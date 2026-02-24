@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+	<changeSet id="V-001-01-create-t-demo" author="kapita">
+		<createTable tableName="t_demo">
+			<column name="c_id" type="varchar(36)">
+				<constraints nullable="false" primaryKey="true"
+					primaryKeyName="pk_t_demo" />
+			</column>
+			<column name="c_name" type="varchar(255)" />
+			<column name="c_version" type="bigint" defaultValueNumeric="0">
+				<constraints nullable="false" />
+			</column>
+			<column name="c_deleted" type="boolean"
+				defaultValueBoolean="false">
+				<constraints nullable="false" />
+			</column>
+		</createTable>
+	</changeSet>
+
+	<changeSet id="V-001-02-seed-t-demo" author="kapita"
+		context="@e2e">
+		<insert tableName="t_demo">
+			<column name="c_id"
+				value="11111111-1111-1111-1111-111111111111" />
+			<column name="c_name" value="seed-demo-1" />
+			<column name="c_version" valueNumeric="0" />
+			<column name="c_deleted" valueBoolean="false" />
+		</insert>
+
+		<insert tableName="t_demo">
+			<column name="c_id"
+				value="22222222-2222-2222-2222-222222222222" />
+			<column name="c_name" value="seed-demo-2" />
+			<column name="c_version" valueNumeric="0" />
+			<column name="c_deleted" valueBoolean="false" />
+		</insert>
+
+		<insert tableName="t_demo">
+			<column name="c_id"
+				value="33333333-3333-3333-3333-333333333333" />
+			<column name="c_name" value="seed-demo-deleted" />
+			<column name="c_version" valueNumeric="0" />
+			<column name="c_deleted" valueBoolean="true" />
+		</insert>
+	</changeSet>
+
+</databaseChangeLog>
