@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="GradleMigrationSettings" migrationVersion="1" />
+  <component name="GradleSettings">
+    <option name="linkedExternalProjectsSettings">
+      <GradleProjectSettings>
+        <compositeConfiguration>
+          <compositeBuild compositeDefinitionSource="SCRIPT">
+            <builds>
+              <build path="$PROJECT_DIR$/platform-libs" name="kapita-platform-libs">
+                <projects>
+                  <project path="$PROJECT_DIR$/platform-libs" />
+                  <project path="$PROJECT_DIR$/platform-libs/kapita-domain-entity-core" />
+                  <project path="$PROJECT_DIR$/platform-libs/kapita-jpa-eclipselink-autoconfigure" />
+                  <project path="$PROJECT_DIR$/platform-libs/kapita-jpa-eclipselink-starter" />
+                  <project path="$PROJECT_DIR$/platform-libs/kapita-platform-bom" />
+                  <project path="$PROJECT_DIR$/platform-libs/kapita-security-jwt-autoconfigure" />
+                  <project path="$PROJECT_DIR$/platform-libs/kapita-security-jwt-starter" />
+                </projects>
+              </build>
+            </builds>
+          </compositeBuild>
+        </compositeConfiguration>
+        <option name="distributionType" value="LOCAL" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$/cm.domeni.kapita" />
+        <option name="gradleHome" value="$USER_HOME$/.sdkman/candidates/gradle/8.14.3" />
+        <option name="gradleJvm" value="21" />
+        <option name="modules">
+          <set>
+            <option value="$PROJECT_DIR$/cm.domeni.kapita" />
+            <option value="$PROJECT_DIR$/platform-libs" />
+            <option value="$PROJECT_DIR$/platform-libs/kapita-domain-entity-core" />
+            <option value="$PROJECT_DIR$/platform-libs/kapita-jpa-eclipselink-autoconfigure" />
+            <option value="$PROJECT_DIR$/platform-libs/kapita-jpa-eclipselink-starter" />
+            <option value="$PROJECT_DIR$/platform-libs/kapita-platform-bom" />
+            <option value="$PROJECT_DIR$/platform-libs/kapita-security-jwt-autoconfigure" />
+            <option value="$PROJECT_DIR$/platform-libs/kapita-security-jwt-starter" />
+          </set>
+        </option>
+      </GradleProjectSettings>
+    </option>
+  </component>
+</project>

@@ -1,0 +1,12 @@
+---
+spring:
+  cloud:
+    bus:
+      enabled: false
+    config:
+      enabled: false
+    stream:
+      enabled: false
+kapita:
+  security:
+    expose-docs: true

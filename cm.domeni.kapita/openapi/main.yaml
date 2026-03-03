@@ -1,0 +1,124 @@
+---
+openapi: "3.0.3"
+info:
+  title: "kapita"
+  description: "REST API endpoints for kapita"
+  version: "v-000"
+servers:
+- url: "https"
+- url: "http"
+tags:
+- name: "Demo"
+  description: "Demo operations"
+paths:
+  /demo:
+    get:
+      tags:
+      - "Demo"
+      summary: "Fetch all Demos"
+      description: "Fetch all Demos"
+      operationId: "fetchAllDemo"
+      security:
+      - oAuth:
+        - "demo:read:all"
+      responses:
+        "200":
+          description: "successful operation"
+          content:
+            application/json:
+              schema:
+                type: "array"
+                items:
+                  $ref: "#/components/schemas/DemoDTO"
+    post:
+      tags:
+      - "Demo"
+      summary: "Create a new Demo"
+      description: "Create a new Demo"
+      operationId: "createDemo"
+      security:
+      - oAuth:
+        - "demo:create"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateDemoDTO"
+      responses:
+        "201":
+          description: "successful operation"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreationResponseDTO"
+  /demo/{demoId}:
+    get:
+      tags:
+      - "Demo"
+      summary: "Fetch demo by id"
+      description: "Fetch demo by id"
+      operationId: "fetchDemoById"
+      security:
+      - oAuth:
+        - "demo:read"
+      parameters:
+      - name: "demoId"
+        in: "path"
+        required: true
+        schema:
+          type: "string"
+          format: "uuid"
+        description: "represents the id of demo to fetch."
+      responses:
+        "200":
+          description: "successful operation"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DemoDTO"
+        "404":
+          description: "KAPITA-404-001"
+components:
+  securitySchemes:
+    bearerAuth:
+      type: "http"
+      scheme: "bearer"
+      bearerFormat: "JWT"
+    oAuth:
+      type: "oauth2"
+      description: "This API uses OAuth 2 with the Authorization Code grant flow."
+      flows:
+        authorizationCode:
+          authorizationUrl: ""
+          tokenUrl: ""
+          scopes:
+            demo:read:all: "Needed to fetch all Demo objects"
+            demo:create: "Needed when to create a new Demo object"
+  schemas:
+    DemoDTO:
+      type: "object"
+      required:
+      - "id"
+      - "name"
+      properties:
+        id:
+          type: "string"
+          format: "uuid"
+        name:
+          type: "string"
+    CreateDemoDTO:
+      type: "object"
+      required:
+      - "name"
+      properties:
+        name:
+          type: "string"
+    CreationResponseDTO:
+      type: "object"
+      required:
+      - "newId"
+      properties:
+        newId:
+          type: "string"
+          format: "uuid"

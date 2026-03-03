@@ -1,0 +1,16 @@
+---
+spring:
+  cloud:
+    bus:
+      enabled: false
+    config:
+      enabled: false
+    stream:
+      enabled: false
+  liquibase:
+    change-log: "classpath:db/changelog/db.changelog-master.xml"
+    contexts: "e2e"
+    enabled: true
+kapita:
+  security:
+    expose-docs: true

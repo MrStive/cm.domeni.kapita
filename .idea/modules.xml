@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/cm.domeni.kapita.iml" filepath="$PROJECT_DIR$/.idea/cm.domeni.kapita.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/417236438/com.domeni.kapita.kapita-platform-libs.kapita-security-jwt-autoconfigure.main.iml" filepath="$PROJECT_DIR$/.idea/modules/417236438/com.domeni.kapita.kapita-platform-libs.kapita-security-jwt-autoconfigure.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/-467539472/kapita-platform-libs.iml" filepath="$PROJECT_DIR$/.idea/modules/-467539472/kapita-platform-libs.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/-2048068270/kapita-platform-libs.kapita-domain-entity-core.iml" filepath="$PROJECT_DIR$/.idea/modules/-2048068270/kapita-platform-libs.kapita-domain-entity-core.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/-2048068270/kapita-platform-libs.kapita-domain-entity-core.main.iml" filepath="$PROJECT_DIR$/.idea/modules/-2048068270/kapita-platform-libs.kapita-domain-entity-core.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/-2048068270/kapita-platform-libs.kapita-domain-entity-core.test.iml" filepath="$PROJECT_DIR$/.idea/modules/-2048068270/kapita-platform-libs.kapita-domain-entity-core.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/374637511/kapita-platform-libs.kapita-jpa-eclipselink-autoconfigure.iml" filepath="$PROJECT_DIR$/.idea/modules/374637511/kapita-platform-libs.kapita-jpa-eclipselink-autoconfigure.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/374637511/kapita-platform-libs.kapita-jpa-eclipselink-autoconfigure.main.iml" filepath="$PROJECT_DIR$/.idea/modules/374637511/kapita-platform-libs.kapita-jpa-eclipselink-autoconfigure.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/374637511/kapita-platform-libs.kapita-jpa-eclipselink-autoconfigure.test.iml" filepath="$PROJECT_DIR$/.idea/modules/374637511/kapita-platform-libs.kapita-jpa-eclipselink-autoconfigure.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/72896063/kapita-platform-libs.kapita-jpa-eclipselink-starter.iml" filepath="$PROJECT_DIR$/.idea/modules/72896063/kapita-platform-libs.kapita-jpa-eclipselink-starter.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/72896063/kapita-platform-libs.kapita-jpa-eclipselink-starter.main.iml" filepath="$PROJECT_DIR$/.idea/modules/72896063/kapita-platform-libs.kapita-jpa-eclipselink-starter.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/72896063/kapita-platform-libs.kapita-jpa-eclipselink-starter.test.iml" filepath="$PROJECT_DIR$/.idea/modules/72896063/kapita-platform-libs.kapita-jpa-eclipselink-starter.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/-1702612872/kapita-platform-libs.kapita-platform-bom.iml" filepath="$PROJECT_DIR$/.idea/modules/-1702612872/kapita-platform-libs.kapita-platform-bom.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/417236438/kapita-platform-libs.kapita-security-jwt-autoconfigure.iml" filepath="$PROJECT_DIR$/.idea/modules/417236438/kapita-platform-libs.kapita-security-jwt-autoconfigure.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/417236438/kapita-platform-libs.kapita-security-jwt-autoconfigure.test.iml" filepath="$PROJECT_DIR$/.idea/modules/417236438/kapita-platform-libs.kapita-security-jwt-autoconfigure.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/-1361786994/kapita-platform-libs.kapita-security-jwt-starter.iml" filepath="$PROJECT_DIR$/.idea/modules/-1361786994/kapita-platform-libs.kapita-security-jwt-starter.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/-1361786994/kapita-platform-libs.kapita-security-jwt-starter.main.iml" filepath="$PROJECT_DIR$/.idea/modules/-1361786994/kapita-platform-libs.kapita-security-jwt-starter.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/-1361786994/kapita-platform-libs.kapita-security-jwt-starter.test.iml" filepath="$PROJECT_DIR$/.idea/modules/-1361786994/kapita-platform-libs.kapita-security-jwt-starter.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/kapita.main.iml" filepath="$PROJECT_DIR$/.idea/modules/kapita.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/kapita.test.iml" filepath="$PROJECT_DIR$/.idea/modules/kapita.test.iml" />
+    </modules>
+  </component>
+</project>
