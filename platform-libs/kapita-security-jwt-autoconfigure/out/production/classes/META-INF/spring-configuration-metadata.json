@@ -1,0 +1,27 @@
+{
+  "groups": [
+    {
+      "name": "kapita.security.jwt",
+      "type": "com.domeni.kapita.security.jwt.autoconfigure.KapitaJwtSecurityProperties",
+      "sourceType": "com.domeni.kapita.security.jwt.autoconfigure.KapitaJwtSecurityProperties"
+    }
+  ],
+  "properties": [
+    {
+      "name": "kapita.security.jwt.audience",
+      "type": "java.lang.String",
+      "sourceType": "com.domeni.kapita.security.jwt.autoconfigure.KapitaJwtSecurityProperties"
+    },
+    {
+      "name": "kapita.security.jwt.issuer",
+      "type": "java.lang.String",
+      "sourceType": "com.domeni.kapita.security.jwt.autoconfigure.KapitaJwtSecurityProperties"
+    },
+    {
+      "name": "kapita.security.jwt.public-key-location",
+      "type": "org.springframework.core.io.Resource",
+      "sourceType": "com.domeni.kapita.security.jwt.autoconfigure.KapitaJwtSecurityProperties"
+    }
+  ],
+  "hints": []
+}
