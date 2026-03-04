@@ -18,5 +18,6 @@ rad.json
 *.g.xlf
 #License-file
 *.flf
+*.idea
 #Test results file
 TestResults.xml

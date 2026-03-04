@@ -14,7 +14,7 @@ buildscript {
 plugins {
     java
     id("application")
-    id("org.springframework.boot") version "3.4.2"
+    id("org.springframework.boot") version "3.4.13"
     id("io.spring.dependency-management") version "1.1.7"
     id("org.openapi.generator") version "7.11.0"
     id("com.google.cloud.tools.jib") version "3.4.4"
@@ -56,7 +56,7 @@ val nexusPassword =
         .orNull
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(21)
+        languageVersion = JavaLanguageVersion.of(25)
     }
 }
 repositories {
@@ -113,9 +113,14 @@ tasks.named("check") {
     dependsOn("verifyBootJarStartClass")
 }
 
-val springCloudVersion = "2024.0.0"
+val springCloudVersion = "2024.0.3"
 val mapstructVersion = "1.6.3"
 val cucumberVersion = "7.20.1"
+val lombokVersion = "1.18.42"
+val errorProneVersion = "2.48.0"
+val nullAwayVersion = "0.13.1"
+val mockitoVersion = "5.22.0"
+val byteBuddyVersion = "1.18.7"
 
 dependencyManagement {
     imports {
@@ -137,10 +142,10 @@ dependencies {
     implementation("com.domeni.kapita:kapita-jpa-eclipselink-starter")
     implementation("org.liquibase:liquibase-core")
     // Lombok
-    compileOnly("org.projectlombok:lombok")
-    annotationProcessor("org.projectlombok:lombok")
-    testCompileOnly("org.projectlombok:lombok")
-    testAnnotationProcessor("org.projectlombok:lombok")
+    compileOnly("org.projectlombok:lombok:$lombokVersion")
+    annotationProcessor("org.projectlombok:lombok:$lombokVersion")
+    testCompileOnly("org.projectlombok:lombok:$lombokVersion")
+    testAnnotationProcessor("org.projectlombok:lombok:$lombokVersion")
     // Cloud
     implementation("org.springframework.cloud:spring-cloud-starter-config")
 
@@ -151,13 +156,17 @@ dependencies {
     // Security
     implementation("org.springframework.boot:spring-boot-starter-security")
     testImplementation("org.springframework.security:spring-security-test")
+    testImplementation("org.mockito:mockito-core:$mockitoVersion")
+    testImplementation("org.mockito:mockito-junit-jupiter:$mockitoVersion")
+    testImplementation("net.bytebuddy:byte-buddy:$byteBuddyVersion")
+    testRuntimeOnly("net.bytebuddy:byte-buddy-agent:$byteBuddyVersion")
 
     // DB
     implementation("org.postgresql:postgresql")
 
     implementation("org.jspecify:jspecify:1.0.0")
-    errorprone("com.google.errorprone:error_prone_core:2.28.0")
-    errorprone("com.uber.nullaway:nullaway:0.10.25")
+    errorprone("com.google.errorprone:error_prone_core:$errorProneVersion")
+    errorprone("com.uber.nullaway:nullaway:$nullAwayVersion")
 
     // OPENAPI
     implementation("io.swagger:swagger-annotations:1.6.8")
@@ -209,6 +218,7 @@ tasks.withType<JavaCompile> {
     options.compilerArgs.addAll(
         listOf(
             "--enable-preview",
+            "--should-stop=ifError=FLOW",
         ),
     )
     options.errorprone {
@@ -368,7 +378,7 @@ jib {
     val nexusUsername = System.getenv("NEXUS_CREDENTIALS_USR") ?: ""
     val nexusPassword = System.getenv("NEXUS_CREDENTIALS_PSW") ?: ""
     from {
-        image = "eclipse-temurin:21-jdk"
+        image = "eclipse-temurin:25-jdk"
     }
     to {
         if (imageNamePrefix.isBlank()) {
@@ -393,7 +403,7 @@ spotless {
     java {
         targetExclude("build/**")
         toggleOffOn()
-        googleJavaFormat("1.25.2")
+        googleJavaFormat("1.30.0")
             .reflowLongStrings()
             .formatJavadoc(true)
             .reorderImports(true)
@@ -413,7 +423,7 @@ spotless {
     yaml {
         targetExclude("build/**")
         target("src/*/resources/**/*.yaml", "src/*/resources/**/*.yml", "specs/openapi/main.yaml")
-// 		targetExclude("src/test/resources/docker-compose.yml")
+        targetExclude("src/test/resources/docker-compose.yml")
         jackson()
             .feature("ORDER_MAP_ENTRIES_BY_KEYS", true)
     }

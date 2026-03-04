@@ -21,6 +21,7 @@
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/-1361786994/kapita-platform-libs.kapita-security-jwt-starter.main.iml" filepath="$PROJECT_DIR$/.idea/modules/-1361786994/kapita-platform-libs.kapita-security-jwt-starter.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/-1361786994/kapita-platform-libs.kapita-security-jwt-starter.test.iml" filepath="$PROJECT_DIR$/.idea/modules/-1361786994/kapita-platform-libs.kapita-security-jwt-starter.test.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/kapita.main.iml" filepath="$PROJECT_DIR$/.idea/modules/kapita.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/kapita.test.iml" filepath="$PROJECT_DIR$/.idea/modules/kapita.test.iml" />
     </modules>
   </component>
 </project>

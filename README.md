@@ -11,6 +11,11 @@ No Nexus access is needed.
 2. Remote Nexus mode:
 Use published artifacts when local sources are unavailable or when you want CI/release parity.
 
+## Java Version
+
+- Project toolchains are set to Java 25.
+- Gradle can auto-download a matching JDK via the Foojay toolchain resolver if Java 25 is not installed locally.
+
 ## Local Developer Setup
 
 From `cm.domeni.kapita/cm.domeni.kapita`:
@@ -20,6 +25,26 @@ From `cm.domeni.kapita/cm.domeni.kapita`:
 ```
 
 If `../platform-libs` is present, Gradle resolves libs from local source automatically.
+
+## Publish Platform Libraries
+
+From `cm.domeni.kapita` root:
+
+```bash
+export NEXUS_MAVEN_URL="http://localhost:8081/repository/kapita-releases/"
+export NEXUS_CREDENTIALS_USR="<your-nexus-user>"
+export NEXUS_CREDENTIALS_PSW="<your-nexus-password-or-token>"
+./cm.domeni.kapita/gradlew --no-daemon -p platform-libs publish -PkapitaPlatformVersion=0.1.1-SNAPSHOT
+```
+
+Or use the helper script:
+
+```bash
+cd platform-libs
+./scripts/publish-all.sh 0.1.1-SNAPSHOT
+```
+
+For details about where to get these variables, see `platform-libs/README.md`.
 
 ## Force Remote Nexus
 

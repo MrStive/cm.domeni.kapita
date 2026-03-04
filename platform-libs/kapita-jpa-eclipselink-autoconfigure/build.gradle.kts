@@ -3,9 +3,9 @@ plugins {
     `maven-publish`
 }
 
-val springBootVersion = "3.4.2"
-val springVersion = "6.2.2"
-val springDataVersion = "3.4.2"
+val springBootVersion = "3.4.13"
+val springVersion = "6.2.15"
+val springDataVersion = "3.4.13"
 
 dependencies {
     api(project(":kapita-domain-entity-core"))

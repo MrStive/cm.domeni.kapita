@@ -3,7 +3,7 @@ plugins {
     `maven-publish`
 }
 
-val springBootVersion = "3.4.2"
+val springBootVersion = "3.4.13"
 
 dependencies {
     api("org.springframework.boot:spring-boot-autoconfigure:$springBootVersion")

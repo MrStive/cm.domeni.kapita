@@ -23,8 +23,8 @@
         </compositeConfiguration>
         <option name="distributionType" value="LOCAL" />
         <option name="externalProjectPath" value="$PROJECT_DIR$/cm.domeni.kapita" />
-        <option name="gradleHome" value="$USER_HOME$/.sdkman/candidates/gradle/8.14.3" />
-        <option name="gradleJvm" value="21" />
+        <option name="gradleHome" value="$USER_HOME$/.sdkman/candidates/gradle/9.2.0" />
+        <option name="gradleJvm" value="temurin-25" />
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$/cm.domeni.kapita" />

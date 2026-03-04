@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1.7
 
-FROM gradle:8.14.3-jdk21 AS builder
+FROM gradle:9.3.1-jdk25 AS builder
 WORKDIR /workspace
 
 COPY gradlew gradlew
@@ -11,7 +11,7 @@ COPY src src
 
 RUN chmod +x gradlew && ./gradlew --no-daemon bootJar
 
-FROM eclipse-temurin:21-jre-jammy AS runtime
+FROM eclipse-temurin:25-jdk-jammy AS runtime
 WORKDIR /app
 
 RUN groupadd --system app && useradd --system --gid app app
