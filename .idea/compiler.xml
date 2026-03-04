@@ -5,13 +5,6 @@
       <profile name="Gradle Imported" enabled="true">
         <outputRelativeToContentRoot value="true" />
         <processorPath useClasspath="false">
-          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.springframework.boot/spring-boot-configuration-processor/3.4.2/4f9e3e0c959aaf5fb24fd885f9ce201d8643f0dc/spring-boot-configuration-processor-3.4.2.jar" />
-        </processorPath>
-        <module name="com.domeni.kapita.kapita-platform-libs.kapita-security-jwt-autoconfigure.main" />
-      </profile>
-      <profile name="Gradle Imported" enabled="true">
-        <outputRelativeToContentRoot value="true" />
-        <processorPath useClasspath="false">
           <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.36/lombok-1.18.36.jar" />
           <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.mapstruct/mapstruct-processor/1.6.3/52e345c907fbf173b376586c7f8b131d53fa5867/mapstruct-processor-1.6.3.jar" />
           <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.google.errorprone/error_prone_core/2.28.0/6cdc9d1c0fdba408e91a5d15a2651b7b04b91717/error_prone_core-2.28.0.jar" />
@@ -75,23 +68,32 @@
         </processorPath>
         <module name="kapita.test" />
       </profile>
+      <profile name="Gradle Imported" enabled="true">
+        <outputRelativeToContentRoot value="true" />
+        <processorPath useClasspath="false">
+          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.springframework.boot/spring-boot-configuration-processor/3.4.2/4f9e3e0c959aaf5fb24fd885f9ce201d8643f0dc/spring-boot-configuration-processor-3.4.2.jar" />
+        </processorPath>
+        <module name="com.domeni.kapita.kapita-platform-libs.kapita-security-jwt-autoconfigure.main" />
+      </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="kapita-platform-libs.kapita-domain-entity-core" target="21" />
-      <module name="kapita-platform-libs.kapita-domain-entity-core.main" target="21" />
-      <module name="kapita-platform-libs.kapita-domain-entity-core.test" target="21" />
-      <module name="kapita-platform-libs.kapita-jpa-eclipselink-autoconfigure" target="21" />
-      <module name="kapita-platform-libs.kapita-jpa-eclipselink-autoconfigure.main" target="21" />
-      <module name="kapita-platform-libs.kapita-jpa-eclipselink-autoconfigure.test" target="21" />
-      <module name="kapita-platform-libs.kapita-jpa-eclipselink-starter" target="21" />
-      <module name="kapita-platform-libs.kapita-jpa-eclipselink-starter.main" target="21" />
-      <module name="kapita-platform-libs.kapita-jpa-eclipselink-starter.test" target="21" />
-      <module name="kapita-platform-libs.kapita-security-jwt-autoconfigure" target="21" />
-      <module name="kapita-platform-libs.kapita-security-jwt-autoconfigure.main" target="21" />
-      <module name="kapita-platform-libs.kapita-security-jwt-autoconfigure.test" target="21" />
-      <module name="kapita-platform-libs.kapita-security-jwt-starter" target="21" />
-      <module name="kapita-platform-libs.kapita-security-jwt-starter.main" target="21" />
-      <module name="kapita-platform-libs.kapita-security-jwt-starter.test" target="21" />
+      <module name="kapita-domain-entity-core" target="21" />
+      <module name="kapita-domain-entity-core_main" target="21" />
+      <module name="kapita-domain-entity-core_test" target="21" />
+      <module name="kapita-jpa-eclipselink-autoconfigure" target="21" />
+      <module name="kapita-jpa-eclipselink-autoconfigure_main" target="21" />
+      <module name="kapita-jpa-eclipselink-autoconfigure_test" target="21" />
+      <module name="kapita-jpa-eclipselink-starter" target="21" />
+      <module name="kapita-jpa-eclipselink-starter_main" target="21" />
+      <module name="kapita-jpa-eclipselink-starter_test" target="21" />
+      <module name="kapita-security-jwt-autoconfigure" target="21" />
+      <module name="kapita-security-jwt-autoconfigure_main" target="21" />
+      <module name="kapita-security-jwt-autoconfigure_test" target="21" />
+      <module name="kapita-security-jwt-starter" target="21" />
+      <module name="kapita-security-jwt-starter_main" target="21" />
+      <module name="kapita-security-jwt-starter_test" target="21" />
+      <module name="kapita_main" target="21" />
+      <module name="kapita_test" target="21" />
     </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
@@ -99,6 +101,8 @@
       <module name="kapita" options="-parameters --enable-preview --enable-preview" />
       <module name="kapita.main" options="-parameters --enable-preview &quot;-Xplugin:ErrorProne -XepDisableAllChecks -XepDisableWarningsInGeneratedCode -XepExcludedPaths:.*/build/generated/sources/.* -Xep:NullAway:ERROR -XepOpt:NullAway:AnnotatedPackages=cm.domeni.kapita -XepOpt:NullAway:JSpecifyMode=true -XepOpt:NullAway:TreatGeneratedAsUnannotated=true -XepOpt:NullAway:CheckOptionalEmptiness=true -XepOpt:NullAway:SuggestSuppressions=true -XepOpt:NullAway:ExcludedClasses=cm.domeni.kapita.KapitaApplication,cm.domeni.kapita.config -XepOpt:NullAway:ExcludedClassAnnotations=org.mapstruct.Mapper,org.springframework.boot.test.context.SpringBootTest,org.junit.jupiter.api.Test,org.junit.jupiter.api.extension.ExtendWith,org.junit.jupiter.api.BeforeEach,org.mockito.Mock,org.springframework.context.annotation.Configuration,org.springframework.boot.autoconfigure.SpringBootApplication,jakarta.annotation.Generated,com.fasterxml.jackson.annotation.JsonProperty,jakarta.persistence.Converter -XepOpt:NullAway:CustomNullableAnnotations=org.springframework.lang.Nullable,jakarta.annotation.Nullable -XepOpt:NullAway:CustomNonnullAnnotations=org.springframework.lang.NonNull,jakarta.annotation.Nonnull -XepOpt:NullAway:HandleTestAssertionLibraries=true -XepOpt:NullAway:ExcludedFieldAnnotations=org.springframework.beans.factory.annotation.Autowired,jakarta.inject.Inject,lombok.Generated,lombok.NonNull,org.jspecify.annotations.NonNull&quot; -XDcompilePolicy=simple" />
       <module name="kapita.test" options="-parameters --enable-preview --enable-preview" />
+      <module name="kapita_main" options="-parameters --enable-preview &quot;-Xplugin:ErrorProne -XepDisableAllChecks -XepDisableWarningsInGeneratedCode -XepExcludedPaths:.*/build/generated/sources/.* -Xep:NullAway:ERROR -XepOpt:NullAway:AnnotatedPackages=cm.domeni.kapita -XepOpt:NullAway:JSpecifyMode=true -XepOpt:NullAway:TreatGeneratedAsUnannotated=true -XepOpt:NullAway:CheckOptionalEmptiness=true -XepOpt:NullAway:SuggestSuppressions=true -XepOpt:NullAway:ExcludedClasses=cm.domeni.kapita.KapitaApplication,cm.domeni.kapita.config -XepOpt:NullAway:ExcludedClassAnnotations=org.mapstruct.Mapper,org.springframework.boot.test.context.SpringBootTest,org.junit.jupiter.api.Test,org.junit.jupiter.api.extension.ExtendWith,org.junit.jupiter.api.BeforeEach,org.mockito.Mock,org.springframework.context.annotation.Configuration,org.springframework.boot.autoconfigure.SpringBootApplication,jakarta.annotation.Generated,com.fasterxml.jackson.annotation.JsonProperty,jakarta.persistence.Converter -XepOpt:NullAway:CustomNullableAnnotations=org.springframework.lang.Nullable,jakarta.annotation.Nullable -XepOpt:NullAway:CustomNonnullAnnotations=org.springframework.lang.NonNull,jakarta.annotation.Nonnull -XepOpt:NullAway:HandleTestAssertionLibraries=true -XepOpt:NullAway:ExcludedFieldAnnotations=org.springframework.beans.factory.annotation.Autowired,jakarta.inject.Inject,lombok.Generated,lombok.NonNull,org.jspecify.annotations.NonNull&quot; -XDcompilePolicy=simple" />
+      <module name="kapita_test" options="-parameters --enable-preview --enable-preview" />
     </option>
   </component>
 </project>
