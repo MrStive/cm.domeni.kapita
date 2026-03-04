@@ -9,6 +9,11 @@ Shared libraries for Kapita microservices:
 - `kapita-jpa-eclipselink-autoconfigure`
 - `kapita-jpa-eclipselink-starter`
 
+## Java Version
+
+- Toolchains are set to Java 25.
+- Gradle can auto-download a matching JDK via the Foojay toolchain resolver if Java 25 is not installed locally.
+
 ## Local Build
 
 From the microservice root (which already contains `gradlew`):
@@ -25,15 +30,26 @@ From the microservice root (which already contains `gradlew`):
 ./gradlew -p ../platform-libs publishToMavenLocal
 ```
 
-### 2. Publish to Nexus (snapshot or release)
+### 2. Publish to Nexus with one command (recommended)
+
+From `platform-libs`:
+
+```bash
+export NEXUS_MAVEN_URL="http://localhost:8081/repository/kapita-releases/"
+export NEXUS_CREDENTIALS_USR="<your-nexus-user>"
+export NEXUS_CREDENTIALS_PSW="<your-nexus-password-or-token>"
+./scripts/publish-all.sh 0.1.1-SNAPSHOT
+```
+
+### 3. Publish to Nexus with Gradle (snapshot or release)
 
 Set repository URLs and credentials:
 
 ```bash
 export NEXUS_MAVEN_SNAPSHOTS_URL="http://localhost:8081/repository/kapita-releases/"
 export NEXUS_MAVEN_RELEASES_URL="http://localhost:8081/repository/kapita-releases/"
-export NEXUS_CREDENTIALS_USR="admin"
-export NEXUS_CREDENTIALS_PSW="9d912f7d-c29a-4795-bd0a-b17481659304"
+export NEXUS_CREDENTIALS_USR="<your-nexus-user>"
+export NEXUS_CREDENTIALS_PSW="<your-nexus-password-or-token>"
 ```
 
 Publish a snapshot:
@@ -48,17 +64,6 @@ Publish a release:
 ./gradlew -p ../platform-libs publish -PkapitaPlatformVersion=0.1.1
 ```
 
-### 3. Publish all with helper script
-
-From `platform-libs`:
-
-```bash
-export NEXUS_MAVEN_URL="http://localhost:8081/repository/kapita-releases/"
-export NEXUS_CREDENTIALS_USR="admin"
-export NEXUS_CREDENTIALS_PSW="your-password"
-./scripts/publish-all.sh 0.1.1-SNAPSHOT
-```
-
 Notes:
 - `NEXUS_MAVEN_URL` can be used as a shortcut (it fills both snapshot and release URLs).
 - You can still set `NEXUS_MAVEN_SNAPSHOTS_URL` and `NEXUS_MAVEN_RELEASES_URL` separately.
@@ -68,6 +73,34 @@ Notes:
 - For `*-SNAPSHOT`, Gradle publishes to `NEXUS_MAVEN_SNAPSHOTS_URL`.
 - For non-snapshot versions, Gradle publishes to `NEXUS_MAVEN_RELEASES_URL`.
 - You can also pass `-PnexusSnapshotsUrl=... -PnexusReleasesUrl=... -PnexusUsername=... -PnexusPassword=...`.
+
+## Where to get environment variables
+
+- `NEXUS_MAVEN_URL` (or `NEXUS_MAVEN_SNAPSHOTS_URL` / `NEXUS_MAVEN_RELEASES_URL`):
+  get it from your Nexus repository URL, provided by your DevOps team or Nexus admin.
+- `NEXUS_CREDENTIALS_USR` and `NEXUS_CREDENTIALS_PSW`:
+  use your Nexus account credentials or an access token generated in Nexus.
+- If you do not have values yet:
+  request them from the team owning Nexus access (DevOps/platform).
+
+Example: keep them in a local file and load them for the session:
+
+```bash
+mkdir -p ~/.kapita
+cat > ~/.kapita/nexus.env <<'EOF'
+export NEXUS_MAVEN_URL="http://localhost:8081/repository/kapita-releases/"
+export NEXUS_CREDENTIALS_USR="<your-nexus-user>"
+export NEXUS_CREDENTIALS_PSW="<your-nexus-password-or-token>"
+EOF
+chmod 600 ~/.kapita/nexus.env
+source ~/.kapita/nexus.env
+```
+
+Quick connectivity check:
+
+```bash
+curl -u "${NEXUS_CREDENTIALS_USR}:${NEXUS_CREDENTIALS_PSW}" "${NEXUS_MAVEN_URL}"
+```
 
 ## Typical Usage In a Microservice
 

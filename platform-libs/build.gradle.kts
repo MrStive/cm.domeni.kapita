@@ -24,7 +24,7 @@ subprojects {
     plugins.withType(JavaPlugin::class.java) {
         extensions.configure(JavaPluginExtension::class.java) {
             toolchain {
-                languageVersion.set(org.gradle.jvm.toolchain.JavaLanguageVersion.of(21))
+                languageVersion.set(org.gradle.jvm.toolchain.JavaLanguageVersion.of(25))
             }
         }
         tasks.withType(Test::class.java).configureEach {

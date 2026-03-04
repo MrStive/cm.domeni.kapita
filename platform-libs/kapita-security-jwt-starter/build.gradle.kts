@@ -3,7 +3,7 @@ plugins {
     `maven-publish`
 }
 
-val springBootVersion = "3.4.2"
+val springBootVersion = "3.4.13"
 
 dependencies {
     api(project(":kapita-security-jwt-autoconfigure"))
