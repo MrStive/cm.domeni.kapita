@@ -8,6 +8,8 @@ import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.kafka.KafkaContainer;
+import org.testcontainers.utility.DockerImageName;
 
 @CucumberContextConfiguration
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -22,15 +24,23 @@ public class CucumberSpringConfiguration {
           .withUsername("kapita")
           .withPassword("kapita");
 
+  @Container
+  static final KafkaContainer KAFKA_CONTAINER =
+      new KafkaContainer(DockerImageName.parse("apache/kafka:3.8.1"));
+
   @DynamicPropertySource
   static void registerDatabaseProperties(DynamicPropertyRegistry registry) {
     if (!POSTGRESQL_CONTAINER.isRunning()) {
       POSTGRESQL_CONTAINER.start();
     }
+    if (!KAFKA_CONTAINER.isRunning()) {
+      KAFKA_CONTAINER.start();
+    }
     registry.add("spring.datasource.url", POSTGRESQL_CONTAINER::getJdbcUrl);
     registry.add("spring.datasource.username", POSTGRESQL_CONTAINER::getUsername);
     registry.add("spring.datasource.password", POSTGRESQL_CONTAINER::getPassword);
     registry.add("spring.datasource.driver-class-name", POSTGRESQL_CONTAINER::getDriverClassName);
+    registry.add("spring.kafka.bootstrap-servers", KAFKA_CONTAINER::getBootstrapServers);
     registry.add("spring.jpa.properties.eclipselink.weaving", () -> "false");
     registry.add("spring.jpa.properties.eclipselink.ddl-generation", () -> "none");
     registry.add("spring.jpa.properties.eclipselink.target-database", () -> "PostgreSQL");
