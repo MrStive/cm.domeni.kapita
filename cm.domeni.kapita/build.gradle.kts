@@ -67,8 +67,8 @@ repositories {
             url = uri(nexusMavenPublicUrl)
             isAllowInsecureProtocol = nexusMavenPublicUrl.startsWith("http://")
             credentials {
-                username = nexusUsername ?: ""
-                password = nexusPassword ?: ""
+                username = nexusUsername ?: "admin"
+                password = nexusPassword ?: "9d912f7d-c29a-4795-bd0a-b17481659304"
             }
         }
     }
@@ -132,7 +132,7 @@ dependencies {
     implementation(platform("com.domeni.kapita:kapita-platform-bom:$kapitaPlatformVersion"))
     compileOnly("jakarta.servlet:jakarta.servlet-api:6.0.0")
     implementation("org.springframework.boot:spring-boot-starter-actuator")
-    implementation("org.springframework.kafka:spring-kafka")
+    implementation("com.domeni.kapita:kapita-kafka-inbound-starter")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-validation")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
@@ -375,8 +375,8 @@ tasks.register<GenerateTask>("authentisUserEventOpenApiGenerate") {
             .dir("generated/sources/authentis-user-event")
             .get()
             .asFile.path
-    apiPackage = "cm.lao.generated.domeni.kapita.event.api"
-    modelPackage = "cm.lao.generated.domeni.kapita.event.dto"
+    apiPackage = "cm.domeni.generated.domeni.kapita.event.api"
+    modelPackage = "cm.domeni.generated.domeni.kapita.event.dto"
     configOptions =
         mapOf(
             "dateLibrary" to "java8-localdatetime",
@@ -429,8 +429,8 @@ sourceSets.main.get().java.srcDir(
 
 jib {
     val imageNamePrefix = System.getenv("NEXUS_DOCKER_REGISTRY_URL") ?: ""
-    val nexusUsername = System.getenv("NEXUS_CREDENTIALS_USR") ?: ""
-    val nexusPassword = System.getenv("NEXUS_CREDENTIALS_PSW") ?: ""
+    val nexusUsername = System.getenv("NEXUS_CREDENTIALS_USR") ?: "admin"
+    val nexusPassword = System.getenv("NEXUS_CREDENTIALS_PSW") ?: "9d912f7d-c29a-4795-bd0a-b17481659304"
     from {
         image = "eclipse-temurin:25-jdk"
     }

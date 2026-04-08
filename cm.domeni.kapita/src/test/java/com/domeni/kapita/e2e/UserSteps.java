@@ -66,4 +66,40 @@ public class UserSteps {
               assertThat(row.get("email")).isEqualTo(map.get("email"));
             });
   }
+
+  @Then("I should see that there is exactly {int} user with id {string} in the database")
+  public void iShouldSeeThatThereIsExactlyUserWithIdInTheDatabase(int expectedCount, String id) {
+    await()
+        .atMost(1000, TimeUnit.MILLISECONDS)
+        .ignoreExceptions()
+        .untilAsserted(
+            () -> {
+              Integer count =
+                  jdbcClient
+                      .sql("SELECT COUNT(1) FROM t_user WHERE c_id = ?")
+                      .param(id)
+                      .query(Integer.class)
+                      .single();
+
+              assertThat(count).isEqualTo(expectedCount);
+            });
+  }
+
+  @Then("I should see that the inbox contains exactly {int} event with id {string}")
+  public void iShouldSeeThatTheInboxContainsExactlyEventWithId(int expectedCount, String eventId) {
+    await()
+        .atMost(1000, TimeUnit.MILLISECONDS)
+        .ignoreExceptions()
+        .untilAsserted(
+            () -> {
+              Integer count =
+                  jdbcClient
+                      .sql("SELECT COUNT(1) FROM t_inbox_event WHERE c_id = ?")
+                      .param(eventId)
+                      .query(Integer.class)
+                      .single();
+
+              assertThat(count).isEqualTo(expectedCount);
+            });
+  }
 }

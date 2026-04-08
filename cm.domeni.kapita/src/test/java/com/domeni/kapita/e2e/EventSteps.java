@@ -50,8 +50,11 @@ public class EventSteps {
             .enabled(true)
             .email(email == null ? null : new EmailAddressDTO().email(email));
 
+    UUID eventId =
+        Optional.ofNullable(map.get("event_id")).map(UUID::fromString).orElse(UUID.randomUUID());
+
     return new UserCreatedEventEnvelopeDTO()
-        .eventId(UUID.randomUUID())
+        .eventId(eventId)
         .eventType(DomainEventType.USER_CREATED)
         .occurredAt(LocalDateTime.now())
         .payload(payload);

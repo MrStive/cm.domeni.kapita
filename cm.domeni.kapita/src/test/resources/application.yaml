@@ -1,0 +1,22 @@
+---
+spring:
+  cloud:
+    config:
+      enabled: false
+      import-check:
+        enabled: false
+    bus:
+      enabled: false
+    stream:
+      enabled: false
+  kafka:
+    bootstrap-servers: "localhost:9092"
+    listener:
+      auto-startup: false
+kapita:
+  security:
+    expose-docs: true
+    jwt:
+      issuer: "http://auth-service.local"
+      audience: "kapita-api"
+      public-key-location: "classpath:security/jwt-public.pem"

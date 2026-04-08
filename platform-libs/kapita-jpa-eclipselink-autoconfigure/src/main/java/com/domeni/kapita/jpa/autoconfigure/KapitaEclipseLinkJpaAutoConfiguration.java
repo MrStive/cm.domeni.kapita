@@ -9,6 +9,7 @@ import org.eclipse.persistence.jpa.PersistenceProvider;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigurationPackages;
+import org.springframework.boot.autoconfigure.domain.EntityScanPackages;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -59,7 +60,10 @@ public class KapitaEclipseLinkJpaAutoConfiguration {
         AutoConfigurationPackages.has(beanFactory)
             ? AutoConfigurationPackages.get(beanFactory)
             : List.of();
-    return autoConfiguredPackages.toArray(String[]::new);
+    List<String> entityScanPackages = EntityScanPackages.get(beanFactory).getPackageNames();
+    return java.util.stream.Stream.concat(autoConfiguredPackages.stream(), entityScanPackages.stream())
+        .distinct()
+        .toArray(String[]::new);
   }
 
   private static Map<String, Object> resolveJpaProperties(Environment environment) {

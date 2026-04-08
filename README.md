@@ -31,9 +31,10 @@ If `../platform-libs` is present, Gradle resolves libs from local source automat
 From `cm.domeni.kapita` root:
 
 ```bash
-export NEXUS_MAVEN_URL="http://localhost:8081/repository/kapita-releases/"
-export NEXUS_CREDENTIALS_USR="<your-nexus-user>"
-export NEXUS_CREDENTIALS_PSW="<your-nexus-password-or-token>"
+export NEXUS_MAVEN_URL="http://localhost:8083/repository/kapita-releases"
+export NEXUS_MAVEN_SNAPSHOTS_URL="http://localhost:8083/repository/kapita-releases"
+export NEXUS_CREDENTIALS_USR="admin"
+export NEXUS_CREDENTIALS_PSW="9d912f7d-c29a-4795-bd0a-b17481659304"
 ./cm.domeni.kapita/gradlew --no-daemon -p platform-libs publish -PkapitaPlatformVersion=0.1.1-SNAPSHOT
 ```
 

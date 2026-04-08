@@ -10,6 +10,7 @@ javaPlatform {
 dependencies {
     constraints {
         api(project(":kapita-domain-entity-core"))
+        api(project(":kapita-kafka-inbound-starter"))
         api(project(":kapita-security-jwt-starter"))
         api(project(":kapita-jpa-eclipselink-starter"))
     }

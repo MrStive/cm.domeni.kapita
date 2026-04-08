@@ -10,21 +10,33 @@ import com.domeni.kapita.domain.user.UserLastName;
 import com.domeni.kapita.domain.user.UserName;
 import com.domeni.kapita.domain.user.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @RequiredArgsConstructor
 public class UserFactoryImpl implements UserFactory {
   private final UserRepository userRepository;
 
   @Override
   public User create(UserCreationData userCreationData) {
-    return userRepository.save(
-        User.builder()
-            .id(new UserId(userCreationData.id()))
-            .name(new UserName(userCreationData.name()))
-            .firstname(mapFirstName(userCreationData.firstname()))
-            .lastname(mapLastName(userCreationData.lastname()))
-            .email(mapEmail(userCreationData.email()))
-            .build());
+    UserId userId = new UserId(userCreationData.id());
+    return userRepository
+        .findById(userId)
+        .map(
+            existingUser -> {
+              log.info("User with id={} already exists, skipping creation", userId.getValue());
+              return existingUser;
+            })
+        .orElseGet(
+            () ->
+                userRepository.save(
+                    User.builder()
+                        .id(userId)
+                        .name(new UserName(userCreationData.name()))
+                        .firstname(mapFirstName(userCreationData.firstname()))
+                        .lastname(mapLastName(userCreationData.lastname()))
+                        .email(mapEmail(userCreationData.email()))
+                        .build()));
   }
 
   private UserFirstName mapFirstName(String value) {

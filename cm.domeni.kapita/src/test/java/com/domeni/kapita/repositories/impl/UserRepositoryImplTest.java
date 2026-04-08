@@ -6,7 +6,10 @@ import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
 
 import com.domeni.kapita.domain.user.User;
+import com.domeni.kapita.domain.user.UserId;
 import com.domeni.kapita.repositories.UserSpringRepository;
+import java.util.Optional;
+import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -33,5 +36,20 @@ class UserRepositoryImplTest {
     // Then
     assertThat(result).isSameAs(persistedUser);
     then(userSpringRepository).should().save(user);
+  }
+
+  @Test
+  void findByIdShouldDelegateToSpringRepositoryTest() {
+    // Given
+    UserId userId = new UserId(UUID.randomUUID());
+    User user = mock(User.class);
+    given(userSpringRepository.findById(userId)).willReturn(Optional.of(user));
+
+    // When
+    Optional<User> result = objectUnderTest.findById(userId);
+
+    // Then
+    assertThat(result).containsSame(user);
+    then(userSpringRepository).should().findById(userId);
   }
 }

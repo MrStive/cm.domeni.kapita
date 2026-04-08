@@ -9,7 +9,9 @@ import static org.mockito.Mockito.verifyNoInteractions;
 
 import com.domeni.kapita.domain.user.User;
 import com.domeni.kapita.domain.user.UserCreationData;
+import com.domeni.kapita.domain.user.UserId;
 import com.domeni.kapita.domain.user.UserRepository;
+import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -37,6 +39,7 @@ class UserFactoryImplTest {
             .lastname("Doe")
             .email("john.doe@example.com")
             .build();
+    given(userRepository.findById(any(UserId.class))).willReturn(Optional.empty());
     User persistedUser = new User();
     given(userRepository.save(any(User.class))).willReturn(persistedUser);
 
@@ -47,6 +50,7 @@ class UserFactoryImplTest {
     assertThat(result).isSameAs(persistedUser);
 
     ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
+    then(userRepository).should().findById(any(UserId.class));
     then(userRepository).should().save(userCaptor.capture());
 
     User userToSave = userCaptor.getValue();
@@ -60,6 +64,30 @@ class UserFactoryImplTest {
     assertThat(userToSave.getLastname().getValue()).isEqualTo("Doe");
     assertThat(userToSave.getEmail()).isNotNull();
     assertThat(userToSave.getEmail().getValue()).isEqualTo("john.doe@example.com");
+  }
+
+  @Test
+  void createWhenUserAlreadyExistsShouldReturnExistingUserWithoutSavingTest() {
+    // Given
+    UUID userId = UUID.randomUUID();
+    UserCreationData input =
+        UserCreationData.builder()
+            .id(userId)
+            .name("john.doe")
+            .firstname("John")
+            .lastname("Doe")
+            .email("john.doe@example.com")
+            .build();
+    User existingUser = new User();
+    given(userRepository.findById(any(UserId.class))).willReturn(Optional.of(existingUser));
+
+    // When
+    User result = userFactory.create(input);
+
+    // Then
+    assertThat(result).isSameAs(existingUser);
+    then(userRepository).should().findById(any(UserId.class));
+    then(userRepository).shouldHaveNoMoreInteractions();
   }
 
   @Test

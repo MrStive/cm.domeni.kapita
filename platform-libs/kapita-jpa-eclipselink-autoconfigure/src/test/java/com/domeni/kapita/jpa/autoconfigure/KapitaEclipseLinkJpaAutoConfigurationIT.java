@@ -2,6 +2,8 @@ package com.domeni.kapita.jpa.autoconfigure;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.domeni.kapita.jpa.scanned.ScannedEntity;
+import com.domeni.kapita.jpa.scanned.ScannedEntityRepository;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -31,6 +33,8 @@ class KapitaEclipseLinkJpaAutoConfigurationIT {
 
   @Autowired private TestDemoRepository repository;
 
+  @Autowired private ScannedEntityRepository scannedEntityRepository;
+
   @Autowired private JdbcTemplate jdbcTemplate;
 
   @Autowired private PlatformTransactionManager transactionManager;
@@ -38,6 +42,7 @@ class KapitaEclipseLinkJpaAutoConfigurationIT {
   @BeforeEach
   void resetTable() {
     jdbcTemplate.update("delete from t_test_demo");
+    jdbcTemplate.update("delete from t_scanned_entity");
   }
 
   @Test
@@ -81,6 +86,17 @@ class KapitaEclipseLinkJpaAutoConfigurationIT {
     repository.deleteAllInBatch();
     assertCounts(0L, 5L);
     assertThat(repository.findAll()).isEmpty();
+  }
+
+  @Test
+  void scansEntitiesDeclaredThroughEntityScanPackages() {
+    ScannedEntity saved = scannedEntityRepository.save(new ScannedEntity(null, "external"));
+
+    assertThat(saved.getId()).isNotNull();
+    assertThat(scannedEntityRepository.findById(saved.getId()))
+        .get()
+        .extracting(ScannedEntity::getName)
+        .isEqualTo("external");
   }
 
   private void assertCounts(long expectedActive, long expectedDeleted) {
