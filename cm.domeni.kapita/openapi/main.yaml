@@ -10,6 +10,8 @@ servers:
 tags:
 - name: "Demo"
   description: "Demo operations"
+- name: "Transaction"
+  description: "Transaction operations"
 paths:
   /demo:
     get:
@@ -79,6 +81,29 @@ paths:
                 $ref: "#/components/schemas/DemoDTO"
         "404":
           description: "KAPITA-404-001"
+  /transaction:
+    post:
+      tags:
+      - "Transaction"
+      summary: "Create a new transaction"
+      description: "Create a new transaction"
+      operationId: "createTransaction"
+      security:
+      - oAuth:
+        - "transaction:create"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateTransactionDTO"
+      responses:
+        "201":
+          description: "successful operation"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreationResponseDTO"
 components:
   securitySchemes:
     bearerAuth:
@@ -95,6 +120,7 @@ components:
           scopes:
             demo:read:all: "Needed to fetch all Demo objects"
             demo:create: "Needed when to create a new Demo object"
+            transaction:create: "Needed when to create a new transaction"
   schemas:
     DemoDTO:
       type: "object"
@@ -122,3 +148,66 @@ components:
         newId:
           type: "string"
           format: "uuid"
+    TransactionTypeDTO:
+      type: "string"
+      enum:
+      - "INCOMING"
+      - "EXPENSE"
+    TransactionCategoryDTO:
+      type: "string"
+      enum:
+      - "STOCK"
+      - "TRANSPORT"
+      - "FOOD"
+      - "PHONE_CREDIT"
+      - "RENT"
+      - "EMPLOYEE_SALARY"
+      - "SALE"
+      - "SERVICE_PROVIDED"
+      - "SALARY"
+      - "OTHER"
+    CreateTransactionDTO:
+      type: "object"
+      required:
+      - "type"
+      - "category"
+      - "amount"
+      properties:
+        type:
+          $ref: "#/components/schemas/TransactionTypeDTO"
+        category:
+          $ref: "#/components/schemas/TransactionCategoryDTO"
+        otherCategoryDetail:
+          type: "string"
+          description: "Required when category is OTHER"
+        amount:
+          type: "number"
+          minimum: 0
+          exclusiveMinimum: true
+        description:
+          type: "string"
+    TransactionDTO:
+      type: "object"
+      required:
+      - "id"
+      - "type"
+      - "category"
+      - "amount"
+      - "createdAt"
+      properties:
+        id:
+          type: "string"
+          format: "uuid"
+        type:
+          $ref: "#/components/schemas/TransactionTypeDTO"
+        category:
+          $ref: "#/components/schemas/TransactionCategoryDTO"
+        otherCategoryDetail:
+          type: "string"
+        amount:
+          type: "number"
+        description:
+          type: "string"
+        createdAt:
+          type: "string"
+          format: "date-time"

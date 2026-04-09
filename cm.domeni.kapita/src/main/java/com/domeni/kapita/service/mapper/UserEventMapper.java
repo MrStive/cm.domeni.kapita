@@ -1,7 +1,7 @@
 package com.domeni.kapita.service.mapper;
 
-import cm.lao.generated.domeni.kapita.event.dto.EmailAddressDTO;
-import cm.lao.generated.domeni.kapita.event.dto.UserCreatedEventDTO;
+import cm.domeni.generated.domeni.kapita.event.dto.EmailAddressDTO;
+import cm.domeni.generated.domeni.kapita.event.dto.UserCreatedEventDTO;
 import com.domeni.kapita.domain.user.UserCreationData;
 import java.util.Optional;
 import org.mapstruct.BeanMapping;

@@ -341,8 +341,8 @@ tasks.register<GenerateTask>("mainOpenApiGenerate") {
             .dir("generated/sources/openapi")
             .get()
             .asFile.path
-    apiPackage = "cm.lao.generated.domeni.kapita.api"
-    modelPackage = "cm.lao.generated.domeni.kapita.dto"
+    apiPackage = "cm.domeni.generated.domeni.kapita.api"
+    modelPackage = "cm.domeni.generated.domeni.kapita.dto"
     configOptions =
         mapOf(
             "dateLibrary" to "java8-localdatetime",
@@ -351,12 +351,19 @@ tasks.register<GenerateTask>("mainOpenApiGenerate") {
             "useTags" to "true",
             "skipDefaultInterface" to "true",
             "useSpringBoot3" to "true",
+            "openApiNullable" to "false",
         )
     typeMappings =
         mapOf(
             "time" to "java.time.LocalTime",
+            "date-time" to "java.time.LocalDateTime",
         )
-    val generatedSourceCodeDir = file(outputDir.get() + "/src/main/java/cm/lao/generated/domeni/kapita")
+    importMappings =
+        mapOf(
+            "LocalTime" to "java.time.LocalTime",
+            "LocalDateTime" to "java.time.LocalDateTime",
+        )
+    val generatedSourceCodeDir = file(outputDir.get() + "/src/main/java/cm/domeni/generated/domeni/kapita")
     doFirst {
         generatedSourceCodeDir.deleteRecursively()
     }
@@ -400,7 +407,7 @@ tasks.register<GenerateTask>("authentisUserEventOpenApiGenerate") {
             "LocalDateTime" to "java.time.LocalDateTime",
         )
     val generatedSourceCodeDir =
-        file(outputDir.get() + "/src/main/java/cm/lao/generated/domeni/kapita/event")
+        file(outputDir.get() + "/src/main/java/cm/domeni/generated/domeni/kapita/event")
     doFirst {
         generatedSourceCodeDir.deleteRecursively()
     }

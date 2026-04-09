@@ -1,5 +1,6 @@
 package com.domeni.kapita.security.jwt.autoconfigure;
 
+import com.domeni.kapita.security.jwt.CurrentUserProvider;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.interfaces.RSAPublicKey;
@@ -24,6 +25,12 @@ import org.springframework.util.Assert;
 @ConditionalOnClass({JwtDecoder.class, NimbusJwtDecoder.class})
 @EnableConfigurationProperties(KapitaJwtSecurityProperties.class)
 public class KapitaJwtSecurityAutoConfiguration {
+
+  @Bean
+  @ConditionalOnMissingBean(CurrentUserProvider.class)
+  public CurrentUserProvider currentUserProvider() {
+    return new SecurityContextCurrentUserProvider();
+  }
 
   @Bean
   @ConditionalOnMissingBean(JwtDecoder.class)

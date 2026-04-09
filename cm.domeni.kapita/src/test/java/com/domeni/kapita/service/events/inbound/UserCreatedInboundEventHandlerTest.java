@@ -3,7 +3,7 @@ package com.domeni.kapita.service.events.inbound;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 
-import cm.lao.generated.domeni.kapita.event.dto.UserCreatedEventDTO;
+import cm.domeni.generated.domeni.kapita.event.dto.UserCreatedEventDTO;
 import com.domeni.kapita.domain.user.UserCreationData;
 import com.domeni.kapita.kafka.inbound.InboundEventContext;
 import com.domeni.kapita.service.UserService;

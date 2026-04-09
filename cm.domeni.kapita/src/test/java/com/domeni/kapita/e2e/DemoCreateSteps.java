@@ -3,7 +3,7 @@ package com.domeni.kapita.e2e;
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import cm.lao.generated.domeni.kapita.dto.CreateDemoDTO;
+import cm.domeni.generated.domeni.kapita.dto.CreateDemoDTO;
 import com.domeni.kapita.e2e.context.CreateFlowContext;
 import com.domeni.kapita.e2e.support.JwtTokenFactory;
 import io.cucumber.datatable.DataTable;

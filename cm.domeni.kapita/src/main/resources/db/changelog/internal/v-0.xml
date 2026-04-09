@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+	<changeSet id="kapita-4:1" author="domeni.ngameni">
+		<createTable tableName="t_user">
+			<column name="c_id" type="varchar(36)">
+				<constraints nullable="false" primaryKey="true"
+					primaryKeyName="pk_t_user" />
+			</column>
+			<column name="c_name" type="varchar(255)" />
+			<column name="c_firstname" type="varchar(255)" />
+			<column name="c_lastname" type="varchar(255)" />
+			<column name="c_email" type="varchar(255)" />
+			<column name="c_version" type="bigint" defaultValueNumeric="0">
+				<constraints nullable="false" />
+			</column>
+			<column name="c_deleted" type="boolean"
+				defaultValueBoolean="false">
+				<constraints nullable="false" />
+			</column>
+		</createTable>
+	</changeSet>
+	<changeSet id="kapita-4:2" author="domeni.ngameni">
+		<createTable tableName="t_inbox_event">
+			<column name="c_id" type="varchar(36)">
+				<constraints nullable="false" primaryKey="true"
+					primaryKeyName="pk_inbox_event" />
+			</column>
+			<column name="c_type" type="varchar(100)">
+				<constraints nullable="false" />
+			</column>
+			<column name="c_status" type="varchar(32)">
+				<constraints nullable="false" />
+			</column>
+			<column name="c_created_at" type="timestamp">
+				<constraints nullable="false" />
+			</column>
+			<column name="c_processed_at" type="timestamp" />
+		</createTable>
+	</changeSet>
+	<changeSet id="kapita-5:1" author="domeni.ngameni">
+		<createTable tableName="t_transaction">
+			<column name="c_id" type="varchar(36)">
+				<constraints nullable="false" primaryKey="true"
+					primaryKeyName="pk_t_transaction" />
+			</column>
+			<column name="c_type" type="varchar(32)">
+				<constraints nullable="false" />
+			</column>
+			<column name="c_category" type="varchar(64)">
+				<constraints nullable="false" />
+			</column>
+			<column name="c_other_category_detail" type="varchar(255)" />
+			<column name="c_amount" type="numeric(19,2)">
+				<constraints nullable="false" />
+			</column>
+			<column name="c_description" type="varchar(255)" />
+			<column name="c_user_id" type="varchar(36)">
+				<constraints nullable="false" />
+			</column>
+			<column name="c_created_at" type="timestamp">
+				<constraints nullable="false" />
+			</column>
+			<column name="c_version" type="bigint" defaultValueNumeric="0">
+				<constraints nullable="false" />
+			</column>
+			<column name="c_deleted" type="boolean"
+				defaultValueBoolean="false">
+				<constraints nullable="false" />
+			</column>
+		</createTable>
+	</changeSet>
+</databaseChangeLog>

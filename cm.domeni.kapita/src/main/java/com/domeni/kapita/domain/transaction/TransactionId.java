@@ -1,4 +1,4 @@
-package com.domeni.kapita.domain.user;
+package com.domeni.kapita.domain.transaction;
 
 import jakarta.persistence.Embeddable;
 import java.io.Serializable;
@@ -10,14 +10,14 @@ import lombok.NonNull;
 @Embeddable
 @Getter
 @EqualsAndHashCode
-public class UserId implements Serializable {
-  private final String value;
+public class TransactionId implements Serializable {
+  private String value;
 
-  public UserId(@NonNull UUID value) {
+  public TransactionId(@NonNull UUID value) {
     this.value = value.toString();
   }
 
-  public UserId() {
+  public TransactionId() {
     this.value = UUID.randomUUID().toString();
   }
 
