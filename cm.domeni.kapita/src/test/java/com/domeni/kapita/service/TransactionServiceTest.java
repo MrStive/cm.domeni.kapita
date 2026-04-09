@@ -4,12 +4,17 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
+import static org.mockito.Mockito.mock;
 
 import cm.domeni.generated.domeni.kapita.dto.CreateTransactionDTO;
+import cm.domeni.generated.domeni.kapita.dto.MoneyDTO;
+import cm.domeni.generated.domeni.kapita.dto.TransactionBalanceDTO;
 import cm.domeni.generated.domeni.kapita.dto.TransactionCategoryDTO;
 import cm.domeni.generated.domeni.kapita.dto.TransactionTypeDTO;
 import com.domeni.kapita.domain.exception.InvalidTransactionPayloadException;
 import com.domeni.kapita.domain.transaction.Transaction;
+import com.domeni.kapita.domain.transaction.TransactionBalance;
+import com.domeni.kapita.domain.transaction.TransactionBalanceFetcher;
 import com.domeni.kapita.domain.transaction.TransactionCategory;
 import com.domeni.kapita.domain.transaction.TransactionData;
 import com.domeni.kapita.domain.transaction.TransactionFactory;
@@ -18,7 +23,9 @@ import com.domeni.kapita.domain.transaction.TransactionType;
 import com.domeni.kapita.domain.user.UserId;
 import com.domeni.kapita.service.mapper.TransactionMapper;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.UUID;
+import javax.money.MonetaryAmount;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -31,6 +38,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 class TransactionServiceTest {
 
   @Mock private TransactionFactory transactionFactory;
+
+  @Mock private TransactionBalanceFetcher transactionBalanceFetcher;
 
   @Mock private TransactionMapper transactionMapper;
 
@@ -108,5 +117,29 @@ class TransactionServiceTest {
 
     then(transactionMapper).should().map(input);
     then(transactionFactory).should().create(mappedData, currentUserId);
+  }
+
+  @Test
+  void getBalanceShouldReturnIncomingMinusExpensesWithinRequestedPeriodTest() {
+    LocalDate startDate = LocalDate.of(2026, 2, 1);
+    LocalDate endDate = LocalDate.of(2026, 2, 28);
+    UserId currentUserId = new UserId(UUID.randomUUID());
+    TransactionBalance domainBalance =
+        new TransactionBalance(startDate, endDate, mock(MonetaryAmount.class));
+    TransactionBalanceDTO expectedDto =
+        new TransactionBalanceDTO()
+            .startDate(startDate)
+            .endDate(endDate)
+            .balance(new MoneyDTO().currency("XAF").value(new BigDecimal("320749.25")));
+
+    given(transactionBalanceFetcher.getBalance(startDate, endDate, currentUserId))
+        .willReturn(domainBalance);
+    given(transactionMapper.map(domainBalance)).willReturn(expectedDto);
+
+    TransactionBalanceDTO result = transactionService.getBalance(startDate, endDate, currentUserId);
+
+    assertThat(result).isSameAs(expectedDto);
+    then(transactionBalanceFetcher).should().getBalance(startDate, endDate, currentUserId);
+    then(transactionMapper).should().map(domainBalance);
   }
 }

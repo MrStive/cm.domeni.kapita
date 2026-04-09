@@ -156,6 +156,8 @@ dependencies {
     testAnnotationProcessor("org.mapstruct:mapstruct-processor:$mapstructVersion")
     // Security
     implementation("org.springframework.boot:spring-boot-starter-security")
+    implementation("javax.money:money-api:1.1")
+    implementation("org.javamoney.moneta:moneta-core:1.4.5")
     testImplementation("org.springframework.security:spring-security-test")
     testImplementation("org.mockito:mockito-core:$mockitoVersion")
     testImplementation("org.mockito:mockito-junit-jupiter:$mockitoVersion")
@@ -356,11 +358,13 @@ tasks.register<GenerateTask>("mainOpenApiGenerate") {
     typeMappings =
         mapOf(
             "time" to "java.time.LocalTime",
+            "date" to "java.time.LocalDate",
             "date-time" to "java.time.LocalDateTime",
         )
     importMappings =
         mapOf(
             "LocalTime" to "java.time.LocalTime",
+            "LocalDate" to "java.time.LocalDate",
             "LocalDateTime" to "java.time.LocalDateTime",
         )
     val generatedSourceCodeDir = file(outputDir.get() + "/src/main/java/cm/domeni/generated/domeni/kapita")
