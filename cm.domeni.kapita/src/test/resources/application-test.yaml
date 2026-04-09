@@ -16,15 +16,7 @@ spring:
   liquibase:
     enabled: true
     change-log: "classpath:db/changelog/db.changelog-master.xml"
-  cloud:
-    config:
-      enabled: false
-      import-check:
-        enabled: false
-    bus:
-      enabled: false
-    stream:
-      enabled: false
+    contexts: "test"
 kapita:
   security:
     expose-docs: true

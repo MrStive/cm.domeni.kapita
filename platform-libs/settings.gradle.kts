@@ -7,6 +7,8 @@ rootProject.name = "kapita-platform-libs"
 include(
     "kapita-platform-bom",
     "kapita-domain-entity-core",
+    "kapita-kafka-inbound-autoconfigure",
+    "kapita-kafka-inbound-starter",
     "kapita-security-jwt-autoconfigure",
     "kapita-security-jwt-starter",
     "kapita-jpa-eclipselink-autoconfigure",

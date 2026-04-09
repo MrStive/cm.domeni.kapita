@@ -23,7 +23,6 @@
         </compositeConfiguration>
         <option name="distributionType" value="LOCAL" />
         <option name="externalProjectPath" value="$PROJECT_DIR$/cm.domeni.kapita" />
-        <option name="gradleHome" value="$USER_HOME$/.sdkman/candidates/gradle/9.2.0" />
         <option name="gradleJvm" value="temurin-25" />
         <option name="modules">
           <set>
@@ -37,6 +36,7 @@
             <option value="$PROJECT_DIR$/platform-libs/kapita-security-jwt-starter" />
           </set>
         </option>
+        <option name="myGradleHome" value="$USER_HOME$/.sdkman/candidates/gradle/9.2.0" />
       </GradleProjectSettings>
     </option>
   </component>

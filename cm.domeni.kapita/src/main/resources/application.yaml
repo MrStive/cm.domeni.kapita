@@ -8,6 +8,12 @@ spring:
     url: "jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:kapita-db}"
     username: "${DB_USER:kapita}"
     password: "${DB_PASSWORD:change-me}"
+  kafka:
+    bootstrap-servers: "${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}"
+    consumer:
+      group-id: "${KAFKA_CONSUMER_GROUP_ID:kapita-service}"
+    listener:
+      missing-topics-fatal: false
   jpa:
     show-sql: true
     generate-ddl: false
@@ -20,6 +26,9 @@ spring:
   liquibase:
     change-log: "classpath:db/changelog/db.changelog-master.xml"
 kapita:
+  messaging:
+    user-created:
+      topic: "${KAPITA_USER_CREATED_TOPIC:user-created}"
   security:
     jwt:
       issuer: "${ISSUER_URI:http://localhost:8080/realms/kapital-financial}"

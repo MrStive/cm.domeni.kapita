@@ -67,8 +67,8 @@ repositories {
             url = uri(nexusMavenPublicUrl)
             isAllowInsecureProtocol = nexusMavenPublicUrl.startsWith("http://")
             credentials {
-                username = nexusUsername ?: ""
-                password = nexusPassword ?: ""
+                username = nexusUsername ?: "admin"
+                password = nexusPassword ?: "9d912f7d-c29a-4795-bd0a-b17481659304"
             }
         }
     }
@@ -132,6 +132,7 @@ dependencies {
     implementation(platform("com.domeni.kapita:kapita-platform-bom:$kapitaPlatformVersion"))
     compileOnly("jakarta.servlet:jakarta.servlet-api:6.0.0")
     implementation("org.springframework.boot:spring-boot-starter-actuator")
+    implementation("com.domeni.kapita:kapita-kafka-inbound-starter")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-validation")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
@@ -178,6 +179,7 @@ dependencies {
     testImplementation("io.cucumber:cucumber-java:$cucumberVersion")
     testImplementation("io.cucumber:cucumber-spring:$cucumberVersion")
     testImplementation("org.testcontainers:junit-jupiter")
+    testImplementation("org.testcontainers:kafka")
     testImplementation("org.testcontainers:postgresql")
 }
 
@@ -363,8 +365,54 @@ tasks.register<GenerateTask>("mainOpenApiGenerate") {
             file(inputSpec.get()).lastModified() > generatedSourceCodeDir.lastModified()
     }
 }
+
+tasks.register<GenerateTask>("authentisUserEventOpenApiGenerate") {
+    generatorName = "spring"
+    templateDir.set("$rootDir/openapi/templates/spring-boot")
+    inputSpec = "$rootDir/openapi/authentis-user.yaml"
+    outputDir =
+        layout.buildDirectory
+            .dir("generated/sources/authentis-user-event")
+            .get()
+            .asFile.path
+    apiPackage = "cm.domeni.generated.domeni.kapita.event.api"
+    modelPackage = "cm.domeni.generated.domeni.kapita.event.dto"
+    configOptions =
+        mapOf(
+            "dateLibrary" to "java8-localdatetime",
+            "library" to "spring-boot",
+            "interfaceOnly" to "true",
+            "useTags" to "true",
+            "skipDefaultInterface" to "true",
+            "useSpringBoot3" to "true",
+            "openApiNullable" to "false",
+        )
+    typeMappings =
+        mapOf(
+            "time" to "java.time.LocalTime",
+            "date" to "java.time.LocalDate",
+            "date-time" to "java.time.LocalDateTime",
+        )
+    importMappings =
+        mapOf(
+            "LocalTime" to "java.time.LocalTime",
+            "LocalDate" to "java.time.LocalDate",
+            "LocalDateTime" to "java.time.LocalDateTime",
+        )
+    val generatedSourceCodeDir =
+        file(outputDir.get() + "/src/main/java/cm/lao/generated/domeni/kapita/event")
+    doFirst {
+        generatedSourceCodeDir.deleteRecursively()
+    }
+    onlyIf {
+        !generatedSourceCodeDir.exists() ||
+            file(inputSpec.get()).lastModified() > generatedSourceCodeDir.lastModified()
+    }
+}
+
 tasks.compileJava.get().dependsOn(
     tasks["mainOpenApiGenerate"],
+    tasks["authentisUserEventOpenApiGenerate"],
 )
 sourceSets.main.get().java.srcDir(
     layout.buildDirectory
@@ -372,11 +420,17 @@ sourceSets.main.get().java.srcDir(
         .get()
         .asFile.path,
 )
+sourceSets.main.get().java.srcDir(
+    layout.buildDirectory
+        .dir("generated/sources/authentis-user-event/src/main/java")
+        .get()
+        .asFile.path,
+)
 
 jib {
     val imageNamePrefix = System.getenv("NEXUS_DOCKER_REGISTRY_URL") ?: ""
-    val nexusUsername = System.getenv("NEXUS_CREDENTIALS_USR") ?: ""
-    val nexusPassword = System.getenv("NEXUS_CREDENTIALS_PSW") ?: ""
+    val nexusUsername = System.getenv("NEXUS_CREDENTIALS_USR") ?: "admin"
+    val nexusPassword = System.getenv("NEXUS_CREDENTIALS_PSW") ?: "9d912f7d-c29a-4795-bd0a-b17481659304"
     from {
         image = "eclipse-temurin:25-jdk"
     }

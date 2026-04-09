@@ -17,10 +17,12 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Profile;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 
 @Component
+@Profile("e2e")
 public class JwtTokenFactory {
 
   private static final RSAPrivateKey PRIVATE_KEY = loadPrivateKey();
