@@ -104,6 +104,38 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/CreationResponseDTO"
+  /transaction/balance:
+    get:
+      tags:
+      - "Transaction"
+      summary: "Fetch current user balance over a period"
+      description: "Compute the current user balance over a period using incoming transactions minus expenses"
+      operationId: "fetchTransactionBalance"
+      security:
+      - oAuth:
+        - "transaction:read:balance"
+      parameters:
+      - name: "startDate"
+        in: "query"
+        required: true
+        schema:
+          type: "string"
+          format: "date"
+        description: "Inclusive period start date."
+      - name: "endDate"
+        in: "query"
+        required: true
+        schema:
+          type: "string"
+          format: "date"
+        description: "Inclusive period end date."
+      responses:
+        "200":
+          description: "successful operation"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TransactionBalanceDTO"
 components:
   securitySchemes:
     bearerAuth:
@@ -121,6 +153,7 @@ components:
             demo:read:all: "Needed to fetch all Demo objects"
             demo:create: "Needed when to create a new Demo object"
             transaction:create: "Needed when to create a new transaction"
+            transaction:read:balance: "Needed when to fetch the current user balance over a period"
   schemas:
     DemoDTO:
       type: "object"
@@ -211,3 +244,30 @@ components:
         createdAt:
           type: "string"
           format: "date-time"
+    TransactionBalanceDTO:
+      type: "object"
+      required:
+      - "startDate"
+      - "endDate"
+      - "balance"
+      properties:
+        startDate:
+          type: "string"
+          format: "date"
+        endDate:
+          type: "string"
+          format: "date"
+        balance:
+          description: "Incoming transactions minus expenses over the requested period. Value can be negative, zero, or positive."
+          allOf:
+          - $ref: "#/components/schemas/MoneyDTO"
+    MoneyDTO:
+      type: "object"
+      properties:
+        value:
+          type: "number"
+          format: "currency"
+          description: "The value of the represented money instance"
+        currency:
+          type: "string"
+          description: "ISO 4217 currency code"

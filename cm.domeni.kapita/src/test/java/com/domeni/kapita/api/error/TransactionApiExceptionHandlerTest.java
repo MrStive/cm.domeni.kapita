@@ -3,6 +3,7 @@ package com.domeni.kapita.api.error;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -12,6 +13,7 @@ import com.domeni.kapita.domain.exception.InvalidTransactionPayloadException;
 import com.domeni.kapita.domain.user.UserId;
 import com.domeni.kapita.security.jwt.CurrentUserProvider;
 import com.domeni.kapita.service.TransactionService;
+import java.time.LocalDate;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,6 +74,27 @@ class TransactionApiExceptionHandlerTest {
         .andExpect(jsonPath("$.code").value("KAPITA-400-004"))
         .andExpect(jsonPath("$.message").value("transaction category is invalid for type"))
         .andExpect(jsonPath("$.path").value("/transaction"))
+        .andExpect(jsonPath("$.traceId").isNotEmpty())
+        .andExpect(jsonPath("$.timestamp").exists());
+  }
+
+  @Test
+  void fetchTransactionBalanceWhenServiceRejectsPeriodShouldReturnDomainPayloadTest()
+      throws Exception {
+    when(currentUserProvider.requireCurrentUserId()).thenReturn(UUID.randomUUID());
+    when(transactionService.getBalance(
+            any(LocalDate.class), any(LocalDate.class), any(UserId.class)))
+        .thenThrow(new InvalidTransactionPayloadException("transaction period is invalid"));
+
+    mockMvc
+        .perform(
+            get("/transaction/balance")
+                .queryParam("startDate", "2026-02-10")
+                .queryParam("endDate", "2026-02-01"))
+        .andExpect(status().isBadRequest())
+        .andExpect(jsonPath("$.code").value("KAPITA-400-004"))
+        .andExpect(jsonPath("$.message").value("transaction period is invalid"))
+        .andExpect(jsonPath("$.path").value("/transaction/balance"))
         .andExpect(jsonPath("$.traceId").isNotEmpty())
         .andExpect(jsonPath("$.timestamp").exists());
   }
