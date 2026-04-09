@@ -6,8 +6,8 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.verifyNoInteractions;
 
-import cm.lao.generated.domeni.kapita.dto.CreateDemoDTO;
-import cm.lao.generated.domeni.kapita.dto.DemoDTO;
+import cm.domeni.generated.domeni.kapita.dto.CreateDemoDTO;
+import cm.domeni.generated.domeni.kapita.dto.DemoDTO;
 import com.domeni.kapita.domain.demo.Demo;
 import com.domeni.kapita.domain.demo.DemoData;
 import com.domeni.kapita.domain.demo.DemoFactory;

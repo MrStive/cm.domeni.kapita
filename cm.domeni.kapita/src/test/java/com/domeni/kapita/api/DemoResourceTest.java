@@ -5,9 +5,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
-import cm.lao.generated.domeni.kapita.dto.CreateDemoDTO;
-import cm.lao.generated.domeni.kapita.dto.CreationResponseDTO;
-import cm.lao.generated.domeni.kapita.dto.DemoDTO;
+import cm.domeni.generated.domeni.kapita.dto.CreateDemoDTO;
+import cm.domeni.generated.domeni.kapita.dto.CreationResponseDTO;
+import cm.domeni.generated.domeni.kapita.dto.DemoDTO;
 import com.domeni.kapita.service.DemoService;
 import java.util.List;
 import java.util.UUID;

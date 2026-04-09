@@ -1,9 +1,9 @@
 package com.domeni.kapita.e2e;
 
-import cm.lao.generated.domeni.kapita.event.dto.DomainEventType;
-import cm.lao.generated.domeni.kapita.event.dto.EmailAddressDTO;
-import cm.lao.generated.domeni.kapita.event.dto.UserCreatedEventDTO;
-import cm.lao.generated.domeni.kapita.event.dto.UserCreatedEventEnvelopeDTO;
+import cm.domeni.generated.domeni.kapita.event.dto.DomainEventType;
+import cm.domeni.generated.domeni.kapita.event.dto.EmailAddressDTO;
+import cm.domeni.generated.domeni.kapita.event.dto.UserCreatedEventDTO;
+import cm.domeni.generated.domeni.kapita.event.dto.UserCreatedEventEnvelopeDTO;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.cucumber.datatable.DataTable;
 import io.cucumber.java.en.When;

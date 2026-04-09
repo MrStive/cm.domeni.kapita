@@ -2,8 +2,8 @@ package com.domeni.kapita.service.mapper;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import cm.lao.generated.domeni.kapita.event.dto.EmailAddressDTO;
-import cm.lao.generated.domeni.kapita.event.dto.UserCreatedEventDTO;
+import cm.domeni.generated.domeni.kapita.event.dto.EmailAddressDTO;
+import cm.domeni.generated.domeni.kapita.event.dto.UserCreatedEventDTO;
 import com.domeni.kapita.domain.user.UserCreationData;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;

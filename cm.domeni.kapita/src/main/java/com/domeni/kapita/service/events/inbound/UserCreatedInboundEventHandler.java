@@ -1,7 +1,7 @@
 package com.domeni.kapita.service.events.inbound;
 
-import cm.lao.generated.domeni.kapita.event.dto.DomainEventType;
-import cm.lao.generated.domeni.kapita.event.dto.UserCreatedEventDTO;
+import cm.domeni.generated.domeni.kapita.event.dto.DomainEventType;
+import cm.domeni.generated.domeni.kapita.event.dto.UserCreatedEventDTO;
 import com.domeni.kapita.kafka.inbound.InboundEventContext;
 import com.domeni.kapita.kafka.inbound.InboundEventHandler;
 import com.domeni.kapita.service.UserService;

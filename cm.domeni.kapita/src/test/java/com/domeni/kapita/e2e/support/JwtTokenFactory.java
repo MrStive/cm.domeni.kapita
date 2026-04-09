@@ -26,6 +26,7 @@ import org.springframework.stereotype.Component;
 public class JwtTokenFactory {
 
   private static final RSAPrivateKey PRIVATE_KEY = loadPrivateKey();
+  private static final String E2E_USER_ID = "44a31cb2-bb38-4734-b8d8-9be15c7fb7b5";
   private final String audience;
 
   public JwtTokenFactory(@Value("${kapita.security.jwt.audience}") String audience) {
@@ -39,7 +40,7 @@ public class JwtTokenFactory {
     JWTClaimsSet claimsSet =
         new JWTClaimsSet.Builder()
             .issuer("http://auth-service.local")
-            .subject("e2e-user")
+            .subject(E2E_USER_ID)
             .issueTime(Date.from(now))
             .expirationTime(Date.from(now.plusSeconds(3600)))
             .jwtID(UUID.randomUUID().toString())

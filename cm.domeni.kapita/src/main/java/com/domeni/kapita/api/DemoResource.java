@@ -1,9 +1,9 @@
 package com.domeni.kapita.api;
 
-import cm.lao.generated.domeni.kapita.api.DemoApi;
-import cm.lao.generated.domeni.kapita.dto.CreateDemoDTO;
-import cm.lao.generated.domeni.kapita.dto.CreationResponseDTO;
-import cm.lao.generated.domeni.kapita.dto.DemoDTO;
+import cm.domeni.generated.domeni.kapita.api.DemoApi;
+import cm.domeni.generated.domeni.kapita.dto.CreateDemoDTO;
+import cm.domeni.generated.domeni.kapita.dto.CreationResponseDTO;
+import cm.domeni.generated.domeni.kapita.dto.DemoDTO;
 import com.domeni.kapita.service.DemoService;
 import java.util.List;
 import java.util.UUID;

@@ -4,11 +4,14 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.options;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.domeni.kapita.api.DemoResource;
+import com.domeni.kapita.api.TransactionResource;
 import com.domeni.kapita.security.jwt.autoconfigure.KapitaJwtSecurityAutoConfiguration;
 import com.domeni.kapita.service.DemoService;
+import com.domeni.kapita.service.TransactionService;
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jose.JWSHeader;
@@ -32,11 +35,12 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
-@WebMvcTest(controllers = DemoResource.class)
+@WebMvcTest(controllers = {DemoResource.class, TransactionResource.class})
 @Import(SecurityConfig.class)
 @ImportAutoConfiguration(KapitaJwtSecurityAutoConfiguration.class)
 @TestPropertySource(
@@ -53,10 +57,13 @@ import org.springframework.test.web.servlet.MockMvc;
 class SecurityConfigTest {
 
   private static final RSAPrivateKey PRIVATE_KEY = loadPrivateKey();
+  private static final String SECURITY_TEST_USER_ID = "84bf7fde-8943-48ce-a420-4d4c85467f44";
 
   @Autowired private MockMvc mockMvc;
 
   @MockitoBean private DemoService demoService;
+
+  @MockitoBean private TransactionService transactionService;
 
   @BeforeEach
   void setUp() {
@@ -111,6 +118,21 @@ class SecurityConfigTest {
     verifyNoInteractions(demoService);
   }
 
+  @Test
+  void createTransactionWhenScopeIsMissingShouldReturnForbiddenTest() throws Exception {
+    String token = createToken(List.of("demo:create"), List.of("kapita-api"));
+
+    mockMvc
+        .perform(
+            post("/transaction")
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"type\":\"INCOMING\",\"category\":\"SALE\",\"amount\":1000}"))
+        .andExpect(status().isForbidden());
+
+    verifyNoInteractions(transactionService);
+  }
+
   private String createToken(List<String> scopes, List<String> audiences) {
     Instant now = Instant.now();
     String scopeValue = String.join(" ", scopes);
@@ -118,7 +140,7 @@ class SecurityConfigTest {
     JWTClaimsSet claimsSet =
         new JWTClaimsSet.Builder()
             .issuer("http://auth-service.local")
-            .subject("security-test-user")
+            .subject(SECURITY_TEST_USER_ID)
             .issueTime(Date.from(now))
             .expirationTime(Date.from(now.plusSeconds(3600)))
             .jwtID(UUID.randomUUID().toString())
