@@ -104,6 +104,29 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/CreationResponseDTO"
+  /debt:
+    post:
+      tags:
+      - "Debt"
+      summary: "Create a new debt"
+      description: "Create a new debt for the current user"
+      operationId: "createDebt"
+      security:
+      - oAuth:
+        - "debt:create"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateDebtDTO"
+      responses:
+        "201":
+          description: "successful operation"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreationResponseDTO"
   /transaction/balance:
     get:
       tags:
@@ -193,6 +216,7 @@ components:
             transaction:create: "Needed when to create a new transaction"
             transaction:read:balance: "Needed when to fetch the current user balance over a period"
             transaction:read:amount: "Needed when to fetch the current user transaction amount over a period for one type"
+            debt:create: "Needed when to create a new debt"
   schemas:
     DemoDTO:
       type: "object"
@@ -220,6 +244,35 @@ components:
         newId:
           type: "string"
           format: "uuid"
+    DebtTypeDTO:
+      type: "string"
+      enum:
+      - "RECEIVABLE"
+      - "PAYABLE"
+    DebtStatusDTO:
+      type: "string"
+      enum:
+      - "UNPAID"
+      - "PAID"
+    CreateDebtDTO:
+      type: "object"
+      required:
+      - "type"
+      - "counterpartyName"
+      - "amount"
+      - "dueDate"
+      properties:
+        type:
+          $ref: "#/components/schemas/DebtTypeDTO"
+        counterpartyName:
+          type: "string"
+          minLength: 1
+          pattern: ".*\\S.*"
+        amount:
+          $ref: "#/components/schemas/MoneyDTO"
+        dueDate:
+          type: "string"
+          format: "date"
     TransactionTypeDTO:
       type: "string"
       enum:
@@ -285,11 +338,14 @@ components:
           format: "date-time"
     MoneyDTO:
       type: "object"
+      required:
+        - "value"
+        - "currency"
       properties:
         value:
           type: "number"
-          format: "currency"
-          description: "The value of the represented money instance"
         currency:
           type: "string"
-          description: "ISO 4217 currency code"
+          minLength: 3
+          maxLength: 3
+          pattern: "^[A-Z]{3}$"

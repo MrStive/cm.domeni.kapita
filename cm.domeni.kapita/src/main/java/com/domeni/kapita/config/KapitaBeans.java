@@ -1,5 +1,8 @@
 package com.domeni.kapita.config;
 
+import com.domeni.kapita.domain.debt.DebtFactory;
+import com.domeni.kapita.domain.debt.DebtRepository;
+import com.domeni.kapita.domain.debt.impl.DebtFactoryImpl;
 import com.domeni.kapita.domain.demo.DemoFactory;
 import com.domeni.kapita.domain.demo.DemoFetcher;
 import com.domeni.kapita.domain.demo.DemoRepository;
@@ -13,9 +16,11 @@ import com.domeni.kapita.domain.transaction.impl.TransactionFetcherImpl;
 import com.domeni.kapita.domain.user.UserFactory;
 import com.domeni.kapita.domain.user.UserRepository;
 import com.domeni.kapita.domain.user.impl.UserFactoryImpl;
+import com.domeni.kapita.repositories.DebtSpringRepository;
 import com.domeni.kapita.repositories.DemoSpringRepository;
 import com.domeni.kapita.repositories.TransactionSpringRepository;
 import com.domeni.kapita.repositories.UserSpringRepository;
+import com.domeni.kapita.repositories.impl.DebtRepositoryImpl;
 import com.domeni.kapita.repositories.impl.DemoRepositoryImpl;
 import com.domeni.kapita.repositories.impl.TransactionRepositoryImpl;
 import com.domeni.kapita.repositories.impl.UserRepositoryImpl;
@@ -54,9 +59,19 @@ public class KapitaBeans {
   }
 
   @Bean
-  public TransactionFetcher transactionFetcher(
-      TransactionRepository transactionRepository) {
+  public DebtFactory debtFactory(
+      DebtRepository debtRepository, TransactionFactory transactionFactory, Clock systemClock) {
+    return new DebtFactoryImpl(debtRepository, transactionFactory, systemClock);
+  }
+
+  @Bean
+  public TransactionFetcher transactionFetcher(TransactionRepository transactionRepository) {
     return new TransactionFetcherImpl(transactionRepository);
+  }
+
+  @Bean
+  public DebtRepository debtRepository(DebtSpringRepository debtSpringRepository) {
+    return new DebtRepositoryImpl(debtSpringRepository);
   }
 
   @Bean

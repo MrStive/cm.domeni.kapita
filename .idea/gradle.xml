@@ -13,6 +13,8 @@
                   <project path="$PROJECT_DIR$/platform-libs/kapita-domain-entity-core" />
                   <project path="$PROJECT_DIR$/platform-libs/kapita-jpa-eclipselink-autoconfigure" />
                   <project path="$PROJECT_DIR$/platform-libs/kapita-jpa-eclipselink-starter" />
+                  <project path="$PROJECT_DIR$/platform-libs/kapita-kafka-inbound-autoconfigure" />
+                  <project path="$PROJECT_DIR$/platform-libs/kapita-kafka-inbound-starter" />
                   <project path="$PROJECT_DIR$/platform-libs/kapita-platform-bom" />
                   <project path="$PROJECT_DIR$/platform-libs/kapita-security-jwt-autoconfigure" />
                   <project path="$PROJECT_DIR$/platform-libs/kapita-security-jwt-starter" />
@@ -31,6 +33,8 @@
             <option value="$PROJECT_DIR$/platform-libs/kapita-domain-entity-core" />
             <option value="$PROJECT_DIR$/platform-libs/kapita-jpa-eclipselink-autoconfigure" />
             <option value="$PROJECT_DIR$/platform-libs/kapita-jpa-eclipselink-starter" />
+            <option value="$PROJECT_DIR$/platform-libs/kapita-kafka-inbound-autoconfigure" />
+            <option value="$PROJECT_DIR$/platform-libs/kapita-kafka-inbound-starter" />
             <option value="$PROJECT_DIR$/platform-libs/kapita-platform-bom" />
             <option value="$PROJECT_DIR$/platform-libs/kapita-security-jwt-autoconfigure" />
             <option value="$PROJECT_DIR$/platform-libs/kapita-security-jwt-starter" />
