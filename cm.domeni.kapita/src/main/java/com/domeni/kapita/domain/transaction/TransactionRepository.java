@@ -10,4 +10,10 @@ public interface TransactionRepository {
 
   List<Transaction> findAllByUserIdAndCreatedAtRange(
       UserId userId, LocalDateTime startInclusive, LocalDateTime endExclusive);
+
+  List<Transaction> findAllByUserIdAndTypeAndCreatedAtRange(
+      UserId userId,
+      TransactionType type,
+      LocalDateTime startInclusive,
+      LocalDateTime endExclusive);
 }

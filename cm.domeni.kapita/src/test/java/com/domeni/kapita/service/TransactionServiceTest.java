@@ -8,16 +8,14 @@ import static org.mockito.Mockito.mock;
 
 import cm.domeni.generated.domeni.kapita.dto.CreateTransactionDTO;
 import cm.domeni.generated.domeni.kapita.dto.MoneyDTO;
-import cm.domeni.generated.domeni.kapita.dto.TransactionBalanceDTO;
 import cm.domeni.generated.domeni.kapita.dto.TransactionCategoryDTO;
 import cm.domeni.generated.domeni.kapita.dto.TransactionTypeDTO;
 import com.domeni.kapita.domain.exception.InvalidTransactionPayloadException;
 import com.domeni.kapita.domain.transaction.Transaction;
-import com.domeni.kapita.domain.transaction.TransactionBalance;
-import com.domeni.kapita.domain.transaction.TransactionBalanceFetcher;
 import com.domeni.kapita.domain.transaction.TransactionCategory;
 import com.domeni.kapita.domain.transaction.TransactionData;
 import com.domeni.kapita.domain.transaction.TransactionFactory;
+import com.domeni.kapita.domain.transaction.TransactionFetcher;
 import com.domeni.kapita.domain.transaction.TransactionId;
 import com.domeni.kapita.domain.transaction.TransactionType;
 import com.domeni.kapita.domain.user.UserId;
@@ -39,7 +37,7 @@ class TransactionServiceTest {
 
   @Mock private TransactionFactory transactionFactory;
 
-  @Mock private TransactionBalanceFetcher transactionBalanceFetcher;
+  @Mock private TransactionFetcher transactionFetcher;
 
   @Mock private TransactionMapper transactionMapper;
 
@@ -124,22 +122,39 @@ class TransactionServiceTest {
     LocalDate startDate = LocalDate.of(2026, 2, 1);
     LocalDate endDate = LocalDate.of(2026, 2, 28);
     UserId currentUserId = new UserId(UUID.randomUUID());
-    TransactionBalance domainBalance =
-        new TransactionBalance(startDate, endDate, mock(MonetaryAmount.class));
-    TransactionBalanceDTO expectedDto =
-        new TransactionBalanceDTO()
-            .startDate(startDate)
-            .endDate(endDate)
-            .balance(new MoneyDTO().currency("XAF").value(new BigDecimal("320749.25")));
+    MonetaryAmount domainBalance = mock(MonetaryAmount.class);
+    MoneyDTO expectedDto = new MoneyDTO().currency("XAF").value(new BigDecimal("320749.25"));
 
-    given(transactionBalanceFetcher.getBalance(startDate, endDate, currentUserId))
-        .willReturn(domainBalance);
+    given(transactionFetcher.getBalance(startDate, endDate, currentUserId)).willReturn(domainBalance);
     given(transactionMapper.map(domainBalance)).willReturn(expectedDto);
 
-    TransactionBalanceDTO result = transactionService.getBalance(startDate, endDate, currentUserId);
+    MoneyDTO result = transactionService.getBalance(startDate, endDate, currentUserId);
 
     assertThat(result).isSameAs(expectedDto);
-    then(transactionBalanceFetcher).should().getBalance(startDate, endDate, currentUserId);
+    then(transactionFetcher).should().getBalance(startDate, endDate, currentUserId);
     then(transactionMapper).should().map(domainBalance);
+  }
+
+  @Test
+  void getAmountByTypeShouldDelegateToDomainFetcherAndMapperTest() {
+    LocalDate startDate = LocalDate.of(2026, 2, 1);
+    LocalDate endDate = LocalDate.of(2026, 2, 28);
+    UserId currentUserId = new UserId(UUID.randomUUID());
+    MonetaryAmount domainAmount = mock(MonetaryAmount.class);
+    MoneyDTO expectedDto = new MoneyDTO().currency("XAF").value(new BigDecimal("4250.75"));
+
+    given(transactionFetcher.getAmount(startDate, endDate, TransactionType.EXPENSE, currentUserId))
+        .willReturn(domainAmount);
+    given(transactionMapper.map(domainAmount)).willReturn(expectedDto);
+
+    MoneyDTO result =
+        transactionService.getAmountByType(
+            startDate, endDate, TransactionType.EXPENSE, currentUserId);
+
+    assertThat(result).isSameAs(expectedDto);
+    then(transactionFetcher)
+        .should()
+        .getAmount(startDate, endDate, TransactionType.EXPENSE, currentUserId);
+    then(transactionMapper).should().map(domainAmount);
   }
 }

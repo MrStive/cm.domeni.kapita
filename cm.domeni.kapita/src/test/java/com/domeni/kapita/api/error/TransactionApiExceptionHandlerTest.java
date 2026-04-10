@@ -98,4 +98,29 @@ class TransactionApiExceptionHandlerTest {
         .andExpect(jsonPath("$.traceId").isNotEmpty())
         .andExpect(jsonPath("$.timestamp").exists());
   }
+
+  @Test
+  void fetchTransactionAmountByTypeWhenServiceRejectsPeriodShouldReturnDomainPayloadTest()
+      throws Exception {
+    when(currentUserProvider.requireCurrentUserId()).thenReturn(UUID.randomUUID());
+    when(transactionService.getAmountByType(
+            any(LocalDate.class),
+            any(LocalDate.class),
+            any(com.domeni.kapita.domain.transaction.TransactionType.class),
+            any(UserId.class)))
+        .thenThrow(new InvalidTransactionPayloadException("transaction period is invalid"));
+
+    mockMvc
+        .perform(
+            get("/transaction/amount")
+                .queryParam("startDate", "2026-02-10")
+                .queryParam("endDate", "2026-02-01")
+                .queryParam("type", "EXPENSE"))
+        .andExpect(status().isBadRequest())
+        .andExpect(jsonPath("$.code").value("KAPITA-400-004"))
+        .andExpect(jsonPath("$.message").value("transaction period is invalid"))
+        .andExpect(jsonPath("$.path").value("/transaction/amount"))
+        .andExpect(jsonPath("$.traceId").isNotEmpty())
+        .andExpect(jsonPath("$.timestamp").exists());
+  }
 }

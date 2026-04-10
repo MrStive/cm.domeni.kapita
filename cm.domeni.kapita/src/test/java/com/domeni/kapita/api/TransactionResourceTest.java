@@ -8,7 +8,6 @@ import static org.mockito.Mockito.when;
 import cm.domeni.generated.domeni.kapita.dto.CreateTransactionDTO;
 import cm.domeni.generated.domeni.kapita.dto.CreationResponseDTO;
 import cm.domeni.generated.domeni.kapita.dto.MoneyDTO;
-import cm.domeni.generated.domeni.kapita.dto.TransactionBalanceDTO;
 import cm.domeni.generated.domeni.kapita.dto.TransactionCategoryDTO;
 import cm.domeni.generated.domeni.kapita.dto.TransactionTypeDTO;
 import com.domeni.kapita.domain.user.UserId;
@@ -63,18 +62,14 @@ class TransactionResourceTest {
     UUID currentUserId = UUID.randomUUID();
     LocalDate startDate = LocalDate.of(2026, 1, 1);
     LocalDate endDate = LocalDate.of(2026, 1, 31);
-    TransactionBalanceDTO expectedResponse =
-        new TransactionBalanceDTO()
-            .startDate(startDate)
-            .endDate(endDate)
-            .balance(new MoneyDTO().currency("XAF").value(new BigDecimal("21249.50")));
+    MoneyDTO expectedResponse = new MoneyDTO().currency("XAF").value(new BigDecimal("21249.50"));
 
     when(currentUserProvider.requireCurrentUserId()).thenReturn(currentUserId);
     when(transactionService.getBalance(startDate, endDate, new UserId(currentUserId)))
         .thenReturn(expectedResponse);
 
     // spotless:off
-        TransactionBalanceDTO response =
+        MoneyDTO response =
                 given()
                         .standaloneSetup(new TransactionResource(currentUserProvider, transactionService))
                         .queryParam("startDate", startDate.toString())
@@ -83,11 +78,41 @@ class TransactionResourceTest {
                         .get("/transaction/balance")
                 .then()
                         .statusCode(200)
-                        .extract().body().as(TransactionBalanceDTO.class);
+                        .extract().body().as(MoneyDTO.class);
         // spotless:on
-    assertThat(response.getStartDate()).isEqualTo(startDate);
-    assertThat(response.getEndDate()).isEqualTo(endDate);
-    assertThat(response.getBalance().getCurrency()).isEqualTo("XAF");
-    assertThat(response.getBalance().getValue()).isEqualByComparingTo("21249.50");
+    assertThat(response.getCurrency()).isEqualTo("XAF");
+    assertThat(response.getValue()).isEqualByComparingTo("21249.50");
+  }
+
+  @Test
+  void fetchTransactionAmountByTypeShouldReturnAmountForCurrentUserAndPeriodTest() {
+    UUID currentUserId = UUID.randomUUID();
+    LocalDate startDate = LocalDate.of(2026, 2, 1);
+    LocalDate endDate = LocalDate.of(2026, 2, 28);
+    MoneyDTO expectedResponse = new MoneyDTO().currency("XAF").value(new BigDecimal("4250.75"));
+
+    when(currentUserProvider.requireCurrentUserId()).thenReturn(currentUserId);
+    when(transactionService.getAmountByType(
+            startDate,
+            endDate,
+            com.domeni.kapita.domain.transaction.TransactionType.EXPENSE,
+            new UserId(currentUserId)))
+        .thenReturn(expectedResponse);
+
+    // spotless:off
+        MoneyDTO response =
+                given()
+                        .standaloneSetup(new TransactionResource(currentUserProvider, transactionService))
+                        .queryParam("startDate", startDate.toString())
+                        .queryParam("endDate", endDate.toString())
+                        .queryParam("type", "EXPENSE")
+                .when()
+                        .get("/transaction/amount")
+                .then()
+                        .statusCode(200)
+                        .extract().body().as(MoneyDTO.class);
+        // spotless:on
+    assertThat(response.getCurrency()).isEqualTo("XAF");
+    assertThat(response.getValue()).isEqualByComparingTo("4250.75");
   }
 }

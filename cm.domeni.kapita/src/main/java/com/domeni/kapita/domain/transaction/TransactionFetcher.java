@@ -1,0 +1,13 @@
+package com.domeni.kapita.domain.transaction;
+
+import com.domeni.kapita.domain.user.UserId;
+import java.time.LocalDate;
+import javax.money.MonetaryAmount;
+
+public interface TransactionFetcher {
+
+  MonetaryAmount getBalance(LocalDate startDate, LocalDate endDate, UserId currentUserId);
+
+  MonetaryAmount getAmount(
+      LocalDate startDate, LocalDate endDate, TransactionType type, UserId currentUserId);
+}

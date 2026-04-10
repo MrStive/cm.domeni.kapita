@@ -1,6 +1,6 @@
 services:
   db:
-    image: postgres:16-alpine
+    image: postgres:17
     environment:
       POSTGRES_DB: kapita-financial-db
       POSTGRES_USER: kapita-financial

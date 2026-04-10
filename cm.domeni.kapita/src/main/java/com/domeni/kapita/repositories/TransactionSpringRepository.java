@@ -2,6 +2,7 @@ package com.domeni.kapita.repositories;
 
 import com.domeni.kapita.domain.transaction.Transaction;
 import com.domeni.kapita.domain.transaction.TransactionId;
+import com.domeni.kapita.domain.transaction.TransactionType;
 import com.domeni.kapita.domain.user.UserId;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -11,4 +12,10 @@ public interface TransactionSpringRepository extends JpaRepository<Transaction, 
 
   List<Transaction> findAllByUserIdAndCreatedAtGreaterThanEqualAndCreatedAtLessThan(
       UserId userId, LocalDateTime startInclusive, LocalDateTime endExclusive);
+
+  List<Transaction> findAllByUserIdAndTypeAndCreatedAtGreaterThanEqualAndCreatedAtLessThan(
+      UserId userId,
+      TransactionType type,
+      LocalDateTime startInclusive,
+      LocalDateTime endExclusive);
 }

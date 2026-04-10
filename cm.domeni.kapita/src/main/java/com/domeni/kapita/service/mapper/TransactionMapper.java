@@ -2,8 +2,6 @@ package com.domeni.kapita.service.mapper;
 
 import cm.domeni.generated.domeni.kapita.dto.CreateTransactionDTO;
 import cm.domeni.generated.domeni.kapita.dto.MoneyDTO;
-import cm.domeni.generated.domeni.kapita.dto.TransactionBalanceDTO;
-import com.domeni.kapita.domain.transaction.TransactionBalance;
 import com.domeni.kapita.domain.transaction.TransactionData;
 import java.math.BigDecimal;
 import java.util.Optional;
@@ -23,12 +21,6 @@ public interface TransactionMapper {
   @Mapping(target = "amount", source = "amount")
   @Mapping(target = "description", source = "description")
   TransactionData map(CreateTransactionDTO transactionDTO);
-
-  @BeanMapping(ignoreByDefault = true)
-  @Mapping(target = "startDate", source = "startDate")
-  @Mapping(target = "endDate", source = "endDate")
-  @Mapping(target = "balance", source = "balance")
-  TransactionBalanceDTO map(TransactionBalance transactionBalance);
 
   default MoneyDTO map(MonetaryAmount value) {
     return Optional.ofNullable(value)

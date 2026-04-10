@@ -135,7 +135,45 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/TransactionBalanceDTO"
+                $ref: "#/components/schemas/MoneyDTO"
+  /transaction/amount:
+    get:
+      tags:
+      - "Transaction"
+      summary: "Fetch current user transaction amount by type over a period"
+      description: "Compute the sum of transaction amounts for the current user, filtered by type and period"
+      operationId: "fetchTransactionAmountByType"
+      security:
+      - oAuth:
+        - "transaction:read:amount"
+      parameters:
+      - name: "startDate"
+        in: "query"
+        required: true
+        schema:
+          type: "string"
+          format: "date"
+        description: "Inclusive period start date."
+      - name: "endDate"
+        in: "query"
+        required: true
+        schema:
+          type: "string"
+          format: "date"
+        description: "Inclusive period end date."
+      - name: "type"
+        in: "query"
+        required: true
+        schema:
+          $ref: "#/components/schemas/TransactionTypeDTO"
+        description: "Transaction type to aggregate."
+      responses:
+        "200":
+          description: "successful operation"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MoneyDTO"
 components:
   securitySchemes:
     bearerAuth:
@@ -154,6 +192,7 @@ components:
             demo:create: "Needed when to create a new Demo object"
             transaction:create: "Needed when to create a new transaction"
             transaction:read:balance: "Needed when to fetch the current user balance over a period"
+            transaction:read:amount: "Needed when to fetch the current user transaction amount over a period for one type"
   schemas:
     DemoDTO:
       type: "object"
@@ -244,23 +283,6 @@ components:
         createdAt:
           type: "string"
           format: "date-time"
-    TransactionBalanceDTO:
-      type: "object"
-      required:
-      - "startDate"
-      - "endDate"
-      - "balance"
-      properties:
-        startDate:
-          type: "string"
-          format: "date"
-        endDate:
-          type: "string"
-          format: "date"
-        balance:
-          description: "Incoming transactions minus expenses over the requested period. Value can be negative, zero, or positive."
-          allOf:
-          - $ref: "#/components/schemas/MoneyDTO"
     MoneyDTO:
       type: "object"
       properties:

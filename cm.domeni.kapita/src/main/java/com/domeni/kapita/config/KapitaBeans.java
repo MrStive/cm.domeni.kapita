@@ -5,11 +5,11 @@ import com.domeni.kapita.domain.demo.DemoFetcher;
 import com.domeni.kapita.domain.demo.DemoRepository;
 import com.domeni.kapita.domain.demo.impl.DemoFactoryImpl;
 import com.domeni.kapita.domain.demo.impl.DemoFetcherImpl;
-import com.domeni.kapita.domain.transaction.TransactionBalanceFetcher;
 import com.domeni.kapita.domain.transaction.TransactionFactory;
+import com.domeni.kapita.domain.transaction.TransactionFetcher;
 import com.domeni.kapita.domain.transaction.TransactionRepository;
-import com.domeni.kapita.domain.transaction.impl.TransactionBalanceFetcherImpl;
 import com.domeni.kapita.domain.transaction.impl.TransactionFactoryImpl;
+import com.domeni.kapita.domain.transaction.impl.TransactionFetcherImpl;
 import com.domeni.kapita.domain.user.UserFactory;
 import com.domeni.kapita.domain.user.UserRepository;
 import com.domeni.kapita.domain.user.impl.UserFactoryImpl;
@@ -54,9 +54,9 @@ public class KapitaBeans {
   }
 
   @Bean
-  public TransactionBalanceFetcher transactionBalanceFetcher(
+  public TransactionFetcher transactionFetcher(
       TransactionRepository transactionRepository) {
-    return new TransactionBalanceFetcherImpl(transactionRepository);
+    return new TransactionFetcherImpl(transactionRepository);
   }
 
   @Bean
