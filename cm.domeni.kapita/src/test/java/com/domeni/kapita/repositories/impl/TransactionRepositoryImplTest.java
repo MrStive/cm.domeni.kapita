@@ -6,6 +6,7 @@ import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
 
 import com.domeni.kapita.domain.transaction.Transaction;
+import com.domeni.kapita.domain.transaction.TransactionType;
 import com.domeni.kapita.domain.user.UserId;
 import com.domeni.kapita.repositories.TransactionSpringRepository;
 import java.time.LocalDateTime;
@@ -57,5 +58,29 @@ class TransactionRepositoryImplTest {
         .should()
         .findAllByUserIdAndCreatedAtGreaterThanEqualAndCreatedAtLessThan(
             userId, startInclusive, endExclusive);
+  }
+
+  @Test
+  void findAllByUserIdAndTypeAndCreatedAtRangeShouldDelegateToSpringRepositoryTest() {
+    UserId userId = new UserId(UUID.randomUUID());
+    LocalDateTime startInclusive = LocalDateTime.of(2026, 1, 1, 0, 0);
+    LocalDateTime endExclusive = LocalDateTime.of(2026, 2, 1, 0, 0);
+    List<Transaction> persistedTransactions =
+        List.of(mock(Transaction.class), mock(Transaction.class));
+    given(
+            transactionSpringRepository
+                .findAllByUserIdAndTypeAndCreatedAtGreaterThanEqualAndCreatedAtLessThan(
+                    userId, TransactionType.EXPENSE, startInclusive, endExclusive))
+        .willReturn(persistedTransactions);
+
+    List<Transaction> result =
+        objectUnderTest.findAllByUserIdAndTypeAndCreatedAtRange(
+            userId, TransactionType.EXPENSE, startInclusive, endExclusive);
+
+    assertThat(result).isSameAs(persistedTransactions);
+    then(transactionSpringRepository)
+        .should()
+        .findAllByUserIdAndTypeAndCreatedAtGreaterThanEqualAndCreatedAtLessThan(
+            userId, TransactionType.EXPENSE, startInclusive, endExclusive);
   }
 }

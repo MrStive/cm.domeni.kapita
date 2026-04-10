@@ -148,6 +148,22 @@ class SecurityConfigTest {
     verifyNoInteractions(transactionService);
   }
 
+  @Test
+  void fetchTransactionAmountWhenScopeIsMissingShouldReturnForbiddenTest() throws Exception {
+    String token = createToken(List.of("transaction:read:balance"), List.of("kapita-api"));
+
+    mockMvc
+        .perform(
+            get("/transaction/amount")
+                .queryParam("startDate", "2026-01-01")
+                .queryParam("endDate", "2026-01-31")
+                .queryParam("type", "INCOMING")
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token))
+        .andExpect(status().isForbidden());
+
+    verifyNoInteractions(transactionService);
+  }
+
   private String createToken(List<String> scopes, List<String> audiences) {
     Instant now = Instant.now();
     String scopeValue = String.join(" ", scopes);
