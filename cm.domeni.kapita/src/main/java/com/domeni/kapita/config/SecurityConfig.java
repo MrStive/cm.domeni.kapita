@@ -48,6 +48,8 @@ public class SecurityConfig {
                   .hasAuthority("SCOPE_transaction:read:amount")
                   .requestMatchers(HttpMethod.POST, "/demo")
                   .hasAuthority("SCOPE_demo:create")
+                  .requestMatchers(HttpMethod.POST, "/debt")
+                  .hasAuthority("SCOPE_debt:create")
                   .requestMatchers(HttpMethod.POST, "/transaction")
                   .hasAuthority("SCOPE_transaction:create")
                   .anyRequest()

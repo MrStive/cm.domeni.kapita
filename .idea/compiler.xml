@@ -71,6 +71,21 @@
         </processorPath>
         <module name="com.domeni.kapita.kapita-platform-libs.kapita-security-jwt-autoconfigure.main" />
       </profile>
+      <profile name="Gradle Imported" enabled="true">
+        <outputRelativeToContentRoot value="true" />
+        <processorPath useClasspath="false">
+          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.projectlombok/lombok/1.18.42/8365263844ebb62398e0dc33057ba10ba472d3b8/lombok-1.18.42.jar" />
+          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.springframework.boot/spring-boot-configuration-processor/3.4.13/593243206e580456535ad066fcc812c624d29cfa/spring-boot-configuration-processor-3.4.13.jar" />
+        </processorPath>
+        <module name="kapita-platform-libs.kapita-kafka-inbound-autoconfigure.main" />
+      </profile>
+      <profile name="Gradle Imported" enabled="true">
+        <outputRelativeToContentRoot value="true" />
+        <processorPath useClasspath="false">
+          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.projectlombok/lombok/1.18.42/8365263844ebb62398e0dc33057ba10ba472d3b8/lombok-1.18.42.jar" />
+        </processorPath>
+        <module name="kapita-platform-libs.kapita-kafka-inbound-autoconfigure.test" />
+      </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="kapita-domain-entity-core" target="21" />

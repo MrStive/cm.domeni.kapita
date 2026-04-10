@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+	<changeSet id="V-002-01-create-t-debt" author="kapita">
+		<createTable tableName="t_debt">
+			<column name="c_id" type="varchar(36)">
+				<constraints nullable="false" primaryKey="true"
+					primaryKeyName="pk_t_debt" />
+			</column>
+			<column name="c_type" type="varchar(32)">
+				<constraints nullable="false" />
+			</column>
+			<column name="c_counterparty_name" type="varchar(255)">
+				<constraints nullable="false" />
+			</column>
+			<column name="c_amount" type="numeric(19,2)">
+				<constraints nullable="false" />
+			</column>
+			<column name="c_currency" type="varchar(3)">
+				<constraints nullable="false" />
+			</column>
+			<column name="c_due_date" type="date">
+				<constraints nullable="false" />
+			</column>
+			<column name="c_status" type="varchar(32)">
+				<constraints nullable="false" />
+			</column>
+			<column name="c_user_id" type="varchar(36)">
+				<constraints nullable="false" />
+			</column>
+			<column name="c_created_at" type="timestamp">
+				<constraints nullable="false" />
+			</column>
+			<column name="c_version" type="bigint" defaultValueNumeric="0">
+				<constraints nullable="false" />
+			</column>
+			<column name="c_deleted" type="boolean"
+				defaultValueBoolean="false">
+				<constraints nullable="false" />
+			</column>
+		</createTable>
+	</changeSet>
+
+</databaseChangeLog>

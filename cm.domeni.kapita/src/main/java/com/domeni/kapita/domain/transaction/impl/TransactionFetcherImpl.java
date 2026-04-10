@@ -20,8 +20,7 @@ public class TransactionFetcherImpl implements TransactionFetcher {
   private final TransactionRepository transactionRepository;
 
   @Override
-  public MonetaryAmount getBalance(
-      LocalDate startDate, LocalDate endDate, UserId currentUserId) {
+  public MonetaryAmount getBalance(LocalDate startDate, LocalDate endDate, UserId currentUserId) {
     validatePeriodAndUser(startDate, endDate, currentUserId);
     LocalDateTime startInclusive = startDate.atStartOfDay();
     LocalDateTime endExclusive = endDate.plusDays(1).atStartOfDay();
@@ -37,6 +36,9 @@ public class TransactionFetcherImpl implements TransactionFetcher {
   public MonetaryAmount getAmount(
       LocalDate startDate, LocalDate endDate, TransactionType type, UserId currentUserId) {
     validatePeriodAndUser(startDate, endDate, currentUserId);
+    if (type == null) {
+      throw new InvalidTransactionPayloadException("transaction type is required");
+    }
 
     LocalDateTime startInclusive = startDate.atStartOfDay();
     LocalDateTime endExclusive = endDate.plusDays(1).atStartOfDay();
@@ -48,8 +50,7 @@ public class TransactionFetcherImpl implements TransactionFetcher {
         .reduce(Money.of(BigDecimal.ZERO, DEFAULT_CURRENCY), MonetaryAmount::add);
   }
 
-  private void validatePeriodAndUser(
-      LocalDate startDate, LocalDate endDate, UserId currentUserId) {
+  private void validatePeriodAndUser(LocalDate startDate, LocalDate endDate, UserId currentUserId) {
     if (startDate == null || endDate == null) {
       throw new InvalidTransactionPayloadException("transaction period is required");
     }

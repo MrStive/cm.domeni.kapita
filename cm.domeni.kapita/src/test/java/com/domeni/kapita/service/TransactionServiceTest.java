@@ -125,7 +125,8 @@ class TransactionServiceTest {
     MonetaryAmount domainBalance = mock(MonetaryAmount.class);
     MoneyDTO expectedDto = new MoneyDTO().currency("XAF").value(new BigDecimal("320749.25"));
 
-    given(transactionFetcher.getBalance(startDate, endDate, currentUserId)).willReturn(domainBalance);
+    given(transactionFetcher.getBalance(startDate, endDate, currentUserId))
+        .willReturn(domainBalance);
     given(transactionMapper.map(domainBalance)).willReturn(expectedDto);
 
     MoneyDTO result = transactionService.getBalance(startDate, endDate, currentUserId);

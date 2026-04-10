@@ -7,9 +7,11 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.domeni.kapita.api.DebtResource;
 import com.domeni.kapita.api.DemoResource;
 import com.domeni.kapita.api.TransactionResource;
 import com.domeni.kapita.security.jwt.autoconfigure.KapitaJwtSecurityAutoConfiguration;
+import com.domeni.kapita.service.DebtService;
 import com.domeni.kapita.service.DemoService;
 import com.domeni.kapita.service.TransactionService;
 import com.nimbusds.jose.JOSEException;
@@ -40,7 +42,7 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
-@WebMvcTest(controllers = {DemoResource.class, TransactionResource.class})
+@WebMvcTest(controllers = {DemoResource.class, TransactionResource.class, DebtResource.class})
 @Import(SecurityConfig.class)
 @ImportAutoConfiguration(KapitaJwtSecurityAutoConfiguration.class)
 @TestPropertySource(
@@ -62,6 +64,8 @@ class SecurityConfigTest {
   @Autowired private MockMvc mockMvc;
 
   @MockitoBean private DemoService demoService;
+
+  @MockitoBean private DebtService debtService;
 
   @MockitoBean private TransactionService transactionService;
 
@@ -131,6 +135,24 @@ class SecurityConfigTest {
         .andExpect(status().isForbidden());
 
     verifyNoInteractions(transactionService);
+  }
+
+  @Test
+  void createDebtWhenScopeIsMissingShouldReturnForbiddenTest() throws Exception {
+    String token = createToken(List.of("transaction:create"), List.of("kapita-api"));
+
+    mockMvc
+        .perform(
+            post("/debt")
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(
+                    """
+                    {"type":"RECEIVABLE","counterpartyName":"Client A","amount":{"value":5000,"currency":"XAF"},"dueDate":"2026-04-11"}
+                    """))
+        .andExpect(status().isForbidden());
+
+    verifyNoInteractions(debtService);
   }
 
   @Test
