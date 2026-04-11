@@ -6,12 +6,20 @@ import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
 
 import com.domeni.kapita.domain.debt.Debt;
+import com.domeni.kapita.domain.debt.DebtPage;
+import com.domeni.kapita.domain.debt.DebtType;
+import com.domeni.kapita.domain.user.UserId;
 import com.domeni.kapita.repositories.DebtSpringRepository;
+import java.util.List;
+import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 
 @ExtendWith(MockitoExtension.class)
 class DebtRepositoryImplTest {
@@ -30,5 +38,25 @@ class DebtRepositoryImplTest {
 
     assertThat(result).isSameAs(persistedDebt);
     then(debtSpringRepository).should().save(debt);
+  }
+
+  @Test
+  void findAllByUserIdAndTypeShouldDelegateToSpringRepositoryAndMapPageTest() {
+    UserId userId = new UserId(UUID.randomUUID());
+    List<Debt> persistedDebts = List.of(mock(Debt.class), mock(Debt.class));
+    PageRequest pageable =
+        PageRequest.of(1, 5, Sort.by(Sort.Direction.DESC, Debt.Fields.createdAt));
+
+    given(debtSpringRepository.findAllByUserIdAndType(userId, DebtType.PAYABLE, pageable))
+        .willReturn(new PageImpl<>(persistedDebts, pageable, 7));
+
+    DebtPage result = objectUnderTest.findAllByUserIdAndType(userId, DebtType.PAYABLE, 1, 5);
+
+    assertThat(result.items()).containsExactlyElementsOf(persistedDebts);
+    assertThat(result.pageNumber()).isEqualTo(1);
+    assertThat(result.pageSize()).isEqualTo(5);
+    assertThat(result.totalElements()).isEqualTo(7);
+    assertThat(result.totalPages()).isEqualTo(2);
+    then(debtSpringRepository).should().findAllByUserIdAndType(userId, DebtType.PAYABLE, pageable);
   }
 }

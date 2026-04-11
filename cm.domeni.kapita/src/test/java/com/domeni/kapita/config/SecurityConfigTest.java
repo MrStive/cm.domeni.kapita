@@ -156,6 +156,22 @@ class SecurityConfigTest {
   }
 
   @Test
+  void fetchDebtWhenScopeIsMissingShouldReturnForbiddenTest() throws Exception {
+    String token = createToken(List.of("debt:create"), List.of("kapita-api"));
+
+    mockMvc
+        .perform(
+            get("/debt")
+                .queryParam("type", "RECEIVABLE")
+                .queryParam("pageNumber", "0")
+                .queryParam("pageSize", "10")
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token))
+        .andExpect(status().isForbidden());
+
+    verifyNoInteractions(debtService);
+  }
+
+  @Test
   void fetchTransactionBalanceWhenScopeIsMissingShouldReturnForbiddenTest() throws Exception {
     String token = createToken(List.of("transaction:create"), List.of("kapita-api"));
 

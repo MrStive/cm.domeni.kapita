@@ -42,6 +42,8 @@ public class SecurityConfig {
                   .hasAuthority("SCOPE_demo:read:all")
                   .requestMatchers(HttpMethod.GET, "/demo/*")
                   .hasAuthority("SCOPE_demo:read")
+                  .requestMatchers(HttpMethod.GET, "/debt")
+                  .hasAuthority("SCOPE_debt:read")
                   .requestMatchers(HttpMethod.GET, "/transaction/balance")
                   .hasAuthority("SCOPE_transaction:read:balance")
                   .requestMatchers(HttpMethod.GET, "/transaction/amount")

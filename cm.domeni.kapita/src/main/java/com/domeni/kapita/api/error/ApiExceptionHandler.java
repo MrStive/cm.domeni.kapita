@@ -3,6 +3,7 @@ package com.domeni.kapita.api.error;
 import com.domeni.kapita.domain.exception.DemoNotFoundException;
 import com.domeni.kapita.domain.exception.DomainException;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.ConstraintViolationException;
 import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
@@ -49,6 +50,18 @@ public class ApiExceptionHandler {
         exception.getBindingResult().getFieldErrors().stream()
             .findFirst()
             .map(fieldError -> fieldError.getField() + " " + fieldError.getDefaultMessage())
+            .orElse("request validation failed");
+    return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+        .body(buildError(VALIDATION_ERROR_CODE, message, request));
+  }
+
+  @ExceptionHandler(ConstraintViolationException.class)
+  public ResponseEntity<ApiError> handleConstraintViolationException(
+      ConstraintViolationException exception, HttpServletRequest request) {
+    String message =
+        exception.getConstraintViolations().stream()
+            .findFirst()
+            .map(violation -> violation.getPropertyPath() + " " + violation.getMessage())
             .orElse("request validation failed");
     return ResponseEntity.status(HttpStatus.BAD_REQUEST)
         .body(buildError(VALIDATION_ERROR_CODE, message, request));

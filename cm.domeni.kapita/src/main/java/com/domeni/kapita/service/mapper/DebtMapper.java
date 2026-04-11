@@ -1,10 +1,16 @@
 package com.domeni.kapita.service.mapper;
 
 import cm.domeni.generated.domeni.kapita.dto.CreateDebtDTO;
+import cm.domeni.generated.domeni.kapita.dto.DebtDTO;
+import cm.domeni.generated.domeni.kapita.dto.DebtPageDTO;
 import cm.domeni.generated.domeni.kapita.dto.MoneyDTO;
+import com.domeni.kapita.domain.debt.Debt;
 import com.domeni.kapita.domain.debt.DebtData;
+import com.domeni.kapita.domain.debt.DebtId;
+import com.domeni.kapita.domain.debt.DebtPage;
 import java.math.BigDecimal;
 import java.util.Optional;
+import java.util.UUID;
 import javax.money.MonetaryAmount;
 import org.javamoney.moneta.Money;
 import org.mapstruct.BeanMapping;
@@ -20,6 +26,24 @@ public interface DebtMapper {
   @Mapping(target = "amount", source = "amount")
   @Mapping(target = "dueDate", source = "dueDate")
   DebtData map(CreateDebtDTO debtDTO);
+
+  @BeanMapping(ignoreByDefault = true)
+  @Mapping(target = "id", source = "id")
+  @Mapping(target = "type", source = "type")
+  @Mapping(target = "counterpartyName", source = "counterpartyName")
+  @Mapping(target = "amount", source = "amount")
+  @Mapping(target = "dueDate", source = "dueDate")
+  @Mapping(target = "status", source = "status")
+  @Mapping(target = "createdAt", source = "createdAt")
+  DebtDTO map(Debt value);
+
+  @BeanMapping(ignoreByDefault = true)
+  @Mapping(target = "items", source = "items")
+  @Mapping(target = "pageNumber", source = "pageNumber")
+  @Mapping(target = "pageSize", source = "pageSize")
+  @Mapping(target = "totalElements", source = "totalElements")
+  @Mapping(target = "totalPages", source = "totalPages")
+  DebtPageDTO map(DebtPage value);
 
   default MonetaryAmount map(MoneyDTO value) {
     return Optional.ofNullable(value)
@@ -37,5 +61,9 @@ public interface DebtMapper {
                     .currency(input.getCurrency().getCurrencyCode())
                     .value(input.getNumber().numberValue(BigDecimal.class)))
         .orElse(null);
+  }
+
+  default UUID map(DebtId value) {
+    return Optional.ofNullable(value).map(DebtId::toUUID).orElse(null);
   }
 }
