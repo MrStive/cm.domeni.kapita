@@ -3,6 +3,7 @@ package com.domeni.kapita.api.error;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -96,5 +97,43 @@ class DebtApiExceptionHandlerTest {
         .andExpect(jsonPath("$.path").value("/debt"))
         .andExpect(jsonPath("$.traceId").isNotEmpty())
         .andExpect(jsonPath("$.timestamp").exists());
+  }
+
+  @Test
+  void fetchDebtsByTypeWhenServiceRejectsQueryShouldReturnDomainPayloadTest() throws Exception {
+    when(currentUserProvider.requireCurrentUserId()).thenReturn(UUID.randomUUID());
+    when(debtService.getDebtsByType(any(), any(), any(), any(UserId.class)))
+        .thenThrow(new InvalidDebtPayloadException("debt query is invalid"));
+
+    mockMvc
+        .perform(
+            get("/debt")
+                .queryParam("type", "RECEIVABLE")
+                .queryParam("pageNumber", "0")
+                .queryParam("pageSize", "10"))
+        .andExpect(status().isBadRequest())
+        .andExpect(jsonPath("$.code").value("KAPITA-400-005"))
+        .andExpect(jsonPath("$.message").value("debt query is invalid"))
+        .andExpect(jsonPath("$.path").value("/debt"))
+        .andExpect(jsonPath("$.traceId").isNotEmpty())
+        .andExpect(jsonPath("$.timestamp").exists());
+  }
+
+  @Test
+  void fetchDebtsByTypeWhenPageNumberIsNegativeShouldReturnValidationPayloadTest()
+      throws Exception {
+    mockMvc
+        .perform(
+            get("/debt")
+                .queryParam("type", "RECEIVABLE")
+                .queryParam("pageNumber", "-1")
+                .queryParam("pageSize", "10"))
+        .andExpect(status().isBadRequest())
+        .andExpect(jsonPath("$.code").value("KAPITA-400-VALIDATION"))
+        .andExpect(jsonPath("$.path").value("/debt"))
+        .andExpect(jsonPath("$.traceId").isNotEmpty())
+        .andExpect(jsonPath("$.timestamp").exists());
+
+    verifyNoInteractions(debtService);
   }
 }

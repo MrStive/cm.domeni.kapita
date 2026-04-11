@@ -6,10 +6,14 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 
 import cm.domeni.generated.domeni.kapita.dto.CreateDebtDTO;
+import cm.domeni.generated.domeni.kapita.dto.DebtPageDTO;
 import com.domeni.kapita.domain.debt.Debt;
 import com.domeni.kapita.domain.debt.DebtData;
 import com.domeni.kapita.domain.debt.DebtFactory;
+import com.domeni.kapita.domain.debt.DebtFetcher;
 import com.domeni.kapita.domain.debt.DebtId;
+import com.domeni.kapita.domain.debt.DebtPage;
+import com.domeni.kapita.domain.debt.DebtType;
 import com.domeni.kapita.domain.exception.InvalidDebtPayloadException;
 import com.domeni.kapita.domain.user.UserId;
 import com.domeni.kapita.service.mapper.DebtMapper;
@@ -23,6 +27,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class DebtServiceTest {
 
+  @Mock private DebtFetcher debtFetcher;
   @Mock private DebtFactory debtFactory;
   @Mock private DebtMapper debtMapper;
 
@@ -79,5 +84,22 @@ class DebtServiceTest {
 
     then(debtMapper).should().map(input);
     then(debtFactory).should().create(mappedData, currentUserId);
+  }
+
+  @Test
+  void getDebtsByTypeShouldDelegateToFetcherAndMapperTest() {
+    UserId currentUserId = new UserId(UUID.randomUUID());
+    DebtPage domainPage = new DebtPage(java.util.List.of(), 1, 10, 15, 2);
+    DebtPageDTO expectedDto =
+        new DebtPageDTO().pageNumber(1).pageSize(10).totalElements(15L).totalPages(2);
+
+    given(debtFetcher.getByType(DebtType.RECEIVABLE, 1, 10, currentUserId)).willReturn(domainPage);
+    given(debtMapper.map(domainPage)).willReturn(expectedDto);
+
+    DebtPageDTO result = debtService.getDebtsByType(DebtType.RECEIVABLE, 1, 10, currentUserId);
+
+    assertThat(result).isSameAs(expectedDto);
+    then(debtFetcher).should().getByType(DebtType.RECEIVABLE, 1, 10, currentUserId);
+    then(debtMapper).should().map(domainPage);
   }
 }

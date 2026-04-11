@@ -3,6 +3,8 @@ package com.domeni.kapita.api;
 import cm.domeni.generated.domeni.kapita.api.DebtApi;
 import cm.domeni.generated.domeni.kapita.dto.CreateDebtDTO;
 import cm.domeni.generated.domeni.kapita.dto.CreationResponseDTO;
+import cm.domeni.generated.domeni.kapita.dto.DebtPageDTO;
+import cm.domeni.generated.domeni.kapita.dto.DebtTypeDTO;
 import com.domeni.kapita.domain.user.UserId;
 import com.domeni.kapita.security.jwt.CurrentUserProvider;
 import com.domeni.kapita.service.DebtService;
@@ -17,6 +19,17 @@ import org.springframework.web.bind.annotation.RestController;
 public class DebtResource implements DebtApi {
   private final CurrentUserProvider currentUserProvider;
   private final DebtService debtService;
+
+  @Override
+  public ResponseEntity<DebtPageDTO> fetchDebtsByType(
+      DebtTypeDTO type, Integer pageNumber, Integer pageSize) {
+    return ResponseEntity.ok(
+        debtService.getDebtsByType(
+            com.domeni.kapita.domain.debt.DebtType.valueOf(type.getValue()),
+            pageNumber,
+            pageSize,
+            new UserId(currentUserProvider.requireCurrentUserId())));
+  }
 
   @Override
   public ResponseEntity<CreationResponseDTO> createDebt(CreateDebtDTO createDebtDTO) {
