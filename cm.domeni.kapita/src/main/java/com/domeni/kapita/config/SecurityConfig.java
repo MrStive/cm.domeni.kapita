@@ -36,24 +36,25 @@ public class SecurityConfig {
                     .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html")
                     .permitAll();
               }
-
               registry
                   .requestMatchers(HttpMethod.GET, "/demo")
                   .hasAuthority("SCOPE_demo:read:all")
                   .requestMatchers(HttpMethod.GET, "/demo/*")
                   .hasAuthority("SCOPE_demo:read")
                   .requestMatchers(HttpMethod.GET, "/debt")
-                  .hasAuthority("SCOPE_debt:read")
+                  .authenticated()
                   .requestMatchers(HttpMethod.GET, "/transaction/balance")
-                  .hasAuthority("SCOPE_transaction:read:balance")
+                  .authenticated()
                   .requestMatchers(HttpMethod.GET, "/transaction/amount")
-                  .hasAuthority("SCOPE_transaction:read:amount")
+                  .authenticated()
                   .requestMatchers(HttpMethod.POST, "/demo")
-                  .hasAuthority("SCOPE_demo:create")
+                  .authenticated()
                   .requestMatchers(HttpMethod.POST, "/debt")
-                  .hasAuthority("SCOPE_debt:create")
+                  .authenticated()
+                  .requestMatchers(HttpMethod.PUT, "/debt/*/paid")
+                  .authenticated()
                   .requestMatchers(HttpMethod.POST, "/transaction")
-                  .hasAuthority("SCOPE_transaction:create")
+                  .authenticated()
                   .anyRequest()
                   .denyAll();
             });

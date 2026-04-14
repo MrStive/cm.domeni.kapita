@@ -6,11 +6,13 @@ import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
 
 import com.domeni.kapita.domain.debt.Debt;
+import com.domeni.kapita.domain.debt.DebtId;
 import com.domeni.kapita.domain.debt.DebtPage;
 import com.domeni.kapita.domain.debt.DebtType;
 import com.domeni.kapita.domain.user.UserId;
 import com.domeni.kapita.repositories.DebtSpringRepository;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -38,6 +40,20 @@ class DebtRepositoryImplTest {
 
     assertThat(result).isSameAs(persistedDebt);
     then(debtSpringRepository).should().save(debt);
+  }
+
+  @Test
+  void findByIdAndUserIdShouldDelegateToSpringRepositoryTest() {
+    DebtId debtId = new DebtId(UUID.randomUUID());
+    UserId userId = new UserId(UUID.randomUUID());
+    Debt persistedDebt = mock(Debt.class);
+    given(debtSpringRepository.findByIdAndUserId(debtId, userId))
+        .willReturn(Optional.of(persistedDebt));
+
+    Optional<Debt> result = objectUnderTest.findByIdAndUserId(debtId, userId);
+
+    assertThat(result).containsSame(persistedDebt);
+    then(debtSpringRepository).should().findByIdAndUserId(debtId, userId);
   }
 
   @Test

@@ -3,6 +3,7 @@ package com.domeni.kapita.api;
 import cm.domeni.generated.domeni.kapita.api.DebtApi;
 import cm.domeni.generated.domeni.kapita.dto.CreateDebtDTO;
 import cm.domeni.generated.domeni.kapita.dto.CreationResponseDTO;
+import cm.domeni.generated.domeni.kapita.dto.DebtDTO;
 import cm.domeni.generated.domeni.kapita.dto.DebtPageDTO;
 import cm.domeni.generated.domeni.kapita.dto.DebtTypeDTO;
 import com.domeni.kapita.domain.user.UserId;
@@ -38,5 +39,11 @@ public class DebtResource implements DebtApi {
             createDebtDTO, new UserId(currentUserProvider.requireCurrentUserId()));
     return ResponseEntity.status(HttpStatus.CREATED)
         .body(new CreationResponseDTO().newId(createdDebtId));
+  }
+
+  @Override
+  public ResponseEntity<DebtDTO> markDebtAsPaid(UUID debtId) {
+    return ResponseEntity.ok(
+        debtService.markDebtAsPaid(debtId, new UserId(currentUserProvider.requireCurrentUserId())));
   }
 }

@@ -5,10 +5,12 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.domeni.kapita.api.DebtResource;
+import com.domeni.kapita.domain.exception.DebtNotFoundException;
 import com.domeni.kapita.domain.exception.InvalidDebtPayloadException;
 import com.domeni.kapita.domain.user.UserId;
 import com.domeni.kapita.security.jwt.CurrentUserProvider;
@@ -135,5 +137,22 @@ class DebtApiExceptionHandlerTest {
         .andExpect(jsonPath("$.timestamp").exists());
 
     verifyNoInteractions(debtService);
+  }
+
+  @Test
+  void markDebtAsPaidWhenDebtDoesNotExistShouldReturnNotFoundPayloadTest() throws Exception {
+    UUID debtId = UUID.randomUUID();
+    when(currentUserProvider.requireCurrentUserId()).thenReturn(UUID.randomUUID());
+    when(debtService.markDebtAsPaid(any(UUID.class), any(UserId.class)))
+        .thenThrow(new DebtNotFoundException());
+
+    mockMvc
+        .perform(put("/debt/{debtId}/paid", debtId))
+        .andExpect(status().isNotFound())
+        .andExpect(jsonPath("$.code").value("KAPITA-404-002"))
+        .andExpect(jsonPath("$.message").value("debt not found"))
+        .andExpect(jsonPath("$.path").value("/debt/" + debtId + "/paid"))
+        .andExpect(jsonPath("$.traceId").isNotEmpty())
+        .andExpect(jsonPath("$.timestamp").exists());
   }
 }

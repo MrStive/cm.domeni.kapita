@@ -6,6 +6,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 
 import cm.domeni.generated.domeni.kapita.dto.CreateDebtDTO;
+import cm.domeni.generated.domeni.kapita.dto.DebtDTO;
 import cm.domeni.generated.domeni.kapita.dto.DebtPageDTO;
 import com.domeni.kapita.domain.debt.Debt;
 import com.domeni.kapita.domain.debt.DebtData;
@@ -14,6 +15,7 @@ import com.domeni.kapita.domain.debt.DebtFetcher;
 import com.domeni.kapita.domain.debt.DebtId;
 import com.domeni.kapita.domain.debt.DebtPage;
 import com.domeni.kapita.domain.debt.DebtType;
+import com.domeni.kapita.domain.debt.DebtUpdater;
 import com.domeni.kapita.domain.exception.InvalidDebtPayloadException;
 import com.domeni.kapita.domain.user.UserId;
 import com.domeni.kapita.service.mapper.DebtMapper;
@@ -29,6 +31,7 @@ class DebtServiceTest {
 
   @Mock private DebtFetcher debtFetcher;
   @Mock private DebtFactory debtFactory;
+  @Mock private DebtUpdater debtUpdater;
   @Mock private DebtMapper debtMapper;
 
   @InjectMocks private DebtService debtService;
@@ -101,5 +104,31 @@ class DebtServiceTest {
     assertThat(result).isSameAs(expectedDto);
     then(debtFetcher).should().getByType(DebtType.RECEIVABLE, 1, 10, currentUserId);
     then(debtMapper).should().map(domainPage);
+  }
+
+  @Test
+  void markDebtAsPaidShouldDelegateToSettlerAndMapperTest() {
+    UUID debtId = UUID.randomUUID();
+    UserId currentUserId = new UserId(UUID.randomUUID());
+    Debt settledDebt = new Debt();
+    DebtDTO expectedDto = new DebtDTO();
+
+    given(debtUpdater.settle(new DebtId(debtId), currentUserId)).willReturn(settledDebt);
+    given(debtMapper.map(settledDebt)).willReturn(expectedDto);
+
+    DebtDTO result = debtService.markDebtAsPaid(debtId, currentUserId);
+
+    assertThat(result).isSameAs(expectedDto);
+    then(debtUpdater).should().settle(new DebtId(debtId), currentUserId);
+    then(debtMapper).should().map(settledDebt);
+  }
+
+  @Test
+  void markDebtAsPaidWhenDebtIdIsNullShouldThrowInvalidDebtPayloadExceptionTest() {
+    UserId currentUserId = new UserId(UUID.randomUUID());
+
+    assertThatThrownBy(() -> debtService.markDebtAsPaid(null, currentUserId))
+        .isInstanceOf(InvalidDebtPayloadException.class)
+        .hasMessage("debt id is required");
   }
 }

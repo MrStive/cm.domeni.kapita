@@ -1,5 +1,6 @@
 package com.domeni.kapita.api.error;
 
+import com.domeni.kapita.domain.exception.DebtNotFoundException;
 import com.domeni.kapita.domain.exception.DemoNotFoundException;
 import com.domeni.kapita.domain.exception.DomainException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -28,6 +29,13 @@ public class ApiExceptionHandler {
   @ExceptionHandler(DemoNotFoundException.class)
   public ResponseEntity<ApiError> handleDemoNotFound(
       DemoNotFoundException exception, HttpServletRequest request) {
+    return ResponseEntity.status(HttpStatus.NOT_FOUND)
+        .body(buildError(exception.getCode(), exception.getMessage(), request));
+  }
+
+  @ExceptionHandler(DebtNotFoundException.class)
+  public ResponseEntity<ApiError> handleDebtNotFound(
+      DebtNotFoundException exception, HttpServletRequest request) {
     return ResponseEntity.status(HttpStatus.NOT_FOUND)
         .body(buildError(exception.getCode(), exception.getMessage(), request));
   }

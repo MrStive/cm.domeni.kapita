@@ -6,12 +6,7 @@ import com.domeni.kapita.domain.debt.DebtFactory;
 import com.domeni.kapita.domain.debt.DebtId;
 import com.domeni.kapita.domain.debt.DebtRepository;
 import com.domeni.kapita.domain.debt.DebtStatus;
-import com.domeni.kapita.domain.debt.DebtType;
 import com.domeni.kapita.domain.exception.InvalidDebtPayloadException;
-import com.domeni.kapita.domain.transaction.TransactionCategory;
-import com.domeni.kapita.domain.transaction.TransactionData;
-import com.domeni.kapita.domain.transaction.TransactionFactory;
-import com.domeni.kapita.domain.transaction.TransactionType;
 import com.domeni.kapita.domain.user.UserId;
 import java.time.Clock;
 import java.time.LocalDateTime;
@@ -20,10 +15,7 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 public class DebtFactoryImpl implements DebtFactory {
-  static final String TRANSACTION_OTHER_CATEGORY_DETAIL = "debt";
-
   private final DebtRepository debtRepository;
-  private final TransactionFactory transactionFactory;
   private final Clock clock;
 
   @Override
@@ -45,8 +37,6 @@ public class DebtFactoryImpl implements DebtFactory {
                 .userId(currentUserId)
                 .createdAt(LocalDateTime.now(clock))
                 .build());
-
-    transactionFactory.create(toTransactionData(normalizedData), currentUserId);
     return createdDebt;
   }
 
@@ -57,23 +47,6 @@ public class DebtFactoryImpl implements DebtFactory {
         .amount(data.amount())
         .dueDate(data.dueDate())
         .build();
-  }
-
-  private TransactionData toTransactionData(DebtData debtData) {
-    return TransactionData.builder()
-        .type(toTransactionType(debtData.type()))
-        .category(TransactionCategory.OTHER)
-        .otherCategoryDetail(TRANSACTION_OTHER_CATEGORY_DETAIL)
-        .amount(debtData.amount().getNumber().numberValueExact(java.math.BigDecimal.class))
-        .description(debtData.counterpartyName())
-        .build();
-  }
-
-  private TransactionType toTransactionType(DebtType debtType) {
-    return switch (debtType) {
-      case RECEIVABLE -> TransactionType.INCOMING;
-      case PAYABLE -> TransactionType.EXPENSE;
-    };
   }
 
   private String normalizeOptional(String value) {

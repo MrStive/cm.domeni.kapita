@@ -104,4 +104,37 @@ class DebtResourceTest {
         // spotless:on
     assertThat(response.getNewId()).isEqualTo(debtId);
   }
+
+  @Test
+  void markDebtAsPaidShouldReturnUpdatedDebtTest() {
+    UUID debtId = UUID.randomUUID();
+    UUID currentUserId = UUID.randomUUID();
+    DebtDTO expectedResponse =
+        new DebtDTO()
+            .id(debtId)
+            .type(DebtTypeDTO.PAYABLE)
+            .counterpartyName("Fournisseur B")
+            .amount(new MoneyDTO().currency("XAF").value(new BigDecimal("15000.00")))
+            .dueDate(LocalDate.of(2026, 4, 12))
+            .status(DebtStatusDTO.PAID)
+            .createdAt(LocalDateTime.of(2026, 4, 10, 9, 30));
+
+    when(currentUserProvider.requireCurrentUserId()).thenReturn(currentUserId);
+    when(debtService.markDebtAsPaid(debtId, new UserId(currentUserId)))
+        .thenReturn(expectedResponse);
+
+    // spotless:off
+        DebtDTO response =
+                given()
+                        .standaloneSetup(new DebtResource(currentUserProvider, debtService))
+                        .pathParam("debtId", debtId)
+                .when()
+                        .put("/debt/{debtId}/paid")
+                .then()
+                        .statusCode(200)
+                        .extract().body().as(DebtDTO.class);
+        // spotless:on
+    assertThat(response.getId()).isEqualTo(debtId);
+    assertThat(response.getStatus()).isEqualTo(DebtStatusDTO.PAID);
+  }
 }
