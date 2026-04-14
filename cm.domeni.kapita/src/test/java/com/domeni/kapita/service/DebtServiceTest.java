@@ -107,6 +107,23 @@ class DebtServiceTest {
   }
 
   @Test
+  void getDebtsByTypeShouldSupportMissingFilterAndPaginationTest() {
+    UserId currentUserId = new UserId(UUID.randomUUID());
+    DebtPage domainPage = new DebtPage(java.util.List.of(), 0, 10, 0, 0);
+    DebtPageDTO expectedDto =
+        new DebtPageDTO().pageNumber(0).pageSize(10).totalElements(0L).totalPages(0);
+
+    given(debtFetcher.getByType(null, null, null, currentUserId)).willReturn(domainPage);
+    given(debtMapper.map(domainPage)).willReturn(expectedDto);
+
+    DebtPageDTO result = debtService.getDebtsByType(null, null, null, currentUserId);
+
+    assertThat(result).isSameAs(expectedDto);
+    then(debtFetcher).should().getByType(null, null, null, currentUserId);
+    then(debtMapper).should().map(domainPage);
+  }
+
+  @Test
   void markDebtAsPaidShouldDelegateToSettlerAndMapperTest() {
     UUID debtId = UUID.randomUUID();
     UserId currentUserId = new UserId(UUID.randomUUID());

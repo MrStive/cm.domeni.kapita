@@ -6,6 +6,9 @@ import javax.money.MonetaryAmount;
 
 public interface TransactionFetcher {
 
+  TransactionPage getTransactions(
+      TransactionType type, Integer pageNumber, Integer pageSize, UserId currentUserId);
+
   MonetaryAmount getBalance(LocalDate startDate, LocalDate endDate, UserId currentUserId);
 
   MonetaryAmount getAmount(

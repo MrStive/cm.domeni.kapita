@@ -3,6 +3,7 @@ package com.domeni.kapita.domain.transaction.impl;
 import com.domeni.kapita.domain.exception.InvalidTransactionPayloadException;
 import com.domeni.kapita.domain.transaction.Transaction;
 import com.domeni.kapita.domain.transaction.TransactionFetcher;
+import com.domeni.kapita.domain.transaction.TransactionPage;
 import com.domeni.kapita.domain.transaction.TransactionRepository;
 import com.domeni.kapita.domain.transaction.TransactionType;
 import com.domeni.kapita.domain.user.UserId;
@@ -16,8 +17,26 @@ import org.javamoney.moneta.Money;
 @RequiredArgsConstructor
 public class TransactionFetcherImpl implements TransactionFetcher {
   static final String DEFAULT_CURRENCY = "XAF";
+  static final int DEFAULT_PAGE_NUMBER = 0;
+  static final int DEFAULT_PAGE_SIZE = 10;
 
   private final TransactionRepository transactionRepository;
+
+  @Override
+  public TransactionPage getTransactions(
+      TransactionType type, Integer pageNumber, Integer pageSize, UserId currentUserId) {
+    validatePageAndUser(pageNumber, pageSize, currentUserId);
+
+    int normalizedPageNumber = pageNumber == null ? DEFAULT_PAGE_NUMBER : pageNumber;
+    int normalizedPageSize = pageSize == null ? DEFAULT_PAGE_SIZE : pageSize;
+
+    if (type == null) {
+      return transactionRepository.findAllByUserId(
+          currentUserId, normalizedPageNumber, normalizedPageSize);
+    }
+    return transactionRepository.findAllByUserIdAndType(
+        currentUserId, type, normalizedPageNumber, normalizedPageSize);
+  }
 
   @Override
   public MonetaryAmount getBalance(LocalDate startDate, LocalDate endDate, UserId currentUserId) {
@@ -56,6 +75,18 @@ public class TransactionFetcherImpl implements TransactionFetcher {
     }
     if (endDate.isBefore(startDate)) {
       throw new InvalidTransactionPayloadException("transaction period is invalid");
+    }
+    if (currentUserId == null) {
+      throw new InvalidTransactionPayloadException("transaction user id is required");
+    }
+  }
+
+  private void validatePageAndUser(Integer pageNumber, Integer pageSize, UserId currentUserId) {
+    if (pageNumber != null && pageNumber < 0) {
+      throw new InvalidTransactionPayloadException("transaction page number is invalid");
+    }
+    if (pageSize != null && pageSize <= 0) {
+      throw new InvalidTransactionPayloadException("transaction page size is invalid");
     }
     if (currentUserId == null) {
       throw new InvalidTransactionPayloadException("transaction user id is required");

@@ -43,6 +43,8 @@ public class SecurityConfig {
                   .hasAuthority("SCOPE_demo:read")
                   .requestMatchers(HttpMethod.GET, "/debt")
                   .authenticated()
+                  .requestMatchers(HttpMethod.GET, "/transaction")
+                  .authenticated()
                   .requestMatchers(HttpMethod.GET, "/transaction/balance")
                   .authenticated()
                   .requestMatchers(HttpMethod.GET, "/transaction/amount")

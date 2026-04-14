@@ -40,6 +40,20 @@ class DebtFetcherImplTest {
   }
 
   @Test
+  void getByTypeShouldUseDefaultPaginationAndReturnAllTypesWhenTypeIsMissingTest() {
+    DebtFetcherImpl objectUnderTest = new DebtFetcherImpl(debtRepository);
+    UserId currentUserId = new UserId(UUID.randomUUID());
+    DebtPage expectedPage = new DebtPage(List.of(new Debt()), 0, 10, 1, 1);
+
+    given(debtRepository.findAllByUserId(currentUserId, 0, 10)).willReturn(expectedPage);
+
+    DebtPage result = objectUnderTest.getByType(null, null, null, currentUserId);
+
+    assertThat(result).isSameAs(expectedPage);
+    then(debtRepository).should().findAllByUserId(currentUserId, 0, 10);
+  }
+
+  @Test
   void getByTypeWhenPageNumberIsInvalidShouldThrowInvalidDebtPayloadExceptionTest() {
     DebtFetcherImpl objectUnderTest = new DebtFetcherImpl(debtRepository);
 

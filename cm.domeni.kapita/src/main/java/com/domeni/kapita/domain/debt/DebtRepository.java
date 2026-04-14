@@ -9,5 +9,7 @@ public interface DebtRepository {
 
   Optional<Debt> findByIdAndUserId(DebtId debtId, UserId userId);
 
+  DebtPage findAllByUserId(UserId userId, int pageNumber, int pageSize);
+
   DebtPage findAllByUserIdAndType(UserId userId, DebtType type, int pageNumber, int pageSize);
 }

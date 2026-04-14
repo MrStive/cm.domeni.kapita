@@ -122,6 +122,23 @@ class DebtApiExceptionHandlerTest {
   }
 
   @Test
+  void fetchDebtsByTypeWhenServiceRejectsDefaultedQueryShouldReturnDomainPayloadTest()
+      throws Exception {
+    when(currentUserProvider.requireCurrentUserId()).thenReturn(UUID.randomUUID());
+    when(debtService.getDebtsByType(any(), any(), any(), any(UserId.class)))
+        .thenThrow(new InvalidDebtPayloadException("debt page size is invalid"));
+
+    mockMvc
+        .perform(get("/debt"))
+        .andExpect(status().isBadRequest())
+        .andExpect(jsonPath("$.code").value("KAPITA-400-005"))
+        .andExpect(jsonPath("$.message").value("debt page size is invalid"))
+        .andExpect(jsonPath("$.path").value("/debt"))
+        .andExpect(jsonPath("$.traceId").isNotEmpty())
+        .andExpect(jsonPath("$.timestamp").exists());
+  }
+
+  @Test
   void fetchDebtsByTypeWhenPageNumberIsNegativeShouldReturnValidationPayloadTest()
       throws Exception {
     mockMvc

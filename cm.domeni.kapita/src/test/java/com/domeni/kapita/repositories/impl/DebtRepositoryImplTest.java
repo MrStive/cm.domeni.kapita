@@ -57,6 +57,26 @@ class DebtRepositoryImplTest {
   }
 
   @Test
+  void findAllByUserIdShouldDelegateToSpringRepositoryAndMapPageTest() {
+    UserId userId = new UserId(UUID.randomUUID());
+    List<Debt> persistedDebts = List.of(mock(Debt.class), mock(Debt.class));
+    PageRequest pageable =
+        PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, Debt.Fields.createdAt));
+
+    given(debtSpringRepository.findAllByUserId(userId, pageable))
+        .willReturn(new PageImpl<>(persistedDebts, pageable, 2));
+
+    DebtPage result = objectUnderTest.findAllByUserId(userId, 0, 10);
+
+    assertThat(result.items()).containsExactlyElementsOf(persistedDebts);
+    assertThat(result.pageNumber()).isEqualTo(0);
+    assertThat(result.pageSize()).isEqualTo(10);
+    assertThat(result.totalElements()).isEqualTo(2);
+    assertThat(result.totalPages()).isEqualTo(1);
+    then(debtSpringRepository).should().findAllByUserId(userId, pageable);
+  }
+
+  @Test
   void findAllByUserIdAndTypeShouldDelegateToSpringRepositoryAndMapPageTest() {
     UserId userId = new UserId(UUID.randomUUID());
     List<Debt> persistedDebts = List.of(mock(Debt.class), mock(Debt.class));
