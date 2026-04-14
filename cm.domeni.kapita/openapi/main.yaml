@@ -64,8 +64,7 @@ paths:
       description: "Fetch demo by id"
       operationId: "fetchDemoById"
       security:
-      - oAuth:
-        - "demo:read"
+      - bearerAuth: []
       parameters:
       - name: "demoId"
         in: "path"
@@ -91,8 +90,7 @@ paths:
       description: "Create a new transaction"
       operationId: "createTransaction"
       security:
-      - oAuth:
-        - "transaction:create"
+      - bearerAuth: []
       requestBody:
         required: true
         content:
@@ -114,8 +112,7 @@ paths:
       description: "Fetch current user debts by type with pagination"
       operationId: "fetchDebtsByType"
       security:
-      - oAuth:
-        - "debt:read"
+      - bearerAuth: []
       parameters:
       - name: "type"
         in: "query"
@@ -153,8 +150,7 @@ paths:
       description: "Create a new debt for the current user"
       operationId: "createDebt"
       security:
-      - oAuth:
-        - "debt:create"
+      - bearerAuth: []
       requestBody:
         required: true
         content:
@@ -168,6 +164,32 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/CreationResponseDTO"
+  /debt/{debtId}/paid:
+    put:
+      tags:
+      - "Debt"
+      summary: "Mark a debt as paid"
+      description: "Mark the current user debt as paid and create the related transaction"
+      operationId: "markDebtAsPaid"
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: "debtId"
+        in: "path"
+        required: true
+        schema:
+          type: "string"
+          format: "uuid"
+        description: "Debt identifier."
+      responses:
+        "200":
+          description: "successful operation"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DebtDTO"
+        "404":
+          description: "KAPITA-404-002"
   /transaction/balance:
     get:
       tags:
@@ -176,8 +198,7 @@ paths:
       description: "Compute the current user balance over a period using incoming transactions minus expenses"
       operationId: "fetchTransactionBalance"
       security:
-      - oAuth:
-        - "transaction:read:balance"
+      - bearerAuth: []
       parameters:
       - name: "startDate"
         in: "query"
@@ -208,8 +229,7 @@ paths:
       description: "Compute the sum of transaction amounts for the current user, filtered by type and period"
       operationId: "fetchTransactionAmountByType"
       security:
-      - oAuth:
-        - "transaction:read:amount"
+      - bearerAuth: []
       parameters:
       - name: "startDate"
         in: "query"

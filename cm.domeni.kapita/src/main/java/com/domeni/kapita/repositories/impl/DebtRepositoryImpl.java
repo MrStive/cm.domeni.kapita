@@ -1,11 +1,13 @@
 package com.domeni.kapita.repositories.impl;
 
 import com.domeni.kapita.domain.debt.Debt;
+import com.domeni.kapita.domain.debt.DebtId;
 import com.domeni.kapita.domain.debt.DebtPage;
 import com.domeni.kapita.domain.debt.DebtRepository;
 import com.domeni.kapita.domain.debt.DebtType;
 import com.domeni.kapita.domain.user.UserId;
 import com.domeni.kapita.repositories.DebtSpringRepository;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -18,6 +20,11 @@ public class DebtRepositoryImpl implements DebtRepository {
   @Override
   public Debt save(Debt value) {
     return debtSpringRepository.save(value);
+  }
+
+  @Override
+  public Optional<Debt> findByIdAndUserId(DebtId debtId, UserId userId) {
+    return debtSpringRepository.findByIdAndUserId(debtId, userId);
   }
 
   @Override

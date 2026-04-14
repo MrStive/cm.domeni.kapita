@@ -3,8 +3,10 @@ package com.domeni.kapita.config;
 import com.domeni.kapita.domain.debt.DebtFactory;
 import com.domeni.kapita.domain.debt.DebtFetcher;
 import com.domeni.kapita.domain.debt.DebtRepository;
+import com.domeni.kapita.domain.debt.DebtUpdater;
 import com.domeni.kapita.domain.debt.impl.DebtFactoryImpl;
 import com.domeni.kapita.domain.debt.impl.DebtFetcherImpl;
+import com.domeni.kapita.domain.debt.impl.DebtUpdaterImpl;
 import com.domeni.kapita.domain.demo.DemoFactory;
 import com.domeni.kapita.domain.demo.DemoFetcher;
 import com.domeni.kapita.domain.demo.DemoRepository;
@@ -61,14 +63,19 @@ public class KapitaBeans {
   }
 
   @Bean
-  public DebtFactory debtFactory(
-      DebtRepository debtRepository, TransactionFactory transactionFactory, Clock systemClock) {
-    return new DebtFactoryImpl(debtRepository, transactionFactory, systemClock);
+  public DebtFactory debtFactory(DebtRepository debtRepository, Clock systemClock) {
+    return new DebtFactoryImpl(debtRepository, systemClock);
   }
 
   @Bean
   public DebtFetcher debtFetcher(DebtRepository debtRepository) {
     return new DebtFetcherImpl(debtRepository);
+  }
+
+  @Bean
+  public DebtUpdater debtSettler(
+      DebtRepository debtRepository, TransactionFactory transactionFactory) {
+    return new DebtUpdaterImpl(debtRepository, transactionFactory);
   }
 
   @Bean

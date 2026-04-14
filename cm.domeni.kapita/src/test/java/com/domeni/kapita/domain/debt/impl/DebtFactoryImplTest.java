@@ -13,11 +13,6 @@ import com.domeni.kapita.domain.debt.DebtRepository;
 import com.domeni.kapita.domain.debt.DebtStatus;
 import com.domeni.kapita.domain.debt.DebtType;
 import com.domeni.kapita.domain.exception.InvalidDebtPayloadException;
-import com.domeni.kapita.domain.transaction.Transaction;
-import com.domeni.kapita.domain.transaction.TransactionCategory;
-import com.domeni.kapita.domain.transaction.TransactionData;
-import com.domeni.kapita.domain.transaction.TransactionFactory;
-import com.domeni.kapita.domain.transaction.TransactionType;
 import com.domeni.kapita.domain.user.UserId;
 import java.math.BigDecimal;
 import java.time.Clock;
@@ -37,13 +32,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 class DebtFactoryImplTest {
 
   @Mock private DebtRepository debtRepository;
-  @Mock private TransactionFactory transactionFactory;
 
   @Test
-  void createShouldBuildAndPersistDebtFromDebtDataAndCreateIncomingTransactionTest() {
+  void createShouldBuildAndPersistDebtFromDebtDataTest() {
     Clock fixedClock = Clock.fixed(Instant.parse("2026-04-10T10:15:30Z"), ZoneOffset.UTC);
-    DebtFactoryImpl debtFactory =
-        new DebtFactoryImpl(debtRepository, transactionFactory, fixedClock);
+    DebtFactoryImpl debtFactory = new DebtFactoryImpl(debtRepository, fixedClock);
     UserId currentUserId = new UserId(UUID.randomUUID());
     DebtData input =
         DebtData.builder()
@@ -54,8 +47,6 @@ class DebtFactoryImplTest {
             .build();
     Debt persistedDebt = new Debt();
     given(debtRepository.save(any(Debt.class))).willReturn(persistedDebt);
-    given(transactionFactory.create(any(TransactionData.class), any(UserId.class)))
-        .willReturn(new Transaction());
 
     Debt result = debtFactory.create(input, currentUserId);
 
@@ -76,21 +67,11 @@ class DebtFactoryImplTest {
     assertThat(debtToSave.getStatus()).isEqualTo(DebtStatus.UNPAID);
     assertThat(debtToSave.getUserId()).isEqualTo(currentUserId);
     assertThat(debtToSave.getCreatedAt()).isEqualTo(LocalDateTime.of(2026, 4, 10, 10, 15, 30));
-
-    ArgumentCaptor<TransactionData> transactionDataCaptor =
-        ArgumentCaptor.forClass(TransactionData.class);
-    then(transactionFactory).should().create(transactionDataCaptor.capture(), any(UserId.class));
-    assertThat(transactionDataCaptor.getValue().type()).isEqualTo(TransactionType.INCOMING);
-    assertThat(transactionDataCaptor.getValue().category()).isEqualTo(TransactionCategory.OTHER);
-    assertThat(transactionDataCaptor.getValue().otherCategoryDetail()).isEqualTo("debt");
-    assertThat(transactionDataCaptor.getValue().amount()).isEqualByComparingTo("5000.00");
-    assertThat(transactionDataCaptor.getValue().description()).isEqualTo("Client A");
   }
 
   @Test
-  void createShouldNormalizeCounterpartyNameBeforePersistingAndTransactionDescriptionTest() {
-    DebtFactoryImpl debtFactory =
-        new DebtFactoryImpl(debtRepository, transactionFactory, Clock.systemUTC());
+  void createShouldNormalizeCounterpartyNameBeforePersistingTest() {
+    DebtFactoryImpl debtFactory = new DebtFactoryImpl(debtRepository, Clock.systemUTC());
     UserId currentUserId = new UserId(UUID.randomUUID());
     DebtData input =
         DebtData.builder()
@@ -100,25 +81,17 @@ class DebtFactoryImplTest {
             .dueDate(LocalDate.of(2026, 4, 12))
             .build();
     given(debtRepository.save(any(Debt.class))).willReturn(new Debt());
-    given(transactionFactory.create(any(TransactionData.class), any(UserId.class)))
-        .willReturn(new Transaction());
 
     debtFactory.create(input, currentUserId);
 
     ArgumentCaptor<Debt> debtCaptor = ArgumentCaptor.forClass(Debt.class);
-    ArgumentCaptor<TransactionData> transactionDataCaptor =
-        ArgumentCaptor.forClass(TransactionData.class);
     then(debtRepository).should().save(debtCaptor.capture());
-    then(transactionFactory).should().create(transactionDataCaptor.capture(), any(UserId.class));
     assertThat(debtCaptor.getValue().getCounterpartyName()).isEqualTo("Fournisseur B");
-    assertThat(transactionDataCaptor.getValue().type()).isEqualTo(TransactionType.EXPENSE);
-    assertThat(transactionDataCaptor.getValue().description()).isEqualTo("Fournisseur B");
   }
 
   @Test
   void createWhenCurrentUserIdIsMissingShouldThrowInvalidDebtPayloadExceptionTest() {
-    DebtFactoryImpl debtFactory =
-        new DebtFactoryImpl(debtRepository, transactionFactory, Clock.systemUTC());
+    DebtFactoryImpl debtFactory = new DebtFactoryImpl(debtRepository, Clock.systemUTC());
     DebtData input =
         DebtData.builder()
             .type(DebtType.RECEIVABLE)
@@ -131,6 +104,6 @@ class DebtFactoryImplTest {
         .isInstanceOf(InvalidDebtPayloadException.class)
         .hasMessage("debt user id is required");
 
-    verifyNoInteractions(debtRepository, transactionFactory);
+    verifyNoInteractions(debtRepository);
   }
 }
