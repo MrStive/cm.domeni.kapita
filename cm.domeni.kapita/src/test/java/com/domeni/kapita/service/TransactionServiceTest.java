@@ -9,6 +9,7 @@ import static org.mockito.Mockito.mock;
 import cm.domeni.generated.domeni.kapita.dto.CreateTransactionDTO;
 import cm.domeni.generated.domeni.kapita.dto.MoneyDTO;
 import cm.domeni.generated.domeni.kapita.dto.TransactionCategoryDTO;
+import cm.domeni.generated.domeni.kapita.dto.TransactionPageDTO;
 import cm.domeni.generated.domeni.kapita.dto.TransactionTypeDTO;
 import com.domeni.kapita.domain.exception.InvalidTransactionPayloadException;
 import com.domeni.kapita.domain.transaction.Transaction;
@@ -17,6 +18,7 @@ import com.domeni.kapita.domain.transaction.TransactionData;
 import com.domeni.kapita.domain.transaction.TransactionFactory;
 import com.domeni.kapita.domain.transaction.TransactionFetcher;
 import com.domeni.kapita.domain.transaction.TransactionId;
+import com.domeni.kapita.domain.transaction.TransactionPage;
 import com.domeni.kapita.domain.transaction.TransactionType;
 import com.domeni.kapita.domain.user.UserId;
 import com.domeni.kapita.service.mapper.TransactionMapper;
@@ -115,6 +117,24 @@ class TransactionServiceTest {
 
     then(transactionMapper).should().map(input);
     then(transactionFactory).should().create(mappedData, currentUserId);
+  }
+
+  @Test
+  void getTransactionsShouldDelegateToDomainFetcherAndMapperTest() {
+    UserId currentUserId = new UserId(UUID.randomUUID());
+    TransactionPage domainPage = new TransactionPage(java.util.List.of(), 0, 10, 0, 0);
+    TransactionPageDTO expectedDto =
+        new TransactionPageDTO().pageNumber(0).pageSize(10).totalElements(0L).totalPages(0);
+
+    given(transactionFetcher.getTransactions(null, null, null, currentUserId))
+        .willReturn(domainPage);
+    given(transactionMapper.map(domainPage)).willReturn(expectedDto);
+
+    TransactionPageDTO result = transactionService.getTransactions(null, null, null, currentUserId);
+
+    assertThat(result).isSameAs(expectedDto);
+    then(transactionFetcher).should().getTransactions(null, null, null, currentUserId);
+    then(transactionMapper).should().map(domainPage);
   }
 
   @Test

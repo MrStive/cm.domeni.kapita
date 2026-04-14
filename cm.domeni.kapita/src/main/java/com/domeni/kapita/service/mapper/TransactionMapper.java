@@ -2,9 +2,15 @@ package com.domeni.kapita.service.mapper;
 
 import cm.domeni.generated.domeni.kapita.dto.CreateTransactionDTO;
 import cm.domeni.generated.domeni.kapita.dto.MoneyDTO;
+import cm.domeni.generated.domeni.kapita.dto.TransactionDTO;
+import cm.domeni.generated.domeni.kapita.dto.TransactionPageDTO;
+import com.domeni.kapita.domain.transaction.Transaction;
 import com.domeni.kapita.domain.transaction.TransactionData;
+import com.domeni.kapita.domain.transaction.TransactionId;
+import com.domeni.kapita.domain.transaction.TransactionPage;
 import java.math.BigDecimal;
 import java.util.Optional;
+import java.util.UUID;
 import javax.money.MonetaryAmount;
 import org.javamoney.moneta.Money;
 import org.mapstruct.BeanMapping;
@@ -22,6 +28,24 @@ public interface TransactionMapper {
   @Mapping(target = "description", source = "description")
   TransactionData map(CreateTransactionDTO transactionDTO);
 
+  @BeanMapping(ignoreByDefault = true)
+  @Mapping(target = "id", source = "id")
+  @Mapping(target = "type", source = "type")
+  @Mapping(target = "category", source = "category")
+  @Mapping(target = "otherCategoryDetail", source = "otherCategoryDetail")
+  @Mapping(target = "amount", source = "amount")
+  @Mapping(target = "description", source = "description")
+  @Mapping(target = "createdAt", source = "createdAt")
+  TransactionDTO map(Transaction value);
+
+  @BeanMapping(ignoreByDefault = true)
+  @Mapping(target = "items", source = "items")
+  @Mapping(target = "pageNumber", source = "pageNumber")
+  @Mapping(target = "pageSize", source = "pageSize")
+  @Mapping(target = "totalElements", source = "totalElements")
+  @Mapping(target = "totalPages", source = "totalPages")
+  TransactionPageDTO map(TransactionPage value);
+
   default MoneyDTO map(MonetaryAmount value) {
     return Optional.ofNullable(value)
         .map(
@@ -38,5 +62,9 @@ public interface TransactionMapper {
             input ->
                 Money.of(input.getValue(), Optional.ofNullable(input.getCurrency()).orElse("XAF")))
         .orElse(null);
+  }
+
+  default UUID map(TransactionId value) {
+    return Optional.ofNullable(value).map(TransactionId::toUUID).orElse(null);
   }
 }

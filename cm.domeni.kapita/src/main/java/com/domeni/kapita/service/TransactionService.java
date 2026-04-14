@@ -2,6 +2,7 @@ package com.domeni.kapita.service;
 
 import cm.domeni.generated.domeni.kapita.dto.CreateTransactionDTO;
 import cm.domeni.generated.domeni.kapita.dto.MoneyDTO;
+import cm.domeni.generated.domeni.kapita.dto.TransactionPageDTO;
 import com.domeni.kapita.domain.transaction.Transaction;
 import com.domeni.kapita.domain.transaction.TransactionFactory;
 import com.domeni.kapita.domain.transaction.TransactionFetcher;
@@ -29,6 +30,13 @@ public class TransactionService {
       throw new IllegalStateException("created transaction has no identifier");
     }
     return createdTransaction.getId().toUUID();
+  }
+
+  @Transactional(readOnly = true)
+  public TransactionPageDTO getTransactions(
+      TransactionType type, Integer pageNumber, Integer pageSize, UserId currentUserId) {
+    return transactionMapper.map(
+        transactionFetcher.getTransactions(type, pageNumber, pageSize, currentUserId));
   }
 
   @Transactional(readOnly = true)

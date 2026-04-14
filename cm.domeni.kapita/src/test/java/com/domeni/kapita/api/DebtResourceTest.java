@@ -77,6 +77,36 @@ class DebtResourceTest {
   }
 
   @Test
+  void fetchDebtsByTypeShouldUseDefaultPaginationAndAllTypesWhenQueryIsMissingTest() {
+    UUID currentUserId = UUID.randomUUID();
+    DebtPageDTO expectedResponse =
+        new DebtPageDTO()
+            .items(List.of())
+            .pageNumber(0)
+            .pageSize(10)
+            .totalElements(0L)
+            .totalPages(0);
+
+    when(currentUserProvider.requireCurrentUserId()).thenReturn(currentUserId);
+    when(debtService.getDebtsByType(null, 0, 10, new UserId(currentUserId)))
+        .thenReturn(expectedResponse);
+
+    // spotless:off
+        DebtPageDTO response =
+                given()
+                        .standaloneSetup(new DebtResource(currentUserProvider, debtService))
+                .when()
+                        .get("/debt")
+                .then()
+                        .statusCode(200)
+                        .extract().body().as(DebtPageDTO.class);
+        // spotless:on
+    assertThat(response.getPageNumber()).isEqualTo(0);
+    assertThat(response.getPageSize()).isEqualTo(10);
+    assertThat(response.getItems()).isEmpty();
+  }
+
+  @Test
   void createDebtShouldReturnCreatedDebtIdTest() {
     UUID debtId = UUID.randomUUID();
     UUID currentUserId = UUID.randomUUID();

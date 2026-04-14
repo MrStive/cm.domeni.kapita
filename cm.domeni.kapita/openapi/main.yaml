@@ -83,6 +83,46 @@ paths:
         "404":
           description: "KAPITA-404-001"
   /transaction:
+    get:
+      tags:
+      - "Transaction"
+      summary: "Fetch current user transactions"
+      description: "Fetch current user transactions with optional type filtering and pagination"
+      operationId: "fetchTransactions"
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: "type"
+        in: "query"
+        required: false
+        schema:
+          $ref: "#/components/schemas/TransactionTypeDTO"
+        description: "Transaction type to filter. When omitted, all transaction types are returned."
+      - name: "pageNumber"
+        in: "query"
+        required: false
+        schema:
+          type: "integer"
+          format: "int32"
+          minimum: 0
+          default: 0
+        description: "Zero-based page number. Defaults to 0."
+      - name: "pageSize"
+        in: "query"
+        required: false
+        schema:
+          type: "integer"
+          format: "int32"
+          minimum: 1
+          default: 10
+        description: "Number of items per page. Defaults to 10."
+      responses:
+        "200":
+          description: "successful operation"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TransactionPageDTO"
     post:
       tags:
       - "Transaction"
@@ -108,34 +148,36 @@ paths:
     get:
       tags:
       - "Debt"
-      summary: "Fetch current user debts by type"
-      description: "Fetch current user debts by type with pagination"
+      summary: "Fetch current user debts"
+      description: "Fetch current user debts with optional type filtering and pagination"
       operationId: "fetchDebtsByType"
       security:
       - bearerAuth: []
       parameters:
       - name: "type"
         in: "query"
-        required: true
+        required: false
         schema:
           $ref: "#/components/schemas/DebtTypeDTO"
-        description: "Debt type to filter."
+        description: "Debt type to filter. When omitted, all debt types are returned."
       - name: "pageNumber"
         in: "query"
-        required: true
+        required: false
         schema:
           type: "integer"
           format: "int32"
           minimum: 0
-        description: "Zero-based page number."
+          default: 0
+        description: "Zero-based page number. Defaults to 0."
       - name: "pageSize"
         in: "query"
-        required: true
+        required: false
         schema:
           type: "integer"
           format: "int32"
           minimum: 1
-        description: "Number of items per page."
+          default: 10
+        description: "Number of items per page. Defaults to 10."
       responses:
         "200":
           description: "successful operation"
@@ -452,6 +494,33 @@ components:
         createdAt:
           type: "string"
           format: "date-time"
+    TransactionPageDTO:
+      type: "object"
+      required:
+      - "items"
+      - "pageNumber"
+      - "pageSize"
+      - "totalElements"
+      - "totalPages"
+      properties:
+        items:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/TransactionDTO"
+        pageNumber:
+          type: "integer"
+          format: "int32"
+          minimum: 0
+        pageSize:
+          type: "integer"
+          format: "int32"
+          minimum: 1
+        totalElements:
+          type: "integer"
+          format: "int64"
+        totalPages:
+          type: "integer"
+          format: "int32"
     MoneyDTO:
       type: "object"
       required:

@@ -26,7 +26,7 @@ public class DebtResource implements DebtApi {
       DebtTypeDTO type, Integer pageNumber, Integer pageSize) {
     return ResponseEntity.ok(
         debtService.getDebtsByType(
-            com.domeni.kapita.domain.debt.DebtType.valueOf(type.getValue()),
+            type == null ? null : com.domeni.kapita.domain.debt.DebtType.valueOf(type.getValue()),
             pageNumber,
             pageSize,
             new UserId(currentUserProvider.requireCurrentUserId())));

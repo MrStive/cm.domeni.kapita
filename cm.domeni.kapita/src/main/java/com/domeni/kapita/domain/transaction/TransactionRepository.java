@@ -8,6 +8,11 @@ public interface TransactionRepository {
 
   Transaction save(Transaction value);
 
+  TransactionPage findAllByUserId(UserId userId, int pageNumber, int pageSize);
+
+  TransactionPage findAllByUserIdAndType(
+      UserId userId, TransactionType type, int pageNumber, int pageSize);
+
   List<Transaction> findAllByUserIdAndCreatedAtRange(
       UserId userId, LocalDateTime startInclusive, LocalDateTime endExclusive);
 

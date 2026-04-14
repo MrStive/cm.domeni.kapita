@@ -123,4 +123,34 @@ class TransactionApiExceptionHandlerTest {
         .andExpect(jsonPath("$.traceId").isNotEmpty())
         .andExpect(jsonPath("$.timestamp").exists());
   }
+
+  @Test
+  void fetchTransactionsWhenServiceRejectsQueryShouldReturnDomainPayloadTest() throws Exception {
+    when(currentUserProvider.requireCurrentUserId()).thenReturn(UUID.randomUUID());
+    when(transactionService.getTransactions(any(), any(), any(), any(UserId.class)))
+        .thenThrow(new InvalidTransactionPayloadException("transaction page size is invalid"));
+
+    mockMvc
+        .perform(get("/transaction").queryParam("pageSize", "10"))
+        .andExpect(status().isBadRequest())
+        .andExpect(jsonPath("$.code").value("KAPITA-400-004"))
+        .andExpect(jsonPath("$.message").value("transaction page size is invalid"))
+        .andExpect(jsonPath("$.path").value("/transaction"))
+        .andExpect(jsonPath("$.traceId").isNotEmpty())
+        .andExpect(jsonPath("$.timestamp").exists());
+  }
+
+  @Test
+  void fetchTransactionsWhenPageNumberIsNegativeShouldReturnValidationPayloadTest()
+      throws Exception {
+    mockMvc
+        .perform(get("/transaction").queryParam("pageNumber", "-1"))
+        .andExpect(status().isBadRequest())
+        .andExpect(jsonPath("$.code").value("KAPITA-400-VALIDATION"))
+        .andExpect(jsonPath("$.path").value("/transaction"))
+        .andExpect(jsonPath("$.traceId").isNotEmpty())
+        .andExpect(jsonPath("$.timestamp").exists());
+
+    verifyNoInteractions(transactionService);
+  }
 }

@@ -4,6 +4,7 @@ import cm.domeni.generated.domeni.kapita.api.TransactionApi;
 import cm.domeni.generated.domeni.kapita.dto.CreateTransactionDTO;
 import cm.domeni.generated.domeni.kapita.dto.CreationResponseDTO;
 import cm.domeni.generated.domeni.kapita.dto.MoneyDTO;
+import cm.domeni.generated.domeni.kapita.dto.TransactionPageDTO;
 import cm.domeni.generated.domeni.kapita.dto.TransactionTypeDTO;
 import com.domeni.kapita.domain.user.UserId;
 import com.domeni.kapita.security.jwt.CurrentUserProvider;
@@ -29,6 +30,19 @@ public class TransactionResource implements TransactionApi {
             createTransactionDTO, new UserId(currentUserProvider.requireCurrentUserId()));
     return ResponseEntity.status(HttpStatus.CREATED)
         .body(new CreationResponseDTO().newId(createdTransactionId));
+  }
+
+  @Override
+  public ResponseEntity<TransactionPageDTO> fetchTransactions(
+      TransactionTypeDTO type, Integer pageNumber, Integer pageSize) {
+    return ResponseEntity.ok(
+        transactionService.getTransactions(
+            type == null
+                ? null
+                : com.domeni.kapita.domain.transaction.TransactionType.valueOf(type.getValue()),
+            pageNumber,
+            pageSize,
+            new UserId(currentUserProvider.requireCurrentUserId())));
   }
 
   @Override

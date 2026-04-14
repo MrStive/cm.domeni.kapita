@@ -13,5 +13,7 @@ public interface DebtSpringRepository extends JpaRepository<Debt, DebtId> {
 
   Optional<Debt> findByIdAndUserId(DebtId debtId, UserId userId);
 
+  Page<Debt> findAllByUserId(UserId userId, Pageable pageable);
+
   Page<Debt> findAllByUserIdAndType(UserId userId, DebtType type, Pageable pageable);
 }

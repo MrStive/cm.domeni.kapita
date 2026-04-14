@@ -9,12 +9,16 @@ import cm.domeni.generated.domeni.kapita.dto.CreateTransactionDTO;
 import cm.domeni.generated.domeni.kapita.dto.CreationResponseDTO;
 import cm.domeni.generated.domeni.kapita.dto.MoneyDTO;
 import cm.domeni.generated.domeni.kapita.dto.TransactionCategoryDTO;
+import cm.domeni.generated.domeni.kapita.dto.TransactionDTO;
+import cm.domeni.generated.domeni.kapita.dto.TransactionPageDTO;
 import cm.domeni.generated.domeni.kapita.dto.TransactionTypeDTO;
 import com.domeni.kapita.domain.user.UserId;
 import com.domeni.kapita.security.jwt.CurrentUserProvider;
 import com.domeni.kapita.service.TransactionService;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -55,6 +59,45 @@ class TransactionResourceTest {
                         .extract().body().as(CreationResponseDTO.class);
         // spotless:on
     assertThat(response.getNewId()).isEqualTo(transactionId);
+  }
+
+  @Test
+  void fetchTransactionsShouldReturnTransactionPageForCurrentUserTest() {
+    UUID currentUserId = UUID.randomUUID();
+    TransactionPageDTO expectedResponse =
+        new TransactionPageDTO()
+            .items(
+                List.of(
+                    new TransactionDTO()
+                        .id(UUID.randomUUID())
+                        .type(TransactionTypeDTO.EXPENSE)
+                        .category(TransactionCategoryDTO.TRANSPORT)
+                        .amount(new BigDecimal("2500.00"))
+                        .description("taxi")
+                        .createdAt(LocalDateTime.of(2026, 4, 13, 9, 45))))
+            .pageNumber(0)
+            .pageSize(10)
+            .totalElements(1L)
+            .totalPages(1);
+
+    when(currentUserProvider.requireCurrentUserId()).thenReturn(currentUserId);
+    when(transactionService.getTransactions(any(), any(), any(), any(UserId.class)))
+        .thenReturn(expectedResponse);
+
+    // spotless:off
+        TransactionPageDTO response =
+                given()
+                        .standaloneSetup(new TransactionResource(currentUserProvider, transactionService))
+                .when()
+                        .get("/transaction")
+                .then()
+                        .statusCode(200)
+                        .extract().body().as(TransactionPageDTO.class);
+        // spotless:on
+    assertThat(response.getPageNumber()).isEqualTo(0);
+    assertThat(response.getPageSize()).isEqualTo(10);
+    assertThat(response.getItems()).hasSize(1);
+    assertThat(response.getItems().getFirst().getDescription()).isEqualTo("taxi");
   }
 
   @Test

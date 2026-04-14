@@ -8,6 +8,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
 
 import com.domeni.kapita.domain.exception.InvalidTransactionPayloadException;
 import com.domeni.kapita.domain.transaction.Transaction;
+import com.domeni.kapita.domain.transaction.TransactionPage;
 import com.domeni.kapita.domain.transaction.TransactionRepository;
 import com.domeni.kapita.domain.transaction.TransactionType;
 import com.domeni.kapita.domain.user.UserId;
@@ -26,6 +27,78 @@ import org.mockito.junit.jupiter.MockitoExtension;
 class TransactionFetcherImplTest {
 
   @Mock private TransactionRepository transactionRepository;
+
+  @Test
+  void getTransactionsShouldUseDefaultPaginationAndReturnAllTypesWhenTypeIsMissingTest() {
+    TransactionFetcherImpl objectUnderTest = new TransactionFetcherImpl(transactionRepository);
+    UserId currentUserId = new UserId(UUID.randomUUID());
+    TransactionPage expectedPage = new TransactionPage(List.of(), 0, 10, 0, 0);
+    given(transactionRepository.findAllByUserId(currentUserId, 0, 10)).willReturn(expectedPage);
+
+    TransactionPage result = objectUnderTest.getTransactions(null, null, null, currentUserId);
+
+    assertThat(result).isSameAs(expectedPage);
+    then(transactionRepository).should().findAllByUserId(currentUserId, 0, 10);
+  }
+
+  @Test
+  void getTransactionsShouldFilterByTypeAndUseRequestedPaginationTest() {
+    TransactionFetcherImpl objectUnderTest = new TransactionFetcherImpl(transactionRepository);
+    UserId currentUserId = new UserId(UUID.randomUUID());
+    TransactionPage expectedPage = new TransactionPage(List.of(), 1, 5, 7, 2);
+    given(
+            transactionRepository.findAllByUserIdAndType(
+                currentUserId, TransactionType.EXPENSE, 1, 5))
+        .willReturn(expectedPage);
+
+    TransactionPage result =
+        objectUnderTest.getTransactions(TransactionType.EXPENSE, 1, 5, currentUserId);
+
+    assertThat(result).isSameAs(expectedPage);
+    then(transactionRepository)
+        .should()
+        .findAllByUserIdAndType(currentUserId, TransactionType.EXPENSE, 1, 5);
+  }
+
+  @Test
+  void getTransactionsWhenPageNumberIsInvalidShouldThrowDomainExceptionTest() {
+    TransactionFetcherImpl objectUnderTest = new TransactionFetcherImpl(transactionRepository);
+
+    assertThatThrownBy(
+            () ->
+                objectUnderTest.getTransactions(
+                    null,
+                    -1,
+                    TransactionFetcherImpl.DEFAULT_PAGE_SIZE,
+                    new UserId(UUID.randomUUID())))
+        .isInstanceOf(InvalidTransactionPayloadException.class)
+        .hasMessage("transaction page number is invalid");
+
+    verifyNoInteractions(transactionRepository);
+  }
+
+  @Test
+  void getTransactionsWhenPageSizeIsInvalidShouldThrowDomainExceptionTest() {
+    TransactionFetcherImpl objectUnderTest = new TransactionFetcherImpl(transactionRepository);
+
+    assertThatThrownBy(
+            () -> objectUnderTest.getTransactions(null, 0, 0, new UserId(UUID.randomUUID())))
+        .isInstanceOf(InvalidTransactionPayloadException.class)
+        .hasMessage("transaction page size is invalid");
+
+    verifyNoInteractions(transactionRepository);
+  }
+
+  @Test
+  void getTransactionsWhenCurrentUserIdIsMissingShouldThrowDomainExceptionTest() {
+    TransactionFetcherImpl objectUnderTest = new TransactionFetcherImpl(transactionRepository);
+
+    assertThatThrownBy(() -> objectUnderTest.getTransactions(null, null, null, null))
+        .isInstanceOf(InvalidTransactionPayloadException.class)
+        .hasMessage("transaction user id is required");
+
+    verifyNoInteractions(transactionRepository);
+  }
 
   @Test
   void getBalanceShouldReturnIncomingMinusExpensesWithinRequestedPeriodTest() {
