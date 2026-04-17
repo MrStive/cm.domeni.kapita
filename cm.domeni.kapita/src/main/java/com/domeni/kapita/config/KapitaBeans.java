@@ -12,6 +12,9 @@ import com.domeni.kapita.domain.demo.DemoFetcher;
 import com.domeni.kapita.domain.demo.DemoRepository;
 import com.domeni.kapita.domain.demo.impl.DemoFactoryImpl;
 import com.domeni.kapita.domain.demo.impl.DemoFetcherImpl;
+import com.domeni.kapita.domain.subscriptionplan.SubscriptionPlanFactory;
+import com.domeni.kapita.domain.subscriptionplan.SubscriptionPlanRepository;
+import com.domeni.kapita.domain.subscriptionplan.impl.SubscriptionPlanFactoryImpl;
 import com.domeni.kapita.domain.transaction.TransactionFactory;
 import com.domeni.kapita.domain.transaction.TransactionFetcher;
 import com.domeni.kapita.domain.transaction.TransactionRepository;
@@ -22,10 +25,12 @@ import com.domeni.kapita.domain.user.UserRepository;
 import com.domeni.kapita.domain.user.impl.UserFactoryImpl;
 import com.domeni.kapita.repositories.DebtSpringRepository;
 import com.domeni.kapita.repositories.DemoSpringRepository;
+import com.domeni.kapita.repositories.SubscriptionPlanSpringRepository;
 import com.domeni.kapita.repositories.TransactionSpringRepository;
 import com.domeni.kapita.repositories.UserSpringRepository;
 import com.domeni.kapita.repositories.impl.DebtRepositoryImpl;
 import com.domeni.kapita.repositories.impl.DemoRepositoryImpl;
+import com.domeni.kapita.repositories.impl.SubscriptionPlanRepositoryImpl;
 import com.domeni.kapita.repositories.impl.TransactionRepositoryImpl;
 import com.domeni.kapita.repositories.impl.UserRepositoryImpl;
 import java.time.Clock;
@@ -86,6 +91,18 @@ public class KapitaBeans {
   @Bean
   public DebtRepository debtRepository(DebtSpringRepository debtSpringRepository) {
     return new DebtRepositoryImpl(debtSpringRepository);
+  }
+
+  @Bean
+  public SubscriptionPlanFactory subscriptionPlanFactory(
+      SubscriptionPlanRepository subscriptionPlanRepository, Clock systemClock) {
+    return new SubscriptionPlanFactoryImpl(subscriptionPlanRepository, systemClock);
+  }
+
+  @Bean
+  public SubscriptionPlanRepository subscriptionPlanRepository(
+      SubscriptionPlanSpringRepository subscriptionPlanSpringRepository) {
+    return new SubscriptionPlanRepositoryImpl(subscriptionPlanSpringRepository);
   }
 
   @Bean
