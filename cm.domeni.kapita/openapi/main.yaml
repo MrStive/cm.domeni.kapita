@@ -12,6 +12,8 @@ tags:
   description: "Demo operations"
 - name: "Debt"
   description: "Debt operations"
+- name: "SubscriptionPlan"
+  description: "Subscription plan operations"
 - name: "Transaction"
   description: "Transaction operations"
 paths:
@@ -232,6 +234,28 @@ paths:
                 $ref: "#/components/schemas/DebtDTO"
         "404":
           description: "KAPITA-404-002"
+  /subscription-plan:
+    post:
+      tags:
+      - "SubscriptionPlan"
+      summary: "Create a new subscription plan"
+      description: "Create a new subscription plan"
+      operationId: "createSubscriptionPlan"
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateSubscriptionPlanDTO"
+      responses:
+        "201":
+          description: "successful operation"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreationResponseDTO"
   /transaction/balance:
     get:
       tags:
@@ -321,6 +345,7 @@ components:
             transaction:read:amount: "Needed when to fetch the current user transaction amount over a period for one type"
             debt:create: "Needed when to create a new debt"
             debt:read: "Needed when to fetch current user debts by type"
+            subscription-plan:create: "Needed when to create a new subscription plan"
   schemas:
     DemoDTO:
       type: "object"
@@ -431,6 +456,35 @@ components:
         totalPages:
           type: "integer"
           format: "int32"
+    SubscriptionPlanStatusDTO:
+      type: "string"
+      enum:
+      - "ACTIVE"
+      - "INACTIVE"
+    SubscriptionPlanDurationUnitDTO:
+      type: "string"
+      enum:
+      - "WEEK"
+      - "MONTH"
+      - "YEAR"
+    CreateSubscriptionPlanDTO:
+      type: "object"
+      required:
+      - "status"
+      - "durationValue"
+      - "durationUnit"
+      - "price"
+      properties:
+        status:
+          $ref: "#/components/schemas/SubscriptionPlanStatusDTO"
+        durationValue:
+          type: "integer"
+          format: "int32"
+          minimum: 1
+        durationUnit:
+          $ref: "#/components/schemas/SubscriptionPlanDurationUnitDTO"
+        price:
+          $ref: "#/components/schemas/MoneyDTO"
     TransactionTypeDTO:
       type: "string"
       enum:

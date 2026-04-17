@@ -72,4 +72,73 @@
 			</column>
 		</createTable>
 	</changeSet>
+	<changeSet id="kapita-8:1" author="domeni.ngameni">
+		<createTable tableName="t_debt">
+			<column name="c_id" type="varchar(36)">
+				<constraints nullable="false" primaryKey="true"
+					primaryKeyName="pk_t_debt" />
+			</column>
+			<column name="c_type" type="varchar(32)">
+				<constraints nullable="false" />
+			</column>
+			<column name="c_counterparty_name" type="varchar(255)">
+				<constraints nullable="false" />
+			</column>
+			<column name="c_amount" type="numeric(19,2)">
+				<constraints nullable="false" />
+			</column>
+			<column name="c_currency" type="varchar(3)">
+				<constraints nullable="false" />
+			</column>
+			<column name="c_due_date" type="date">
+				<constraints nullable="false" />
+			</column>
+			<column name="c_status" type="varchar(32)">
+				<constraints nullable="false" />
+			</column>
+			<column name="c_user_id" type="varchar(36)">
+				<constraints nullable="false" />
+			</column>
+			<column name="c_created_at" type="timestamp">
+				<constraints nullable="false" />
+			</column>
+			<column name="c_version" type="bigint" defaultValueNumeric="0">
+				<constraints nullable="false" />
+			</column>
+			<column name="c_deleted" type="boolean"
+				defaultValueBoolean="false">
+				<constraints nullable="false" />
+			</column>
+		</createTable>
+	</changeSet>
+	<changeSet id="kapita-12:1" author="domeni.ngameni">
+		<createTable tableName="t_subscription_plan">
+			<column name="c_id" type="varchar(36)">
+				<constraints nullable="false" primaryKey="true"
+					primaryKeyName="pk_t_subscription_plan" />
+			</column>
+			<column name="c_status" type="varchar(32)">
+				<constraints nullable="false" />
+			</column>
+			<column name="c_duration_value" type="integer">
+				<constraints nullable="false" />
+			</column>
+			<column name="c_duration_unit" type="varchar(16)">
+				<constraints nullable="false" />
+			</column>
+			<column name="c_price" type="varchar(64)">
+				<constraints nullable="false" />
+			</column>
+			<column name="c_created_at" type="timestamp">
+				<constraints nullable="false" />
+			</column>
+			<column name="c_version" type="bigint" defaultValueNumeric="0">
+				<constraints nullable="false" />
+			</column>
+			<column name="c_deleted" type="boolean"
+				defaultValueBoolean="false">
+				<constraints nullable="false" />
+			</column>
+		</createTable>
+	</changeSet>
 </databaseChangeLog>
