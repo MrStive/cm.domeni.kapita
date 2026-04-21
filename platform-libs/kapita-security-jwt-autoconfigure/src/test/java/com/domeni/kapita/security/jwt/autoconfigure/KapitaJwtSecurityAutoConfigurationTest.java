@@ -29,6 +29,20 @@ class KapitaJwtSecurityAutoConfigurationTest {
   }
 
   @Test
+  void createsJwtDecoderWhenJwkSetConfigurationIsPresent() {
+    contextRunner
+        .withPropertyValues(
+            "kapita.security.jwt.issuer=http://issuer.local",
+            "kapita.security.jwt.audience=kapita-api",
+            "kapita.security.jwt.jwk-set-uri=http://issuer.local/protocol/openid-connect/certs")
+        .run(
+            context -> {
+              assertThat(context).hasSingleBean(JwtDecoder.class);
+              assertThat(context).hasSingleBean(CurrentUserProvider.class);
+            });
+  }
+
+  @Test
   void doesNotCreateJwtDecoderWhenRequiredPropertiesAreMissing() {
     contextRunner
         .withPropertyValues("kapita.security.jwt.issuer=http://issuer.local")

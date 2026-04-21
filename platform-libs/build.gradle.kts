@@ -8,7 +8,7 @@ import java.net.URI
 val kapitaPlatformVersion =
     providers.gradleProperty("kapitaPlatformVersion")
         .orElse(providers.environmentVariable("KAPITA_PLATFORM_VERSION"))
-        .orElse("0.1.0-SNAPSHOT")
+        .orElse("0.1.2-SNAPSHOT")
         .get()
 
 allprojects {

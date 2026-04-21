@@ -37,7 +37,7 @@ public class KapitaJwtSecurityAutoConfiguration {
   @ConditionalOnProperty(
       prefix = "kapita.security.jwt",
       name = {"issuer", "audience", "public-key-location"})
-  public JwtDecoder jwtDecoder(KapitaJwtSecurityProperties properties) throws IOException {
+  public JwtDecoder jwtDecoderFromPublicKey(KapitaJwtSecurityProperties properties) throws IOException {
     Assert.hasText(properties.getIssuer(), "kapita.security.jwt.issuer is required");
     Assert.hasText(properties.getAudience(), "kapita.security.jwt.audience is required");
     Assert.notNull(properties.getPublicKeyLocation(), "kapita.security.jwt.public-key-location is required");
@@ -48,11 +48,28 @@ public class KapitaJwtSecurityAutoConfiguration {
     }
 
     NimbusJwtDecoder jwtDecoder = NimbusJwtDecoder.withPublicKey(publicKey).build();
+    jwtDecoder.setJwtValidator(tokenValidator(properties));
+    return jwtDecoder;
+  }
+
+  @Bean
+  @ConditionalOnMissingBean(JwtDecoder.class)
+  @ConditionalOnProperty(prefix = "kapita.security.jwt", name = {"issuer", "audience", "jwk-set-uri"})
+  public JwtDecoder jwtDecoderFromJwkSetUri(KapitaJwtSecurityProperties properties) {
+    Assert.hasText(properties.getIssuer(), "kapita.security.jwt.issuer is required");
+    Assert.hasText(properties.getAudience(), "kapita.security.jwt.audience is required");
+    Assert.hasText(properties.getJwkSetUri(), "kapita.security.jwt.jwk-set-uri is required");
+
+    NimbusJwtDecoder jwtDecoder = NimbusJwtDecoder.withJwkSetUri(properties.getJwkSetUri()).build();
+    jwtDecoder.setJwtValidator(tokenValidator(properties));
+    return jwtDecoder;
+  }
+
+  private OAuth2TokenValidator<Jwt> tokenValidator(KapitaJwtSecurityProperties properties) {
     OAuth2TokenValidator<Jwt> withIssuer = JwtValidators.createDefaultWithIssuer(properties.getIssuer());
     OAuth2TokenValidator<Jwt> withAudience =
         new JwtClaimValidator<List<String>>(
             "aud", audiences -> audiences != null && audiences.contains(properties.getAudience()));
-    jwtDecoder.setJwtValidator(new DelegatingOAuth2TokenValidator<>(withIssuer, withAudience));
-    return jwtDecoder;
+    return new DelegatingOAuth2TokenValidator<>(withIssuer, withAudience);
   }
 }

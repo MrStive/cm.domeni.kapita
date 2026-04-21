@@ -1,5 +1,10 @@
 ---
 spring:
+  cloud:
+    config:
+      enabled: false
+      import-check:
+        enabled: false
   datasource:
     url: "jdbc:h2:mem:kapita-test-db;MODE=PostgreSQL;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false"
     username: "sa"
@@ -17,6 +22,9 @@ spring:
     enabled: true
     change-log: "classpath:db/changelog/db.changelog-master.xml"
     contexts: "test"
+eureka:
+  client:
+    enabled: false
 kapita:
   security:
     expose-docs: true
