@@ -24,9 +24,11 @@ class UserCreatedEventConsumerTest {
   void handleUserCreatedEventShouldDispatchAndAckTest() {
     byte[] raw = "{}".getBytes();
 
-    consumer.handleUserCreatedEvent(raw, "user-created", 0, 10L, acknowledgment);
+    consumer.handleUserCreatedEvent(raw, "authentis.user.created", 0, 10L, acknowledgment);
 
-    then(kafkaInboundConsumer).should().consume(raw, "user-created", 0, 10L, acknowledgment);
+    then(kafkaInboundConsumer)
+        .should()
+        .consume(raw, "authentis.user.created", 0, 10L, acknowledgment);
   }
 
   @Test
@@ -34,11 +36,12 @@ class UserCreatedEventConsumerTest {
     byte[] raw = "{}".getBytes();
     org.mockito.Mockito.doThrow(new RuntimeException("boom"))
         .when(kafkaInboundConsumer)
-        .consume(raw, "user-created", 0, 10L, acknowledgment);
+        .consume(raw, "authentis.user.created", 0, 10L, acknowledgment);
 
     assertThrows(
         RuntimeException.class,
-        () -> consumer.handleUserCreatedEvent(raw, "user-created", 0, 10L, acknowledgment));
+        () ->
+            consumer.handleUserCreatedEvent(raw, "authentis.user.created", 0, 10L, acknowledgment));
 
     verifyNoInteractions(acknowledgment);
   }

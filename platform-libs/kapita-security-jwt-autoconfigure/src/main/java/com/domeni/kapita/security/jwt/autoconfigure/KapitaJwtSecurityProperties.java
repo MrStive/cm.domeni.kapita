@@ -9,6 +9,7 @@ public class KapitaJwtSecurityProperties {
   private String issuer;
   private String audience;
   private Resource publicKeyLocation;
+  private String jwkSetUri;
 
   public String getIssuer() {
     return issuer;
@@ -32,5 +33,13 @@ public class KapitaJwtSecurityProperties {
 
   public void setPublicKeyLocation(Resource publicKeyLocation) {
     this.publicKeyLocation = publicKeyLocation;
+  }
+
+  public String getJwkSetUri() {
+    return jwkSetUri;
+  }
+
+  public void setJwkSetUri(String jwkSetUri) {
+    this.jwkSetUri = jwkSetUri;
   }
 }

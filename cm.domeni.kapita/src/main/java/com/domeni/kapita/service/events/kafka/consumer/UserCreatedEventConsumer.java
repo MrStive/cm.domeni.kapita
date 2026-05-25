@@ -17,7 +17,7 @@ public class UserCreatedEventConsumer {
   private final KafkaInboundConsumer kafkaInboundConsumer;
 
   @KafkaListener(
-      topics = "${kapita.messaging.user-created.topic:user-created}",
+      topics = "${kapita.messaging.user-created.topic:authentis.user.created}",
       groupId = "${spring.kafka.consumer.group-id:kapita-service}",
       containerFactory = KafkaInboundBeanNames.LISTENER_CONTAINER_FACTORY)
   public void handleUserCreatedEvent(

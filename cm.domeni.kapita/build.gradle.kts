@@ -31,7 +31,7 @@ val kapitaPlatformVersion =
     providers
         .gradleProperty("kapitaPlatformVersion")
         .orElse(providers.environmentVariable("KAPITA_PLATFORM_VERSION"))
-        .orElse("0.1.1-SNAPSHOT")
+        .orElse("0.1.2-SNAPSHOT")
         .get()
 
 val nexusMavenPublicUrl =
@@ -149,6 +149,7 @@ dependencies {
     testAnnotationProcessor("org.projectlombok:lombok:$lombokVersion")
     // Cloud
     implementation("org.springframework.cloud:spring-cloud-starter-config")
+    implementation("org.springframework.cloud:spring-cloud-starter-netflix-eureka-client")
 
     // Mapstruct
     implementation("org.mapstruct:mapstruct:$mapstructVersion")
