@@ -15,6 +15,7 @@ import com.domeni.kapita.domain.exception.InvalidDebtPayloadException;
 import com.domeni.kapita.domain.user.UserId;
 import com.domeni.kapita.security.jwt.CurrentUserProvider;
 import com.domeni.kapita.service.DebtService;
+import com.domeni.kapita.service.mapper.DebtMapper;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +46,7 @@ class DebtApiExceptionHandlerTest {
 
   @MockitoBean private CurrentUserProvider currentUserProvider;
   @MockitoBean private DebtService debtService;
+  @MockitoBean private DebtMapper debtMapper;
 
   @Test
   void createDebtWhenPayloadIsInvalidShouldReturnValidationPayloadTest() throws Exception {

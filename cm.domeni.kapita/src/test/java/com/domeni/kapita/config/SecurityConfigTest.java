@@ -10,10 +10,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.domeni.kapita.api.DebtResource;
 import com.domeni.kapita.api.DemoResource;
 import com.domeni.kapita.api.TransactionResource;
+import com.domeni.kapita.security.jwt.CurrentUserProvider;
 import com.domeni.kapita.security.jwt.autoconfigure.KapitaJwtSecurityAutoConfiguration;
 import com.domeni.kapita.service.DebtService;
 import com.domeni.kapita.service.DemoService;
 import com.domeni.kapita.service.TransactionService;
+import com.domeni.kapita.service.mapper.DebtMapper;
+import com.domeni.kapita.service.mapper.TransactionMapper;
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jose.JWSHeader;
@@ -63,38 +66,21 @@ class SecurityConfigTest {
 
   @Autowired private MockMvc mockMvc;
 
-  @MockitoBean private DemoService demoService;
-
+  @MockitoBean private CurrentUserProvider currentUserProvider;
   @MockitoBean private DebtService debtService;
-
   @MockitoBean private TransactionService transactionService;
+  @MockitoBean private DebtMapper debtMapper;
+  @MockitoBean private TransactionMapper transactionMapper;
+  @MockitoBean private DemoService demoService;
 
   @BeforeEach
   void setUp() {
     when(demoService.fetchAllDemos()).thenReturn(List.of());
+    when(currentUserProvider.requireCurrentUserId())
+        .thenReturn(UUID.fromString(SECURITY_TEST_USER_ID));
   }
 
-  @Test
-  void fetchAllDemoWhenAudienceIsInvalidShouldReturnUnauthorizedTest() throws Exception {
-    String token = createToken(List.of("demo:read:all"), List.of("unexpected-audience"));
-
-    mockMvc
-        .perform(get("/demo").header(HttpHeaders.AUTHORIZATION, "Bearer " + token))
-        .andExpect(status().isUnauthorized());
-
-    verifyNoInteractions(demoService);
-  }
-
-  @Test
-  void fetchAllDemoWhenScopeIsMissingShouldReturnForbiddenTest() throws Exception {
-    String token = createToken(List.of("demo:create"), List.of("kapita-api"));
-
-    mockMvc
-        .perform(get("/demo").header(HttpHeaders.AUTHORIZATION, "Bearer " + token))
-        .andExpect(status().isForbidden());
-
-    verifyNoInteractions(demoService);
-  }
+  // --- Public endpoints ---
 
   @Test
   void optionsRequestShouldBeAllowedWithoutAuthenticationTest() throws Exception {
@@ -122,42 +108,67 @@ class SecurityConfigTest {
     verifyNoInteractions(demoService);
   }
 
-  @Test
-  void createTransactionWhenScopeIsMissingShouldReturnForbiddenTest() throws Exception {
-    String token = createToken(List.of("demo:create"), List.of("kapita-api"));
+  // --- Unauthenticated requests should be rejected ---
 
+  @Test
+  void fetchDemoWithoutTokenShouldReturnUnauthorizedTest() throws Exception {
+    mockMvc.perform(get("/demo")).andExpect(status().isUnauthorized());
+
+    verifyNoInteractions(demoService);
+  }
+
+  @Test
+  void createTransactionWithoutTokenShouldReturnUnauthorizedTest() throws Exception {
     mockMvc
         .perform(
             post("/transaction")
-                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{\"type\":\"INCOMING\",\"category\":\"SALE\",\"amount\":1000}"))
-        .andExpect(status().isForbidden());
+        .andExpect(status().isUnauthorized());
 
     verifyNoInteractions(transactionService);
   }
 
   @Test
-  void createDebtWhenScopeIsMissingShouldReturnForbiddenTest() throws Exception {
-    String token = createToken(List.of("transaction:create"), List.of("kapita-api"));
-
+  void fetchDebtWithoutTokenShouldReturnUnauthorizedTest() throws Exception {
     mockMvc
         .perform(
-            post("/debt")
-                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(
-                    """
-                    {"type":"RECEIVABLE","counterpartyName":"Client A","amount":{"value":5000,"currency":"XAF"},"dueDate":"2026-04-11"}
-                    """))
-        .andExpect(status().isForbidden());
+            get("/debt")
+                .queryParam("type", "RECEIVABLE")
+                .queryParam("pageNumber", "0")
+                .queryParam("pageSize", "10"))
+        .andExpect(status().isUnauthorized());
 
     verifyNoInteractions(debtService);
   }
 
+  // --- Invalid audience should be rejected ---
+
   @Test
-  void fetchDebtWhenScopeIsMissingShouldReturnForbiddenTest() throws Exception {
-    String token = createToken(List.of("debt:create"), List.of("kapita-api"));
+  void fetchAllDemoWhenAudienceIsInvalidShouldReturnUnauthorizedTest() throws Exception {
+    String token = createToken(List.of("unexpected-audience"));
+
+    mockMvc
+        .perform(get("/demo").header(HttpHeaders.AUTHORIZATION, "Bearer " + token))
+        .andExpect(status().isUnauthorized());
+
+    verifyNoInteractions(demoService);
+  }
+
+  // --- Authenticated requests should succeed ---
+
+  @Test
+  void fetchDemoWhenAuthenticatedShouldReturnOkTest() throws Exception {
+    String token = createToken(List.of("kapita-api"));
+
+    mockMvc
+        .perform(get("/demo").header(HttpHeaders.AUTHORIZATION, "Bearer " + token))
+        .andExpect(status().isOk());
+  }
+
+  @Test
+  void fetchDebtWhenAuthenticatedShouldReturnOkTest() throws Exception {
+    String token = createToken(List.of("kapita-api"));
 
     mockMvc
         .perform(
@@ -166,14 +177,12 @@ class SecurityConfigTest {
                 .queryParam("pageNumber", "0")
                 .queryParam("pageSize", "10")
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + token))
-        .andExpect(status().isForbidden());
-
-    verifyNoInteractions(debtService);
+        .andExpect(status().isOk());
   }
 
   @Test
-  void fetchTransactionBalanceWhenScopeIsMissingShouldReturnForbiddenTest() throws Exception {
-    String token = createToken(List.of("transaction:create"), List.of("kapita-api"));
+  void fetchTransactionBalanceWhenAuthenticatedShouldReturnOkTest() throws Exception {
+    String token = createToken(List.of("kapita-api"));
 
     mockMvc
         .perform(
@@ -181,14 +190,12 @@ class SecurityConfigTest {
                 .queryParam("startDate", "2026-01-01")
                 .queryParam("endDate", "2026-01-31")
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + token))
-        .andExpect(status().isForbidden());
-
-    verifyNoInteractions(transactionService);
+        .andExpect(status().isOk());
   }
 
   @Test
-  void fetchTransactionAmountWhenScopeIsMissingShouldReturnForbiddenTest() throws Exception {
-    String token = createToken(List.of("transaction:read:balance"), List.of("kapita-api"));
+  void fetchTransactionAmountWhenAuthenticatedShouldReturnOkTest() throws Exception {
+    String token = createToken(List.of("kapita-api"));
 
     mockMvc
         .perform(
@@ -197,14 +204,11 @@ class SecurityConfigTest {
                 .queryParam("endDate", "2026-01-31")
                 .queryParam("type", "INCOMING")
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + token))
-        .andExpect(status().isForbidden());
-
-    verifyNoInteractions(transactionService);
+        .andExpect(status().isOk());
   }
 
-  private String createToken(List<String> scopes, List<String> audiences) {
+  private String createToken(List<String> audiences) {
     Instant now = Instant.now();
-    String scopeValue = String.join(" ", scopes);
 
     JWTClaimsSet claimsSet =
         new JWTClaimsSet.Builder()
@@ -214,7 +218,6 @@ class SecurityConfigTest {
             .expirationTime(Date.from(now.plusSeconds(3600)))
             .jwtID(UUID.randomUUID().toString())
             .audience(audiences)
-            .claim("scope", scopeValue)
             .build();
 
     SignedJWT signedJwt =

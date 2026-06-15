@@ -1,0 +1,243 @@
+---
+openapi: "3.0.3"
+info:
+  title: "kapita-payment"
+  description: "REST API endpoints for kapita payment"
+  version: "v-000"
+servers:
+  - url: "https"
+  - url: "http"
+tags:
+  - name: "Demo"
+    description: "Demo operations"
+  - name: "Payment"
+    description: "Payment operations"
+paths:
+  /demo:
+    get:
+      tags:
+        - "Demo"
+      summary: "Fetch all Demos"
+      description: "Fetch all Demos"
+      operationId: "fetchAllDemo"
+      security:
+        - oAuth:
+            - "demo:read:all"
+      responses:
+        "200":
+          description: "successful operation"
+          content:
+            application/json:
+              schema:
+                type: "array"
+                items:
+                  $ref: "#/components/schemas/DemoDTO"
+    post:
+      tags:
+        - "Demo"
+      summary: "Create a new Demo"
+      description: "Create a new Demo"
+      operationId: "createDemo"
+      security:
+        - oAuth:
+            - "demo:create"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateDemoDTO"
+      responses:
+        "201":
+          description: "successful operation"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreationResponseDTO"
+  /demo/{demoId}:
+    get:
+      tags:
+        - "Demo"
+      summary: "Fetch demo by id"
+      description: "Fetch demo by id"
+      operationId: "fetchDemoById"
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: "demoId"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+            format: "uuid"
+          description: "represents the id of demo to fetch."
+      responses:
+        "200":
+          description: "successful operation"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DemoDTO"
+        "404":
+          description: "KAPITA-404-001"
+  /payment:
+    post:
+      tags:
+        - "Payment"
+      summary: "Initiate a payment"
+      description: "Initiate a payment"
+      operationId: "initiatePayment"
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/InitiatePaymentDTO"
+      responses:
+        "201":
+          description: "successful operation"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaymentResponseDTO"
+  /monetbil/webhook/{providerTransactionId}:
+    post:
+      tags:
+        - "Payment"
+      summary: "Handle Monetbil webhook notification"
+      description: "Receives server-to-server notifications from Monetbil"
+      operationId: "handleMonetbilWebhook"
+      parameters:
+        - name: "providerTransactionId"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+            format: "uuid"
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                amount:
+                  type: string
+                currency:
+                  type: string
+                sign:
+                  type: string
+              additionalProperties:
+                type: string
+      responses:
+        "200":
+          description: "successful operation"
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "received"
+components:
+  securitySchemes:
+    bearerAuth:
+      type: "http"
+      scheme: "bearer"
+      bearerFormat: "JWT"
+    oAuth:
+      type: "oauth2"
+      description: "This API uses OAuth 2 with the Authorization Code grant flow."
+      flows:
+        authorizationCode:
+          authorizationUrl: ""
+          tokenUrl: ""
+          scopes:
+            demo:read:all: "Needed to fetch all Demo objects"
+            demo:create: "Needed when to create a new Demo object"
+            payment:initiate: "Needed when to initiate a payment"
+  schemas:
+    DemoDTO:
+      type: "object"
+      required:
+        - "id"
+        - "name"
+      properties:
+        id:
+          type: "string"
+          format: "uuid"
+        name:
+          type: "string"
+    CreateDemoDTO:
+      type: "object"
+      required:
+        - "name"
+      properties:
+        name:
+          type: "string"
+    CreationResponseDTO:
+      type: "object"
+      required:
+        - "newId"
+      properties:
+        newId:
+          type: "string"
+          format: "uuid"
+    InitiatePaymentDTO:
+      type: "object"
+      required:
+        - "externalReference"
+        - "purpose"
+        - "money"
+        - "description"
+        - "phoneNumber"
+        - "provider"
+        - "idempotencyKey"
+      properties:
+        externalReference:
+          type: "string"
+        purpose:
+          type: "string"
+          enum: ["SUBSCRIPTION_PAYMENT"]
+        money:
+          $ref: "#/components/schemas/MoneyDTO"
+        description:
+          type: "string"
+        phoneNumber:
+          type: "string"
+        provider:
+          type: "string"
+          enum: ["MONETBIL"]
+        idempotencyKey:
+          type: "string"
+        returnUrl:
+          type: "string"
+    MoneyDTO:
+      type: "object"
+      required:
+        - "amount"
+        - "currency"
+      properties:
+        amount:
+          type: "number"
+          format: "decimal"
+        currency:
+          type: "string"
+    PaymentResponseDTO:
+      type: "object"
+      required:
+        - "paymentId"
+        - "externalReference"
+        - "status"
+      properties:
+        paymentId:
+          type: "string"
+          format: "uuid"
+        externalReference:
+          type: "string"
+        status:
+          type: "string"
+        paymentUrl:
+          type: "string"

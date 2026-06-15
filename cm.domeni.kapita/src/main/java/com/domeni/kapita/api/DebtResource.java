@@ -9,6 +9,7 @@ import cm.domeni.generated.domeni.kapita.dto.DebtTypeDTO;
 import com.domeni.kapita.domain.user.UserId;
 import com.domeni.kapita.security.jwt.CurrentUserProvider;
 import com.domeni.kapita.service.DebtService;
+import com.domeni.kapita.service.mapper.DebtMapper;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -20,23 +21,25 @@ import org.springframework.web.bind.annotation.RestController;
 public class DebtResource implements DebtApi {
   private final CurrentUserProvider currentUserProvider;
   private final DebtService debtService;
+  private final DebtMapper debtMapper;
 
   @Override
   public ResponseEntity<DebtPageDTO> fetchDebtsByType(
       DebtTypeDTO type, Integer pageNumber, Integer pageSize) {
     return ResponseEntity.ok(
-        debtService.getDebtsByType(
-            type == null ? null : com.domeni.kapita.domain.debt.DebtType.valueOf(type.getValue()),
-            pageNumber,
-            pageSize,
-            new UserId(currentUserProvider.requireCurrentUserId())));
+        debtMapper.map(
+            debtService.getDebtsByType(
+                debtMapper.map(type),
+                pageNumber,
+                pageSize,
+                new UserId(currentUserProvider.requireCurrentUserId()))));
   }
 
   @Override
   public ResponseEntity<CreationResponseDTO> createDebt(CreateDebtDTO createDebtDTO) {
     UUID createdDebtId =
         debtService.createDebt(
-            createDebtDTO, new UserId(currentUserProvider.requireCurrentUserId()));
+            debtMapper.map(createDebtDTO), new UserId(currentUserProvider.requireCurrentUserId()));
     return ResponseEntity.status(HttpStatus.CREATED)
         .body(new CreationResponseDTO().newId(createdDebtId));
   }
@@ -44,6 +47,8 @@ public class DebtResource implements DebtApi {
   @Override
   public ResponseEntity<DebtDTO> markDebtAsPaid(UUID debtId) {
     return ResponseEntity.ok(
-        debtService.markDebtAsPaid(debtId, new UserId(currentUserProvider.requireCurrentUserId())));
+        debtMapper.map(
+            debtService.markDebtAsPaid(
+                debtId, new UserId(currentUserProvider.requireCurrentUserId()))));
   }
 }

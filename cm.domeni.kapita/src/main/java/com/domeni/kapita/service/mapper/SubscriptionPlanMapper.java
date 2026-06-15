@@ -2,6 +2,8 @@ package com.domeni.kapita.service.mapper;
 
 import cm.domeni.generated.domeni.kapita.dto.CreateSubscriptionPlanDTO;
 import cm.domeni.generated.domeni.kapita.dto.MoneyDTO;
+import cm.domeni.generated.domeni.kapita.dto.SubscriptionResponseDTO;
+import com.domeni.kapita.domain.payment.PaymentResponse;
 import com.domeni.kapita.domain.subscriptionplan.SubscriptionPlanData;
 import java.util.Optional;
 import javax.money.MonetaryAmount;
@@ -19,6 +21,10 @@ public interface SubscriptionPlanMapper {
   @Mapping(target = "durationUnit", source = "durationUnit")
   @Mapping(target = "price", source = "price")
   SubscriptionPlanData map(CreateSubscriptionPlanDTO subscriptionPlanDTO);
+
+  @Mapping(target = "transactionId", source = "paymentId")
+  @Mapping(target = "paymentUrl", source = "paymentUrl")
+  SubscriptionResponseDTO map(PaymentResponse paymentResponse);
 
   default MonetaryAmount map(MoneyDTO value) {
     return Optional.ofNullable(value)

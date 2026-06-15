@@ -141,4 +141,34 @@
 			</column>
 		</createTable>
 	</changeSet>
+	<changeSet id="kapita-14:1" author="domeni.ngameni">
+		<createTable tableName="t_subscription">
+			<column name="c_id" type="varchar(36)">
+				<constraints nullable="false" primaryKey="true"
+					primaryKeyName="pk_t_subscription" />
+			</column>
+			<column name="c_user_id" type="varchar(36)">
+				<constraints nullable="false" />
+			</column>
+			<column name="c_plan_id" type="varchar(36)">
+				<constraints nullable="false" />
+			</column>
+			<column name="c_status" type="varchar(32)">
+				<constraints nullable="false" />
+			</column>
+			<column name="c_payment_transaction_id" type="varchar(36)" />
+			<column name="c_start_date" type="timestamp" />
+			<column name="c_end_date" type="timestamp" />
+			<column name="c_created_at" type="timestamp">
+				<constraints nullable="false" />
+			</column>
+			<column name="c_version" type="bigint" defaultValueNumeric="0">
+				<constraints nullable="false" />
+			</column>
+			<column name="c_deleted" type="boolean"
+				defaultValueBoolean="false">
+				<constraints nullable="false" />
+			</column>
+		</createTable>
+	</changeSet>
 </databaseChangeLog>

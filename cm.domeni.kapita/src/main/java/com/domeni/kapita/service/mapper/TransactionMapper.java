@@ -4,10 +4,12 @@ import cm.domeni.generated.domeni.kapita.dto.CreateTransactionDTO;
 import cm.domeni.generated.domeni.kapita.dto.MoneyDTO;
 import cm.domeni.generated.domeni.kapita.dto.TransactionDTO;
 import cm.domeni.generated.domeni.kapita.dto.TransactionPageDTO;
+import cm.domeni.generated.domeni.kapita.dto.TransactionTypeDTO;
 import com.domeni.kapita.domain.transaction.Transaction;
 import com.domeni.kapita.domain.transaction.TransactionData;
 import com.domeni.kapita.domain.transaction.TransactionId;
 import com.domeni.kapita.domain.transaction.TransactionPage;
+import com.domeni.kapita.domain.transaction.TransactionType;
 import java.math.BigDecimal;
 import java.util.Optional;
 import java.util.UUID;
@@ -17,6 +19,7 @@ import org.mapstruct.BeanMapping;
 import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.ValueMapping;
 
 @Mapper(componentModel = "spring", injectionStrategy = InjectionStrategy.CONSTRUCTOR)
 public interface TransactionMapper {
@@ -45,6 +48,10 @@ public interface TransactionMapper {
   @Mapping(target = "totalElements", source = "totalElements")
   @Mapping(target = "totalPages", source = "totalPages")
   TransactionPageDTO map(TransactionPage value);
+
+  @ValueMapping(source = "INCOMING", target = "INCOMING")
+  @ValueMapping(source = "EXPENSE", target = "EXPENSE")
+  TransactionType map(TransactionTypeDTO type);
 
   default MoneyDTO map(MonetaryAmount value) {
     return Optional.ofNullable(value)
