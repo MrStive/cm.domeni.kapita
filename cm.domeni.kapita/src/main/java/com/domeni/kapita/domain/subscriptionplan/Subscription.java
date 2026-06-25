@@ -18,6 +18,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.FieldNameConstants;
+import org.springframework.lang.Nullable;
 
 @FieldNameConstants
 @Getter
@@ -36,7 +37,8 @@ public class Subscription extends SoftDeleteJpaEntity<SubscriptionId> {
   private UserId userId;
 
   @Embedded
-  @AttributeOverride(name = "value", column = @Column(name = "c_plan_id", nullable = false))
+  @AttributeOverride(name = "value", column = @Column(name = "c_plan_id"))
+  @Nullable
   private SubscriptionPlanId planId;
 
   @Enumerated(EnumType.STRING)
@@ -52,6 +54,10 @@ public class Subscription extends SoftDeleteJpaEntity<SubscriptionId> {
   @Column(name = "c_end_date")
   private LocalDateTime endDate;
 
+  @Column(name = "c_trial_end_date")
+  @Nullable
+  private LocalDateTime trialEndDate;
+
   @Column(name = "c_created_at", nullable = false)
   private LocalDateTime createdAt;
 
@@ -59,11 +65,12 @@ public class Subscription extends SoftDeleteJpaEntity<SubscriptionId> {
   public Subscription(
       SubscriptionId id,
       UserId userId,
-      SubscriptionPlanId planId,
+      @Nullable SubscriptionPlanId planId,
       SubscriptionStatus status,
       UUID paymentTransactionId,
       LocalDateTime startDate,
       LocalDateTime endDate,
+      @Nullable LocalDateTime trialEndDate,
       LocalDateTime createdAt) {
     this.id = id != null ? id : new SubscriptionId();
     this.userId = userId;
@@ -72,6 +79,7 @@ public class Subscription extends SoftDeleteJpaEntity<SubscriptionId> {
     this.paymentTransactionId = paymentTransactionId;
     this.startDate = startDate;
     this.endDate = endDate;
+    this.trialEndDate = trialEndDate;
     this.createdAt = createdAt == null ? LocalDateTime.now() : createdAt;
   }
 

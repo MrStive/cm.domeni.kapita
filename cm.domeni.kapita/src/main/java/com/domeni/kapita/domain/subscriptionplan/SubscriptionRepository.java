@@ -11,4 +11,6 @@ public interface SubscriptionRepository {
 
   Optional<Subscription> findByUserIdAndPlanIdAndStatus(
       UserId userId, SubscriptionPlanId planId, SubscriptionStatus status);
+
+  Optional<Subscription> findByUserId(UserId userId);
 }

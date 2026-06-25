@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+	<changeSet id="kapita-16:1" author="domeni.ngameni">
+		<addColumn tableName="t_subscription">
+			<column name="c_trial_end_date" type="timestamp" />
+		</addColumn>
+	</changeSet>
+
+	<changeSet id="kapita-16:2" author="domeni.ngameni">
+		<dropNotNullConstraint tableName="t_subscription"
+			columnName="c_plan_id" columnDataType="varchar(36)" />
+	</changeSet>
+
+</databaseChangeLog>

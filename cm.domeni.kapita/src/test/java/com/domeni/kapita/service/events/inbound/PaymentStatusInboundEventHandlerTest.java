@@ -4,9 +4,11 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.never;
 
+import com.domeni.kapita.domain.cache.SubscriptionStatusCache;
 import com.domeni.kapita.domain.payment.PaymentStatus;
 import com.domeni.kapita.domain.subscriptionplan.Subscription;
 import com.domeni.kapita.domain.subscriptionplan.SubscriptionFetcher;
+import com.domeni.kapita.domain.user.UserId;
 import com.domeni.kapita.domain.subscriptionplan.SubscriptionPlan;
 import com.domeni.kapita.domain.subscriptionplan.SubscriptionPlanDurationUnit;
 import com.domeni.kapita.domain.subscriptionplan.SubscriptionPlanFetcher;
@@ -33,6 +35,7 @@ class PaymentStatusInboundEventHandlerTest {
   @Mock private SubscriptionFetcher subscriptionFetcher;
   @Mock private SubscriptionPlanFetcher subscriptionPlanFetcher;
   @Mock private SubscriptionUpdater subscriptionUpdater;
+  @Mock private SubscriptionStatusCache subscriptionStatusCache;
 
   private final Clock clock = Clock.fixed(Instant.parse("2026-06-25T10:00:00Z"), ZoneId.of("UTC"));
   private PaymentStatusInboundEventHandler paymentStatusInboundEventHandler;
@@ -41,14 +44,20 @@ class PaymentStatusInboundEventHandlerTest {
   void setUp() {
     paymentStatusInboundEventHandler =
         new PaymentStatusInboundEventHandler(
-            subscriptionFetcher, subscriptionPlanFetcher, subscriptionUpdater, clock);
+            subscriptionFetcher, subscriptionPlanFetcher, subscriptionUpdater, subscriptionStatusCache, clock);
+  }
+
+  private Subscription createTestSubscription() {
+    Subscription subscription = new Subscription();
+    subscription.setPlanId(new SubscriptionPlanId(UUID.randomUUID()));
+    subscription.setUserId(new UserId(UUID.randomUUID()));
+    return subscription;
   }
 
   @Test
   void handleSuccessShouldActivateSubscriptionTest() {
     UUID paymentId = UUID.randomUUID();
-    Subscription subscription = new Subscription();
-    subscription.setPlanId(new SubscriptionPlanId(UUID.randomUUID()));
+    Subscription subscription = createTestSubscription();
 
     SubscriptionPlan plan = new SubscriptionPlan();
     plan.setDurationValue(1);
@@ -63,13 +72,13 @@ class PaymentStatusInboundEventHandlerTest {
         new InboundEventContext("payment.status.changed", 0, 10L));
 
     then(subscriptionUpdater).should().activate(subscription, plan, clock);
+    then(subscriptionStatusCache).should().evict(subscription.getUserId().toUUID());
   }
 
   @Test
   void handleFailedShouldCancelSubscriptionTest() {
     UUID paymentId = UUID.randomUUID();
-    Subscription subscription = new Subscription();
-    subscription.setPlanId(new SubscriptionPlanId(UUID.randomUUID()));
+    Subscription subscription = createTestSubscription();
 
     given(subscriptionFetcher.getByPaymentTransactionId(paymentId))
         .willReturn(Optional.of(subscription));
@@ -79,13 +88,13 @@ class PaymentStatusInboundEventHandlerTest {
         new InboundEventContext("payment.status.changed", 0, 10L));
 
     then(subscriptionUpdater).should().cancel(subscription);
+    then(subscriptionStatusCache).should().evict(subscription.getUserId().toUUID());
   }
 
   @Test
   void handleCancelledShouldCancelSubscriptionTest() {
     UUID paymentId = UUID.randomUUID();
-    Subscription subscription = new Subscription();
-    subscription.setPlanId(new SubscriptionPlanId(UUID.randomUUID()));
+    Subscription subscription = createTestSubscription();
 
     given(subscriptionFetcher.getByPaymentTransactionId(paymentId))
         .willReturn(Optional.of(subscription));
@@ -95,13 +104,13 @@ class PaymentStatusInboundEventHandlerTest {
         new InboundEventContext("payment.status.changed", 0, 10L));
 
     then(subscriptionUpdater).should().cancel(subscription);
+    then(subscriptionStatusCache).should().evict(subscription.getUserId().toUUID());
   }
 
   @Test
   void handleExpiredShouldCancelSubscriptionTest() {
     UUID paymentId = UUID.randomUUID();
-    Subscription subscription = new Subscription();
-    subscription.setPlanId(new SubscriptionPlanId(UUID.randomUUID()));
+    Subscription subscription = createTestSubscription();
 
     given(subscriptionFetcher.getByPaymentTransactionId(paymentId))
         .willReturn(Optional.of(subscription));
@@ -111,13 +120,13 @@ class PaymentStatusInboundEventHandlerTest {
         new InboundEventContext("payment.status.changed", 0, 10L));
 
     then(subscriptionUpdater).should().cancel(subscription);
+    then(subscriptionStatusCache).should().evict(subscription.getUserId().toUUID());
   }
 
   @Test
   void handlePendingShouldNotModifySubscriptionTest() {
     UUID paymentId = UUID.randomUUID();
-    Subscription subscription = new Subscription();
-    subscription.setPlanId(new SubscriptionPlanId(UUID.randomUUID()));
+    Subscription subscription = createTestSubscription();
 
     given(subscriptionFetcher.getByPaymentTransactionId(paymentId))
         .willReturn(Optional.of(subscription));
