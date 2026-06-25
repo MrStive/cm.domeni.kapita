@@ -256,6 +256,35 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/CreationResponseDTO"
+  /subscription-plan/{planId}/subscribe:
+    post:
+      tags:
+      - "SubscriptionPlan"
+      summary: "Subscribe to a plan"
+      description: "Subscribe to a plan by initiating a payment"
+      operationId: "subscribeToPlan"
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: "planId"
+        in: "path"
+        required: true
+        schema:
+          type: "string"
+          format: "uuid"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SubscriptionRequestDTO"
+      responses:
+        "201":
+          description: "successful operation"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SubscriptionResponseDTO"
   /transaction/balance:
     get:
       tags:
@@ -485,6 +514,25 @@ components:
           $ref: "#/components/schemas/SubscriptionPlanDurationUnitDTO"
         price:
           $ref: "#/components/schemas/MoneyDTO"
+    SubscriptionRequestDTO:
+      type: "object"
+      required:
+      - "phoneNumber"
+      properties:
+        phoneNumber:
+          type: "string"
+          pattern: "^\\+?[1-9]\\d{1,14}$"
+    SubscriptionResponseDTO:
+      type: "object"
+      required:
+      - "transactionId"
+      - "paymentUrl"
+      properties:
+        transactionId:
+          type: "string"
+          format: "uuid"
+        paymentUrl:
+          type: "string"
     TransactionTypeDTO:
       type: "string"
       enum:

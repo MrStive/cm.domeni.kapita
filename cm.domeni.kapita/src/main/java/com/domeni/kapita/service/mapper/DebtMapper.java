@@ -3,11 +3,13 @@ package com.domeni.kapita.service.mapper;
 import cm.domeni.generated.domeni.kapita.dto.CreateDebtDTO;
 import cm.domeni.generated.domeni.kapita.dto.DebtDTO;
 import cm.domeni.generated.domeni.kapita.dto.DebtPageDTO;
+import cm.domeni.generated.domeni.kapita.dto.DebtTypeDTO;
 import cm.domeni.generated.domeni.kapita.dto.MoneyDTO;
 import com.domeni.kapita.domain.debt.Debt;
 import com.domeni.kapita.domain.debt.DebtData;
 import com.domeni.kapita.domain.debt.DebtId;
 import com.domeni.kapita.domain.debt.DebtPage;
+import com.domeni.kapita.domain.debt.DebtType;
 import java.math.BigDecimal;
 import java.util.Optional;
 import java.util.UUID;
@@ -17,6 +19,7 @@ import org.mapstruct.BeanMapping;
 import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.ValueMapping;
 
 @Mapper(componentModel = "spring", injectionStrategy = InjectionStrategy.CONSTRUCTOR)
 public interface DebtMapper {
@@ -44,6 +47,10 @@ public interface DebtMapper {
   @Mapping(target = "totalElements", source = "totalElements")
   @Mapping(target = "totalPages", source = "totalPages")
   DebtPageDTO map(DebtPage value);
+
+  @ValueMapping(source = "PAYABLE", target = "PAYABLE")
+  @ValueMapping(source = "RECEIVABLE", target = "RECEIVABLE")
+  DebtType map(DebtTypeDTO type);
 
   default MonetaryAmount map(MoneyDTO value) {
     return Optional.ofNullable(value)

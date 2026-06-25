@@ -1,6 +1,7 @@
 package com.domeni.kapita.api.error;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -8,11 +9,15 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import cm.domeni.generated.domeni.kapita.dto.CreateTransactionDTO;
 import com.domeni.kapita.api.TransactionResource;
 import com.domeni.kapita.domain.exception.InvalidTransactionPayloadException;
+import com.domeni.kapita.domain.transaction.TransactionData;
+import com.domeni.kapita.domain.transaction.TransactionType;
 import com.domeni.kapita.domain.user.UserId;
 import com.domeni.kapita.security.jwt.CurrentUserProvider;
 import com.domeni.kapita.service.TransactionService;
+import com.domeni.kapita.service.mapper.TransactionMapper;
 import java.time.LocalDate;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
@@ -44,6 +49,7 @@ class TransactionApiExceptionHandlerTest {
 
   @MockitoBean private CurrentUserProvider currentUserProvider;
   @MockitoBean private TransactionService transactionService;
+  @MockitoBean private TransactionMapper transactionMapper;
 
   @Test
   void createTransactionWhenPayloadIsInvalidShouldReturnValidationPayloadTest() throws Exception {
@@ -61,6 +67,8 @@ class TransactionApiExceptionHandlerTest {
   @Test
   void createTransactionWhenServiceRejectsPayloadShouldReturnDomainPayloadTest() throws Exception {
     when(currentUserProvider.requireCurrentUserId()).thenReturn(UUID.randomUUID());
+    when(transactionMapper.map(any(CreateTransactionDTO.class)))
+        .thenReturn(mock(TransactionData.class));
     when(transactionService.createTransaction(any(), any(UserId.class)))
         .thenThrow(
             new InvalidTransactionPayloadException("transaction category is invalid for type"));
@@ -103,10 +111,12 @@ class TransactionApiExceptionHandlerTest {
   void fetchTransactionAmountByTypeWhenServiceRejectsPeriodShouldReturnDomainPayloadTest()
       throws Exception {
     when(currentUserProvider.requireCurrentUserId()).thenReturn(UUID.randomUUID());
+    when(transactionMapper.map(any(cm.domeni.generated.domeni.kapita.dto.TransactionTypeDTO.class)))
+        .thenReturn(TransactionType.EXPENSE);
     when(transactionService.getAmountByType(
             any(LocalDate.class),
             any(LocalDate.class),
-            any(com.domeni.kapita.domain.transaction.TransactionType.class),
+            any(TransactionType.class),
             any(UserId.class)))
         .thenThrow(new InvalidTransactionPayloadException("transaction period is invalid"));
 

@@ -422,9 +422,52 @@ tasks.register<GenerateTask>("authentisUserEventOpenApiGenerate") {
     }
 }
 
+tasks.register<GenerateTask>("paymentClientOpenApiGenerate") {
+    generatorName = "spring"
+    templateDir.set("$rootDir/openapi/templates/spring-http-interface")
+    inputSpec = "$rootDir/openapi/payment.yaml"
+    outputDir =
+        layout.buildDirectory
+            .dir("generated/sources/payment-client")
+            .get()
+            .asFile.path
+    apiPackage = "cm.domeni.generated.domeni.kapita.payment.api"
+    modelPackage = "cm.domeni.generated.domeni.kapita.payment.dto"
+    configOptions =
+        mapOf(
+            "dateLibrary" to "java8-localdatetime",
+            "library" to "spring-http-interface",
+            "useTags" to "true",
+            "useSpringBoot3" to "true",
+            "openApiNullable" to "false",
+        )
+    typeMappings =
+        mapOf(
+            "time" to "java.time.LocalTime",
+            "date" to "java.time.LocalDate",
+            "date-time" to "java.time.LocalDateTime",
+        )
+    importMappings =
+        mapOf(
+            "LocalTime" to "java.time.LocalTime",
+            "LocalDate" to "java.time.LocalDate",
+            "LocalDateTime" to "java.time.LocalDateTime",
+        )
+    val generatedSourceCodeDir =
+        file(outputDir.get() + "/src/main/java/cm/domeni/generated/domeni/kapita/payment")
+    doFirst {
+        generatedSourceCodeDir.deleteRecursively()
+    }
+    onlyIf {
+        !generatedSourceCodeDir.exists() ||
+            file(inputSpec.get()).lastModified() > generatedSourceCodeDir.lastModified()
+    }
+}
+
 tasks.compileJava.get().dependsOn(
     tasks["mainOpenApiGenerate"],
     tasks["authentisUserEventOpenApiGenerate"],
+    tasks["paymentClientOpenApiGenerate"],
 )
 sourceSets.main.get().java.srcDir(
     layout.buildDirectory
@@ -435,6 +478,12 @@ sourceSets.main.get().java.srcDir(
 sourceSets.main.get().java.srcDir(
     layout.buildDirectory
         .dir("generated/sources/authentis-user-event/src/main/java")
+        .get()
+        .asFile.path,
+)
+sourceSets.main.get().java.srcDir(
+    layout.buildDirectory
+        .dir("generated/sources/payment-client/src/main/java")
         .get()
         .asFile.path,
 )
