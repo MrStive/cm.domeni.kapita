@@ -3,6 +3,7 @@ package com.domeni.kapita.api.error;
 import com.domeni.kapita.domain.exception.DebtNotFoundException;
 import com.domeni.kapita.domain.exception.DemoNotFoundException;
 import com.domeni.kapita.domain.exception.DomainException;
+import com.domeni.kapita.domain.exception.SubscriptionAccessException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
 import java.time.Instant;
@@ -38,6 +39,15 @@ public class ApiExceptionHandler {
       DebtNotFoundException exception, HttpServletRequest request) {
     return ResponseEntity.status(HttpStatus.NOT_FOUND)
         .body(buildError(exception.getCode(), exception.getMessage(), request));
+  }
+
+  @ExceptionHandler(SubscriptionAccessException.class)
+  public ResponseEntity<ApiError> handleSubscriptionAccessException(
+      SubscriptionAccessException exception, HttpServletRequest request) {
+    return ResponseEntity.status(HttpStatus.FORBIDDEN)
+        .body(
+            buildError(
+                exception.getCode(), exception.getMessage(), request));
   }
 
   @ExceptionHandler(DomainException.class)

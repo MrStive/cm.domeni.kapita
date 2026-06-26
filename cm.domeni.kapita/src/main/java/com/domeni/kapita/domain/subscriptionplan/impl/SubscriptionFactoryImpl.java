@@ -27,6 +27,7 @@ public class SubscriptionFactoryImpl implements SubscriptionFactory {
             .planId(data.planId())
             .status(data.status())
             .paymentTransactionId(data.paymentTransactionId())
+            .trialEndDate(data.trialEndDate())
             .createdAt(LocalDateTime.now(clock))
             .build();
     return subscriptionRepository.save(subscription);

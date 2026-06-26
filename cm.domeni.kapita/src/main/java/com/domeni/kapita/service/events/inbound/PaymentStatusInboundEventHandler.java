@@ -1,5 +1,6 @@
 package com.domeni.kapita.service.events.inbound;
 
+import com.domeni.kapita.domain.cache.SubscriptionStatusCache;
 import com.domeni.kapita.domain.subscriptionplan.Subscription;
 import com.domeni.kapita.domain.subscriptionplan.SubscriptionFetcher;
 import com.domeni.kapita.domain.subscriptionplan.SubscriptionPlan;
@@ -23,6 +24,7 @@ public class PaymentStatusInboundEventHandler
   private final SubscriptionFetcher subscriptionFetcher;
   private final SubscriptionPlanFetcher subscriptionPlanFetcher;
   private final SubscriptionUpdater subscriptionUpdater;
+  private final SubscriptionStatusCache cache;
   private final Clock clock;
 
   @Override
@@ -47,6 +49,7 @@ public class PaymentStatusInboundEventHandler
                         new IllegalStateException(
                             "Plan not found for subscription: " + subscription.getId()));
         subscriptionUpdater.activate(subscription, plan, clock);
+        cache.evict(subscription.getUserId().toUUID());
         log.info("Subscription activated: {}", subscription.getId());
       }
       case FAILED, CANCELLED, EXPIRED -> {
@@ -56,6 +59,7 @@ public class PaymentStatusInboundEventHandler
             subscription.getId(),
             payload.failureReason());
         subscriptionUpdater.cancel(subscription);
+        cache.evict(subscription.getUserId().toUUID());
       }
       case PENDING -> log.info("Payment still pending for subscription: {}", subscription.getId());
     }

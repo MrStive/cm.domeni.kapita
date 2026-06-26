@@ -14,4 +14,6 @@ public interface SubscriptionSpringRepository extends JpaRepository<Subscription
 
   Optional<Subscription> findByUserIdAndPlanIdAndStatus(
       UserId userId, SubscriptionPlanId planId, SubscriptionStatus status);
+
+  Optional<Subscription> findByUserId(UserId userId);
 }

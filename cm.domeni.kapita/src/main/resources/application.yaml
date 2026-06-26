@@ -25,6 +25,10 @@ spring:
       eclipselink.logging.level.sql: "FINE"
   liquibase:
     change-log: "classpath:db/changelog/db.changelog-master.xml"
+  data:
+    redis:
+      host: "${REDIS_HOST:localhost}"
+      port: "${REDIS_PORT:6379}"
 kapita:
   messaging:
     user-created:
@@ -34,6 +38,10 @@ kapita:
       issuer: "${ISSUER_URI:http://localhost:8080/realms/authentis-user}"
       audience: "${JWT_AUDIENCE:kapita-api}"
       jwk-set-uri: "${JWK_SET_URI:http://localhost:8080/realms/authentis-user/protocol/openid-connect/certs}"
+  subscription:
+    trial-period-days: "${KAPITA_TRIAL_PERIOD_DAYS:14}"
+    cache:
+      default-ttl-seconds: "${KAPITA_CACHE_TTL_SECONDS:300}"
 logging:
   level:
     org.springframework.security: "INFO"

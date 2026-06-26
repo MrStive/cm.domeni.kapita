@@ -1,5 +1,8 @@
 package com.domeni.kapita.config;
 
+import com.domeni.kapita.api.interceptor.SubscriptionAccessHandlerInterceptor;
+import com.domeni.kapita.config.WebConfig;
+import com.domeni.kapita.domain.cache.SubscriptionStatusCache;
 import com.domeni.kapita.domain.debt.DebtFactory;
 import com.domeni.kapita.domain.debt.DebtFetcher;
 import com.domeni.kapita.domain.debt.DebtRepository;
@@ -32,6 +35,7 @@ import com.domeni.kapita.domain.transaction.impl.TransactionFetcherImpl;
 import com.domeni.kapita.domain.user.UserFactory;
 import com.domeni.kapita.domain.user.UserRepository;
 import com.domeni.kapita.domain.user.impl.UserFactoryImpl;
+import com.domeni.kapita.infrastructure.impl.RedisSubscriptionStatusCache;
 import com.domeni.kapita.repositories.DebtSpringRepository;
 import com.domeni.kapita.repositories.DemoSpringRepository;
 import com.domeni.kapita.repositories.SubscriptionPlanSpringRepository;
@@ -44,10 +48,15 @@ import com.domeni.kapita.repositories.impl.SubscriptionPlanRepositoryImpl;
 import com.domeni.kapita.repositories.impl.SubscriptionRepositoryImpl;
 import com.domeni.kapita.repositories.impl.TransactionRepositoryImpl;
 import com.domeni.kapita.repositories.impl.UserRepositoryImpl;
+import com.domeni.kapita.security.jwt.CurrentUserProvider;
+import com.domeni.kapita.service.SubscriptionStatusService;
 import java.time.Clock;
+import java.time.Duration;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @RequiredArgsConstructor
 @Configuration
@@ -158,5 +167,27 @@ public class KapitaBeans {
   @Bean
   public UserRepository userRepository(UserSpringRepository userSpringRepository) {
     return new UserRepositoryImpl(userSpringRepository);
+  }
+
+  @Bean
+  public SubscriptionStatusCache subscriptionStatusCache(
+      RedisTemplate<Object, Object> redisTemplate,
+      KapitaSubscriptionProperties properties) {
+    return new RedisSubscriptionStatusCache(
+        redisTemplate, Duration.ofSeconds(properties.getCache().getDefaultTtlSeconds()));
+  }
+
+  @Bean
+  public SubscriptionAccessHandlerInterceptor subscriptionAccessHandlerInterceptor(
+      SubscriptionStatusService subscriptionStatusService,
+      CurrentUserProvider currentUserProvider) {
+    return new SubscriptionAccessHandlerInterceptor(
+        subscriptionStatusService, currentUserProvider);
+  }
+
+  @Bean
+  public WebMvcConfigurer webMvcConfigurer(
+      SubscriptionAccessHandlerInterceptor subscriptionAccessHandlerInterceptor) {
+    return new WebConfig(subscriptionAccessHandlerInterceptor);
   }
 }

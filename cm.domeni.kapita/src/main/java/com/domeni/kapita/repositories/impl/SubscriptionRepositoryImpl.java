@@ -30,4 +30,9 @@ public class SubscriptionRepositoryImpl implements SubscriptionRepository {
       UserId userId, SubscriptionPlanId planId, SubscriptionStatus status) {
     return subscriptionSpringRepository.findByUserIdAndPlanIdAndStatus(userId, planId, status);
   }
+
+  @Override
+  public Optional<Subscription> findByUserId(UserId userId) {
+    return subscriptionSpringRepository.findByUserId(userId);
+  }
 }
