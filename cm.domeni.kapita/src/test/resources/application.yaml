@@ -17,6 +17,10 @@ eureka:
   client:
     enabled: false
 kapita:
+  subscription:
+    scheduler:
+      enabled: false
+      cron: "0 0 * * * *"
   security:
     expose-docs: true
     jwt:

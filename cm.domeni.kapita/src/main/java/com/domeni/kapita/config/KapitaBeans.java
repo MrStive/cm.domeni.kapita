@@ -1,7 +1,6 @@
 package com.domeni.kapita.config;
 
 import com.domeni.kapita.api.interceptor.SubscriptionAccessHandlerInterceptor;
-import com.domeni.kapita.config.WebConfig;
 import com.domeni.kapita.domain.cache.SubscriptionStatusCache;
 import com.domeni.kapita.domain.debt.DebtFactory;
 import com.domeni.kapita.domain.debt.DebtFetcher;
@@ -149,8 +148,9 @@ public class KapitaBeans {
   }
 
   @Bean
-  public SubscriptionUpdater subscriptionUpdater(SubscriptionRepository subscriptionRepository) {
-    return new SubscriptionUpdaterImpl(subscriptionRepository);
+  public SubscriptionUpdater subscriptionUpdater(
+      SubscriptionRepository subscriptionRepository, Clock systemClock) {
+    return new SubscriptionUpdaterImpl(subscriptionRepository, systemClock);
   }
 
   @Bean
@@ -171,8 +171,7 @@ public class KapitaBeans {
 
   @Bean
   public SubscriptionStatusCache subscriptionStatusCache(
-      RedisTemplate<Object, Object> redisTemplate,
-      KapitaSubscriptionProperties properties) {
+      RedisTemplate<Object, Object> redisTemplate, KapitaSubscriptionProperties properties) {
     return new RedisSubscriptionStatusCache(
         redisTemplate, Duration.ofSeconds(properties.getCache().getDefaultTtlSeconds()));
   }
@@ -181,8 +180,7 @@ public class KapitaBeans {
   public SubscriptionAccessHandlerInterceptor subscriptionAccessHandlerInterceptor(
       SubscriptionStatusService subscriptionStatusService,
       CurrentUserProvider currentUserProvider) {
-    return new SubscriptionAccessHandlerInterceptor(
-        subscriptionStatusService, currentUserProvider);
+    return new SubscriptionAccessHandlerInterceptor(subscriptionStatusService, currentUserProvider);
   }
 
   @Bean

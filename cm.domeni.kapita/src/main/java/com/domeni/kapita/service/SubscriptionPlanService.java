@@ -104,7 +104,7 @@ public class SubscriptionPlanService {
                   .idempotencyKey(pendingSubscription.getId().toUUID().toString())
                   .build());
 
-      pendingSubscription.setPaymentTransactionId(UUID.fromString(paymentResponse.paymentId()));
+      pendingSubscription.assignPaymentTransaction(UUID.fromString(paymentResponse.paymentId()));
       subscriptionRepository.save(pendingSubscription);
 
       log.info(
@@ -119,7 +119,7 @@ public class SubscriptionPlanService {
           "Payment initiation failed for subscription {}, marking as CANCELLED",
           pendingSubscription.getId().toUUID(),
           e);
-      pendingSubscription.setStatus(SubscriptionStatus.CANCELLED);
+      pendingSubscription.cancel();
       subscriptionRepository.save(pendingSubscription);
       throw new PaymentInitiationException("Failed to initiate payment for subscription", e);
     }

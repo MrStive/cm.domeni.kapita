@@ -11,8 +11,9 @@
 	</changeSet>
 
 	<changeSet id="kapita-16:2" author="domeni.ngameni">
-		<dropNotNullConstraint tableName="t_subscription"
-			columnName="c_plan_id" columnDataType="varchar(36)" />
+		<dropNotNullConstraint
+			tableName="t_subscription" columnName="c_plan_id"
+			columnDataType="varchar(36)" />
 	</changeSet>
 
 </databaseChangeLog>

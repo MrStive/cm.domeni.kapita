@@ -5,6 +5,8 @@ import com.domeni.kapita.domain.subscriptionplan.SubscriptionData;
 import com.domeni.kapita.domain.subscriptionplan.SubscriptionFactory;
 import com.domeni.kapita.domain.subscriptionplan.SubscriptionId;
 import com.domeni.kapita.domain.subscriptionplan.SubscriptionRepository;
+import com.domeni.kapita.domain.subscriptionplan.SubscriptionStatus;
+import com.domeni.kapita.domain.user.UserId;
 import java.time.Clock;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
@@ -21,15 +23,34 @@ public class SubscriptionFactoryImpl implements SubscriptionFactory {
       throw new IllegalArgumentException("subscription data is required");
     }
     Subscription subscription =
-        Subscription.builder()
-            .id(SubscriptionId.generate())
-            .userId(data.userId())
-            .planId(data.planId())
-            .status(data.status())
-            .paymentTransactionId(data.paymentTransactionId())
-            .trialEndDate(data.trialEndDate())
-            .createdAt(LocalDateTime.now(clock))
-            .build();
+        new Subscription(
+            SubscriptionId.generate(),
+            data.userId(),
+            data.planId(),
+            data.status(),
+            data.paymentTransactionId(),
+            null,
+            null,
+            data.trialEndDate(),
+            LocalDateTime.now(clock));
     return subscriptionRepository.save(subscription);
+  }
+
+  @Override
+  public Subscription createTrial(UserId userId, int trialPeriodDays) {
+    if (subscriptionRepository.hasUserEverHadTrial(userId)) {
+      throw new IllegalStateException(
+          "L'utilisateur " + userId.getValue() + " a déjà bénéficié d'un essai.");
+    }
+    var now = LocalDateTime.now(clock);
+    var trialEndDate = now.plusDays(trialPeriodDays);
+    var data =
+        SubscriptionData.builder()
+            .userId(userId)
+            .planId(null)
+            .status(SubscriptionStatus.TRIAL)
+            .trialEndDate(trialEndDate)
+            .build();
+    return create(data);
   }
 }
