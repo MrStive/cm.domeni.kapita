@@ -53,8 +53,8 @@ class DebtResourceTest {
             .totalPages(1);
 
     when(currentUserProvider.requireCurrentUserId()).thenReturn(currentUserIdValue);
-    when(debtMapper.map(DebtTypeDTO.RECEIVABLE)).thenReturn(DebtType.RECEIVABLE);
-    when(debtService.getDebtsByType(DebtType.RECEIVABLE, 0, 10, currentUserId))
+    when(debtMapper.map(DebtTypeDTO.OWED_TO_ME)).thenReturn(DebtType.OWED_TO_ME);
+    when(debtService.getDebtsByType(DebtType.OWED_TO_ME, 0, 10, currentUserId))
         .thenReturn(domainPage);
     when(debtMapper.map(domainPage)).thenReturn(expectedResponse);
 
@@ -62,7 +62,7 @@ class DebtResourceTest {
         DebtPageDTO response =
                 given()
                         .standaloneSetup(new DebtResource(currentUserProvider, debtService, debtMapper))
-                        .queryParam("type", "RECEIVABLE")
+                        .queryParam("type", "OWED_TO_ME")
                         .queryParam("pageNumber", 0)
                         .queryParam("pageSize", 10)
                 .when()
@@ -81,7 +81,7 @@ class DebtResourceTest {
     UserId currentUserId = new UserId(currentUserIdValue);
     CreateDebtDTO input =
         new CreateDebtDTO()
-            .type(DebtTypeDTO.RECEIVABLE)
+            .type(DebtTypeDTO.OWED_TO_ME)
             .counterpartyName("Client A")
             .amount(new MoneyDTO().currency("XAF").value(new BigDecimal("5000")))
             .dueDate(LocalDate.now());

@@ -4,6 +4,7 @@ import cm.domeni.generated.domeni.kapita.api.TransactionApi;
 import cm.domeni.generated.domeni.kapita.dto.CreateTransactionDTO;
 import cm.domeni.generated.domeni.kapita.dto.CreationResponseDTO;
 import cm.domeni.generated.domeni.kapita.dto.MoneyDTO;
+import cm.domeni.generated.domeni.kapita.dto.TransactionAmountGroupedDTO;
 import cm.domeni.generated.domeni.kapita.dto.TransactionPageDTO;
 import cm.domeni.generated.domeni.kapita.dto.TransactionTypeDTO;
 import com.domeni.kapita.domain.exception.InvalidTransactionPayloadException;
@@ -57,17 +58,21 @@ public class TransactionResource implements TransactionApi {
   }
 
   @Override
-  public ResponseEntity<MoneyDTO> fetchTransactionAmountByType(
+  public ResponseEntity<TransactionAmountGroupedDTO> fetchTransactionAmountByType(
       LocalDate startDate, LocalDate endDate, TransactionTypeDTO type) {
     if (startDate != null && endDate != null && startDate.isAfter(endDate)) {
       throw new InvalidTransactionPayloadException("transaction period is invalid");
     }
+    UserId currentUserId = new UserId(currentUserProvider.requireCurrentUserId());
+    if (type == null) {
+      return ResponseEntity.ok(
+          transactionMapper.map(
+              transactionService.getAmountsGroupedByType(startDate, endDate, currentUserId)));
+    }
     return ResponseEntity.ok(
         transactionMapper.map(
             transactionService.getAmountByType(
-                startDate,
-                endDate,
-                transactionMapper.map(type),
-                new UserId(currentUserProvider.requireCurrentUserId()))));
+                startDate, endDate, transactionMapper.map(type), currentUserId),
+            transactionMapper.map(type)));
   }
 }

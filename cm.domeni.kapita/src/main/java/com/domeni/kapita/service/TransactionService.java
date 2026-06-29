@@ -8,6 +8,7 @@ import com.domeni.kapita.domain.transaction.TransactionPage;
 import com.domeni.kapita.domain.transaction.TransactionType;
 import com.domeni.kapita.domain.user.UserId;
 import java.time.LocalDate;
+import java.util.Map;
 import java.util.UUID;
 import javax.money.MonetaryAmount;
 import lombok.RequiredArgsConstructor;
@@ -44,5 +45,11 @@ public class TransactionService {
   public MonetaryAmount getAmountByType(
       LocalDate startDate, LocalDate endDate, TransactionType type, UserId currentUserId) {
     return transactionFetcher.getAmount(startDate, endDate, type, currentUserId);
+  }
+
+  @Transactional(readOnly = true)
+  public Map<TransactionType, MonetaryAmount> getAmountsGroupedByType(
+      LocalDate startDate, LocalDate endDate, UserId currentUserId) {
+    return transactionFetcher.getAmountsGroupedByType(startDate, endDate, currentUserId);
   }
 }

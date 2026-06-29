@@ -15,6 +15,7 @@ import com.domeni.kapita.domain.transaction.TransactionPage;
 import com.domeni.kapita.domain.transaction.TransactionType;
 import com.domeni.kapita.domain.user.UserId;
 import java.time.LocalDate;
+import java.util.Map;
 import java.util.UUID;
 import javax.money.MonetaryAmount;
 import org.junit.jupiter.api.Test;
@@ -111,5 +112,22 @@ class TransactionServiceTest {
     then(transactionFetcher)
         .should()
         .getAmount(startDate, endDate, TransactionType.EXPENSE, currentUserId);
+  }
+
+  @Test
+  void getAmountsGroupedByTypeShouldDelegateToDomainFetcherTest() {
+    LocalDate startDate = LocalDate.of(2026, 2, 1);
+    LocalDate endDate = LocalDate.of(2026, 2, 28);
+    UserId currentUserId = new UserId(UUID.randomUUID());
+    Map<TransactionType, MonetaryAmount> domainAmounts = mock(Map.class);
+
+    given(transactionFetcher.getAmountsGroupedByType(startDate, endDate, currentUserId))
+        .willReturn(domainAmounts);
+
+    Map<TransactionType, MonetaryAmount> result =
+        transactionService.getAmountsGroupedByType(startDate, endDate, currentUserId);
+
+    assertThat(result).isSameAs(domainAmounts);
+    then(transactionFetcher).should().getAmountsGroupedByType(startDate, endDate, currentUserId);
   }
 }

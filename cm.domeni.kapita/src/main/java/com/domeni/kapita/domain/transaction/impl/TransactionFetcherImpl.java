@@ -10,6 +10,8 @@ import com.domeni.kapita.domain.user.UserId;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.EnumMap;
+import java.util.Map;
 import javax.money.MonetaryAmount;
 import lombok.RequiredArgsConstructor;
 import org.javamoney.moneta.Money;
@@ -67,6 +69,30 @@ public class TransactionFetcherImpl implements TransactionFetcher {
         .stream()
         .<MonetaryAmount>map(transaction -> Money.of(transaction.getAmount(), DEFAULT_CURRENCY))
         .reduce(Money.of(BigDecimal.ZERO, DEFAULT_CURRENCY), MonetaryAmount::add);
+  }
+
+  @Override
+  public Map<TransactionType, MonetaryAmount> getAmountsGroupedByType(
+      LocalDate startDate, LocalDate endDate, UserId currentUserId) {
+    validatePeriodAndUser(startDate, endDate, currentUserId);
+
+    LocalDateTime startInclusive = startDate.atStartOfDay();
+    LocalDateTime endExclusive = endDate.plusDays(1).atStartOfDay();
+
+    Map<TransactionType, MonetaryAmount> result = new EnumMap<>(TransactionType.class);
+    for (TransactionType type : TransactionType.values()) {
+      result.put(type, Money.of(BigDecimal.ZERO, DEFAULT_CURRENCY));
+    }
+
+    transactionRepository
+        .findAllByUserIdAndCreatedAtRange(currentUserId, startInclusive, endExclusive)
+        .forEach(
+            transaction -> {
+              MonetaryAmount amount = Money.of(transaction.getAmount(), DEFAULT_CURRENCY);
+              result.merge(transaction.getType(), amount, MonetaryAmount::add);
+            });
+
+    return result;
   }
 
   private void validatePeriodAndUser(LocalDate startDate, LocalDate endDate, UserId currentUserId) {

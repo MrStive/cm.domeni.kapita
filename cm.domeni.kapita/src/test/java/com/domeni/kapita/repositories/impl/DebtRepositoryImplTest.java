@@ -83,16 +83,18 @@ class DebtRepositoryImplTest {
     PageRequest pageable =
         PageRequest.of(1, 5, Sort.by(Sort.Direction.DESC, Debt.Fields.createdAt));
 
-    given(debtSpringRepository.findAllByUserIdAndType(userId, DebtType.PAYABLE, pageable))
+    given(debtSpringRepository.findAllByUserIdAndType(userId, DebtType.OWED_BY_ME, pageable))
         .willReturn(new PageImpl<>(persistedDebts, pageable, 7));
 
-    DebtPage result = objectUnderTest.findAllByUserIdAndType(userId, DebtType.PAYABLE, 1, 5);
+    DebtPage result = objectUnderTest.findAllByUserIdAndType(userId, DebtType.OWED_BY_ME, 1, 5);
 
     assertThat(result.items()).containsExactlyElementsOf(persistedDebts);
     assertThat(result.pageNumber()).isEqualTo(1);
     assertThat(result.pageSize()).isEqualTo(5);
     assertThat(result.totalElements()).isEqualTo(7);
     assertThat(result.totalPages()).isEqualTo(2);
-    then(debtSpringRepository).should().findAllByUserIdAndType(userId, DebtType.PAYABLE, pageable);
+    then(debtSpringRepository)
+        .should()
+        .findAllByUserIdAndType(userId, DebtType.OWED_BY_ME, pageable);
   }
 }

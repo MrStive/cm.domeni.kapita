@@ -1,6 +1,6 @@
 package com.domeni.kapita.domain.debt;
 
 public enum DebtType {
-  RECEIVABLE,
-  PAYABLE
+  OWED_TO_ME,
+  OWED_BY_ME
 }

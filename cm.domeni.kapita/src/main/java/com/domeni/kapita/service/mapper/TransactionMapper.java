@@ -2,6 +2,7 @@ package com.domeni.kapita.service.mapper;
 
 import cm.domeni.generated.domeni.kapita.dto.CreateTransactionDTO;
 import cm.domeni.generated.domeni.kapita.dto.MoneyDTO;
+import cm.domeni.generated.domeni.kapita.dto.TransactionAmountGroupedDTO;
 import cm.domeni.generated.domeni.kapita.dto.TransactionDTO;
 import cm.domeni.generated.domeni.kapita.dto.TransactionPageDTO;
 import cm.domeni.generated.domeni.kapita.dto.TransactionTypeDTO;
@@ -11,6 +12,7 @@ import com.domeni.kapita.domain.transaction.TransactionId;
 import com.domeni.kapita.domain.transaction.TransactionPage;
 import com.domeni.kapita.domain.transaction.TransactionType;
 import java.math.BigDecimal;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import javax.money.MonetaryAmount;
@@ -61,6 +63,27 @@ public interface TransactionMapper {
                     .currency(input.getCurrency().getCurrencyCode())
                     .value(input.getNumber().numberValue(BigDecimal.class)))
         .orElse(null);
+  }
+
+  default TransactionAmountGroupedDTO map(MonetaryAmount amount, TransactionType type) {
+    TransactionAmountGroupedDTO result = new TransactionAmountGroupedDTO();
+    if (type == TransactionType.INCOMING) {
+      result.setINCOMING(map(amount));
+    } else {
+      result.setEXPENSE(map(amount));
+    }
+    return result;
+  }
+
+  default TransactionAmountGroupedDTO map(Map<TransactionType, MonetaryAmount> amounts) {
+    TransactionAmountGroupedDTO result = new TransactionAmountGroupedDTO();
+    if (amounts.containsKey(TransactionType.INCOMING)) {
+      result.setINCOMING(map(amounts.get(TransactionType.INCOMING)));
+    }
+    if (amounts.containsKey(TransactionType.EXPENSE)) {
+      result.setEXPENSE(map(amounts.get(TransactionType.EXPENSE)));
+    }
+    return result;
   }
 
   default MonetaryAmount map(MoneyDTO value) {

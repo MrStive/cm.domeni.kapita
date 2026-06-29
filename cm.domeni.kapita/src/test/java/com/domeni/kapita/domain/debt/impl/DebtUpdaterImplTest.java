@@ -46,7 +46,7 @@ class DebtUpdaterImplTest {
     Debt debt =
         Debt.builder()
             .id(debtId)
-            .type(DebtType.RECEIVABLE)
+            .type(DebtType.OWED_TO_ME)
             .counterpartyName("Client A")
             .amount(Money.of(new BigDecimal("5000.00"), "XAF"))
             .dueDate(LocalDate.of(2026, 4, 11))
@@ -83,7 +83,7 @@ class DebtUpdaterImplTest {
     Debt debt =
         Debt.builder()
             .id(debtId)
-            .type(DebtType.PAYABLE)
+            .type(DebtType.OWED_BY_ME)
             .counterpartyName("Fournisseur B")
             .amount(Money.of(new BigDecimal("15000.00"), "XAF"))
             .dueDate(LocalDate.of(2026, 4, 12))

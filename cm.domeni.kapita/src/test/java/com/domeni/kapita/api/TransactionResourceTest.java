@@ -10,6 +10,7 @@ import static org.mockito.Mockito.when;
 import cm.domeni.generated.domeni.kapita.dto.CreateTransactionDTO;
 import cm.domeni.generated.domeni.kapita.dto.CreationResponseDTO;
 import cm.domeni.generated.domeni.kapita.dto.MoneyDTO;
+import cm.domeni.generated.domeni.kapita.dto.TransactionAmountGroupedDTO;
 import cm.domeni.generated.domeni.kapita.dto.TransactionCategoryDTO;
 import cm.domeni.generated.domeni.kapita.dto.TransactionDTO;
 import cm.domeni.generated.domeni.kapita.dto.TransactionPageDTO;
@@ -23,7 +24,9 @@ import com.domeni.kapita.service.TransactionService;
 import com.domeni.kapita.service.mapper.TransactionMapper;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.EnumMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import javax.money.MonetaryAmount;
 import org.junit.jupiter.api.Test;
@@ -141,17 +144,19 @@ class TransactionResourceTest {
     LocalDate startDate = LocalDate.of(2026, 2, 1);
     LocalDate endDate = LocalDate.of(2026, 2, 28);
     MonetaryAmount domainAmount = mock(MonetaryAmount.class);
-    MoneyDTO expectedResponse = new MoneyDTO().currency("XAF").value(new BigDecimal("4250.75"));
+    MoneyDTO moneyDTO = new MoneyDTO().currency("XAF").value(new BigDecimal("4250.75"));
+    TransactionAmountGroupedDTO expectedResponse = new TransactionAmountGroupedDTO();
+    expectedResponse.setEXPENSE(moneyDTO);
 
     when(currentUserProvider.requireCurrentUserId()).thenReturn(currentUserIdValue);
     when(transactionMapper.map(TransactionTypeDTO.EXPENSE)).thenReturn(TransactionType.EXPENSE);
     when(transactionService.getAmountByType(
             eq(startDate), eq(endDate), eq(TransactionType.EXPENSE), eq(currentUserId)))
         .thenReturn(domainAmount);
-    when(transactionMapper.map(domainAmount)).thenReturn(expectedResponse);
+    when(transactionMapper.map(domainAmount, TransactionType.EXPENSE)).thenReturn(expectedResponse);
 
     // spotless:off
-        MoneyDTO response =
+        TransactionAmountGroupedDTO response =
                 given()
                         .standaloneSetup(new TransactionResource(currentUserProvider, transactionService, transactionMapper))
                         .queryParam("startDate", startDate.toString())
@@ -161,9 +166,44 @@ class TransactionResourceTest {
                         .get("/transaction/amount")
                 .then()
                         .statusCode(200)
-                        .extract().body().as(MoneyDTO.class);
+                        .extract().body().as(TransactionAmountGroupedDTO.class);
         // spotless:on
-    assertThat(response.getCurrency()).isEqualTo("XAF");
-    assertThat(response.getValue()).isEqualByComparingTo("4250.75");
+    assertThat(response.getEXPENSE()).isNotNull();
+    assertThat(response.getEXPENSE().getCurrency()).isEqualTo("XAF");
+    assertThat(response.getEXPENSE().getValue()).isEqualByComparingTo("4250.75");
+  }
+
+  @Test
+  void fetchTransactionAmountWhenNoTypeShouldReturnGroupedAmountsTest() {
+    UUID currentUserIdValue = UUID.randomUUID();
+    UserId currentUserId = new UserId(currentUserIdValue);
+    LocalDate startDate = LocalDate.of(2026, 2, 1);
+    LocalDate endDate = LocalDate.of(2026, 2, 28);
+    Map<TransactionType, MonetaryAmount> domainAmounts = new EnumMap<>(TransactionType.class);
+    TransactionAmountGroupedDTO expectedResponse = new TransactionAmountGroupedDTO();
+    expectedResponse.setINCOMING(new MoneyDTO().currency("XAF").value(new BigDecimal("10000")));
+    expectedResponse.setEXPENSE(new MoneyDTO().currency("XAF").value(new BigDecimal("4250.75")));
+
+    when(currentUserProvider.requireCurrentUserId()).thenReturn(currentUserIdValue);
+    when(transactionService.getAmountsGroupedByType(startDate, endDate, currentUserId))
+        .thenReturn(domainAmounts);
+    when(transactionMapper.map(domainAmounts)).thenReturn(expectedResponse);
+
+    // spotless:off
+        TransactionAmountGroupedDTO response =
+                given()
+                        .standaloneSetup(new TransactionResource(currentUserProvider, transactionService, transactionMapper))
+                        .queryParam("startDate", startDate.toString())
+                        .queryParam("endDate", endDate.toString())
+                .when()
+                        .get("/transaction/amount")
+                .then()
+                        .statusCode(200)
+                        .extract().body().as(TransactionAmountGroupedDTO.class);
+        // spotless:on
+    assertThat(response.getINCOMING()).isNotNull();
+    assertThat(response.getINCOMING().getValue()).isEqualByComparingTo("10000");
+    assertThat(response.getEXPENSE()).isNotNull();
+    assertThat(response.getEXPENSE().getValue()).isEqualByComparingTo("4250.75");
   }
 }

@@ -67,12 +67,12 @@ class DebtServiceTest {
     UserId currentUserId = new UserId(UUID.randomUUID());
     DebtPage domainPage = new DebtPage(java.util.List.of(), 1, 10, 15, 2);
 
-    given(debtFetcher.getByType(DebtType.RECEIVABLE, 1, 10, currentUserId)).willReturn(domainPage);
+    given(debtFetcher.getByType(DebtType.OWED_TO_ME, 1, 10, currentUserId)).willReturn(domainPage);
 
-    DebtPage result = debtService.getDebtsByType(DebtType.RECEIVABLE, 1, 10, currentUserId);
+    DebtPage result = debtService.getDebtsByType(DebtType.OWED_TO_ME, 1, 10, currentUserId);
 
     assertThat(result).isSameAs(domainPage);
-    then(debtFetcher).should().getByType(DebtType.RECEIVABLE, 1, 10, currentUserId);
+    then(debtFetcher).should().getByType(DebtType.OWED_TO_ME, 1, 10, currentUserId);
   }
 
   @Test
