@@ -6,6 +6,8 @@ import com.domeni.kapita.domain.subscriptionplan.SubscriptionRepository;
 import com.domeni.kapita.domain.subscriptionplan.SubscriptionStatus;
 import com.domeni.kapita.domain.user.UserId;
 import com.domeni.kapita.repositories.SubscriptionSpringRepository;
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +35,16 @@ public class SubscriptionRepositoryImpl implements SubscriptionRepository {
 
   @Override
   public Optional<Subscription> findByUserId(UserId userId) {
-    return subscriptionSpringRepository.findByUserId(userId);
+    return subscriptionSpringRepository.findByUserIdOrdered(userId).stream().findFirst();
+  }
+
+  @Override
+  public boolean hasUserEverHadTrial(UserId userId) {
+    return subscriptionSpringRepository.existsByUserIdAndTrialEndDateIsNotNull(userId);
+  }
+
+  @Override
+  public List<Subscription> findExpiredSubscriptions(LocalDateTime now) {
+    return subscriptionSpringRepository.findExpiredSubscriptions(now);
   }
 }

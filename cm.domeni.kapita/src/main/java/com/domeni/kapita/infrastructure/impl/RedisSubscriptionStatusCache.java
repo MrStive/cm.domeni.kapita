@@ -5,16 +5,20 @@ import com.domeni.kapita.domain.cache.SubscriptionStatusCacheValue;
 import java.time.Duration;
 import java.util.Optional;
 import java.util.UUID;
-import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 
-@RequiredArgsConstructor
 public class RedisSubscriptionStatusCache implements SubscriptionStatusCache {
 
   private static final String KEY_PREFIX = "kapita:subscription:status";
 
   private final RedisTemplate<Object, Object> redisTemplate;
   private final Duration defaultTtl;
+
+  public RedisSubscriptionStatusCache(
+      RedisTemplate<Object, Object> redisTemplate, Duration defaultTtl) {
+    this.redisTemplate = redisTemplate;
+    this.defaultTtl = defaultTtl;
+  }
 
   @Override
   public Optional<SubscriptionStatusCacheValue> get(UUID userId) {

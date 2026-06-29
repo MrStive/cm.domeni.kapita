@@ -3,6 +3,7 @@ package com.domeni.kapita.domain.subscriptionplan.impl;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
+import static org.mockito.Mockito.never;
 
 import com.domeni.kapita.domain.subscriptionplan.Subscription;
 import com.domeni.kapita.domain.subscriptionplan.SubscriptionPlan;
@@ -27,8 +28,10 @@ class SubscriptionUpdaterImplTest {
 
   @Test
   void activateShouldSetActiveStatusAndDatesTest() {
-    SubscriptionUpdaterImpl updater = new SubscriptionUpdaterImpl(subscriptionRepository);
-    Subscription subscription = new Subscription();
+    SubscriptionUpdaterImpl updater = new SubscriptionUpdaterImpl(subscriptionRepository, clock);
+    Subscription subscription =
+        new Subscription(
+            null, null, null, SubscriptionStatus.PENDING, null, null, null, null, null);
 
     SubscriptionPlan plan = new SubscriptionPlan();
     plan.setDurationValue(3);
@@ -47,7 +50,7 @@ class SubscriptionUpdaterImplTest {
 
   @Test
   void cancelShouldSetCancelledStatusTest() {
-    SubscriptionUpdaterImpl updater = new SubscriptionUpdaterImpl(subscriptionRepository);
+    SubscriptionUpdaterImpl updater = new SubscriptionUpdaterImpl(subscriptionRepository, clock);
     Subscription subscription = new Subscription();
 
     given(subscriptionRepository.save(subscription)).willReturn(subscription);
@@ -57,5 +60,43 @@ class SubscriptionUpdaterImplTest {
     assertThat(result).isSameAs(subscription);
     assertThat(subscription.getStatus()).isEqualTo(SubscriptionStatus.CANCELLED);
     then(subscriptionRepository).should().save(subscription);
+  }
+
+  @Test
+  void expireShouldSetExpiredStatusAndSaveTest() {
+    SubscriptionUpdaterImpl updater = new SubscriptionUpdaterImpl(subscriptionRepository, clock);
+    Subscription subscription =
+        new Subscription(
+            null,
+            null,
+            null,
+            SubscriptionStatus.ACTIVE,
+            null,
+            null,
+            LocalDateTime.now(clock).minusDays(1),
+            null,
+            null);
+
+    given(subscriptionRepository.save(subscription)).willReturn(subscription);
+
+    Subscription result = updater.expire(subscription);
+
+    assertThat(result).isSameAs(subscription);
+    assertThat(subscription.getStatus()).isEqualTo(SubscriptionStatus.EXPIRED);
+    then(subscriptionRepository).should().save(subscription);
+  }
+
+  @Test
+  void expireShouldBeIdempotentWhenAlreadyExpiredTest() {
+    SubscriptionUpdaterImpl updater = new SubscriptionUpdaterImpl(subscriptionRepository, clock);
+    Subscription subscription =
+        new Subscription(
+            null, null, null, SubscriptionStatus.EXPIRED, null, null, null, null, null);
+
+    Subscription result = updater.expire(subscription);
+
+    assertThat(result).isSameAs(subscription);
+    assertThat(subscription.getStatus()).isEqualTo(SubscriptionStatus.EXPIRED);
+    then(subscriptionRepository).should(never()).save(subscription);
   }
 }

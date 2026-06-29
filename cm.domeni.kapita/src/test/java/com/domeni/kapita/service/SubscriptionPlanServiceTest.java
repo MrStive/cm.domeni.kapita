@@ -108,7 +108,7 @@ class SubscriptionPlanServiceTest {
     PaymentResponse result = subscriptionPlanService.subscribeToPlan(planId, userId, phoneNumber);
 
     assertThat(result).isEqualTo(paymentResponse);
-    then(sub).should().setPaymentTransactionId(UUID.fromString(paymentResponse.paymentId()));
+    then(sub).should().assignPaymentTransaction(UUID.fromString(paymentResponse.paymentId()));
     then(subscriptionRepository).should().save(sub);
   }
 
@@ -178,7 +178,7 @@ class SubscriptionPlanServiceTest {
             () -> subscriptionPlanService.subscribeToPlan(planId, userId, "+237670000000"))
         .isInstanceOf(PaymentInitiationException.class);
 
-    then(sub).should().setStatus(SubscriptionStatus.CANCELLED);
+    then(sub).should().cancel();
     then(subscriptionRepository).should().save(sub);
   }
 }

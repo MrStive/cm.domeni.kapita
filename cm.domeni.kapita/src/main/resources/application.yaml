@@ -42,6 +42,9 @@ kapita:
     trial-period-days: "${KAPITA_TRIAL_PERIOD_DAYS:14}"
     cache:
       default-ttl-seconds: "${KAPITA_CACHE_TTL_SECONDS:300}"
+    scheduler:
+      enabled: "${KAPITA_SCHEDULER_ENABLED:true}"
+      cron: "0 0 * * * *"
 logging:
   level:
     org.springframework.security: "INFO"

@@ -1,6 +1,8 @@
 package com.domeni.kapita.domain.subscriptionplan;
 
 import com.domeni.kapita.domain.user.UserId;
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -13,4 +15,8 @@ public interface SubscriptionRepository {
       UserId userId, SubscriptionPlanId planId, SubscriptionStatus status);
 
   Optional<Subscription> findByUserId(UserId userId);
+
+  List<Subscription> findExpiredSubscriptions(LocalDateTime now);
+
+  boolean hasUserEverHadTrial(UserId userId);
 }

@@ -45,9 +45,7 @@ public class ApiExceptionHandler {
   public ResponseEntity<ApiError> handleSubscriptionAccessException(
       SubscriptionAccessException exception, HttpServletRequest request) {
     return ResponseEntity.status(HttpStatus.FORBIDDEN)
-        .body(
-            buildError(
-                exception.getCode(), exception.getMessage(), request));
+        .body(buildError(exception.getCode(), exception.getMessage(), request));
   }
 
   @ExceptionHandler(DomainException.class)

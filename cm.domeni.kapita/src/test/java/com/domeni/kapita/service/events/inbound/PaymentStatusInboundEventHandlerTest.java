@@ -8,12 +8,12 @@ import com.domeni.kapita.domain.cache.SubscriptionStatusCache;
 import com.domeni.kapita.domain.payment.PaymentStatus;
 import com.domeni.kapita.domain.subscriptionplan.Subscription;
 import com.domeni.kapita.domain.subscriptionplan.SubscriptionFetcher;
-import com.domeni.kapita.domain.user.UserId;
 import com.domeni.kapita.domain.subscriptionplan.SubscriptionPlan;
 import com.domeni.kapita.domain.subscriptionplan.SubscriptionPlanDurationUnit;
 import com.domeni.kapita.domain.subscriptionplan.SubscriptionPlanFetcher;
 import com.domeni.kapita.domain.subscriptionplan.SubscriptionPlanId;
 import com.domeni.kapita.domain.subscriptionplan.SubscriptionUpdater;
+import com.domeni.kapita.domain.user.UserId;
 import com.domeni.kapita.kafka.inbound.InboundEventContext;
 import com.domeni.kapita.service.events.model.PaymentStatusEventDTO;
 import java.math.BigDecimal;
@@ -44,14 +44,24 @@ class PaymentStatusInboundEventHandlerTest {
   void setUp() {
     paymentStatusInboundEventHandler =
         new PaymentStatusInboundEventHandler(
-            subscriptionFetcher, subscriptionPlanFetcher, subscriptionUpdater, subscriptionStatusCache, clock);
+            subscriptionFetcher,
+            subscriptionPlanFetcher,
+            subscriptionUpdater,
+            subscriptionStatusCache,
+            clock);
   }
 
   private Subscription createTestSubscription() {
-    Subscription subscription = new Subscription();
-    subscription.setPlanId(new SubscriptionPlanId(UUID.randomUUID()));
-    subscription.setUserId(new UserId(UUID.randomUUID()));
-    return subscription;
+    return new Subscription(
+        null,
+        new UserId(UUID.randomUUID()),
+        new SubscriptionPlanId(UUID.randomUUID()),
+        null,
+        null,
+        null,
+        null,
+        null,
+        null);
   }
 
   @Test

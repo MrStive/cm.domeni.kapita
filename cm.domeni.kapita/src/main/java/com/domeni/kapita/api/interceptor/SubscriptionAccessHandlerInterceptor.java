@@ -15,7 +15,8 @@ public class SubscriptionAccessHandlerInterceptor implements HandlerInterceptor 
   private final CurrentUserProvider currentUserProvider;
 
   @Override
-  public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
+  public boolean preHandle(
+      HttpServletRequest request, HttpServletResponse response, Object handler) {
     String method = request.getMethod();
     if (HttpMethod.GET.matches(method)
         || HttpMethod.OPTIONS.matches(method)
@@ -26,8 +27,7 @@ public class SubscriptionAccessHandlerInterceptor implements HandlerInterceptor 
     var userId =
         currentUserProvider
             .getCurrentUserId()
-            .orElseThrow(
-                () -> new IllegalStateException("current user id is unavailable"));
+            .orElseThrow(() -> new IllegalStateException("current user id is unavailable"));
     subscriptionStatusService.validateWriteAccess(userId);
     return true;
   }
