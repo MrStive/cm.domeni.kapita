@@ -134,7 +134,7 @@ class SecurityConfigTest {
     mockMvc
         .perform(
             get("/debt")
-                .queryParam("type", "RECEIVABLE")
+                .queryParam("type", "OWED_TO_ME")
                 .queryParam("pageNumber", "0")
                 .queryParam("pageSize", "10"))
         .andExpect(status().isUnauthorized());
@@ -173,7 +173,7 @@ class SecurityConfigTest {
     mockMvc
         .perform(
             get("/debt")
-                .queryParam("type", "RECEIVABLE")
+                .queryParam("type", "OWED_TO_ME")
                 .queryParam("pageNumber", "0")
                 .queryParam("pageSize", "10")
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + token))

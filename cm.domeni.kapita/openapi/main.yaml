@@ -161,7 +161,7 @@ paths:
         required: false
         schema:
           $ref: "#/components/schemas/DebtTypeDTO"
-        description: "Debt type to filter. When omitted, all debt types are returned."
+        description: "Debt type to filter: OWED_TO_ME (you are owed money) or OWED_BY_ME (you owe money). When omitted, all debt types are returned."
       - name: "pageNumber"
         in: "query"
         required: false
@@ -320,8 +320,8 @@ paths:
     get:
       tags:
       - "Transaction"
-      summary: "Fetch current user transaction amount by type over a period"
-      description: "Compute the sum of transaction amounts for the current user, filtered by type and period"
+      summary: "Fetch current user transaction amount(s) over a period"
+      description: "Compute the sum of transaction amounts for the current user over a period. Filtered by type when provided, or grouped by type when omitted."
       operationId: "fetchTransactionAmountByType"
       security:
       - bearerAuth: []
@@ -342,17 +342,17 @@ paths:
         description: "Inclusive period end date."
       - name: "type"
         in: "query"
-        required: true
+        required: false
         schema:
           $ref: "#/components/schemas/TransactionTypeDTO"
-        description: "Transaction type to aggregate."
+        description: "Transaction type to aggregate. When omitted, the amounts are grouped by type."
       responses:
         "200":
           description: "successful operation"
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/MoneyDTO"
+                $ref: "#/components/schemas/TransactionAmountGroupedDTO"
 components:
   securitySchemes:
     bearerAuth:
@@ -371,7 +371,7 @@ components:
             demo:create: "Needed when to create a new Demo object"
             transaction:create: "Needed when to create a new transaction"
             transaction:read:balance: "Needed when to fetch the current user balance over a period"
-            transaction:read:amount: "Needed when to fetch the current user transaction amount over a period for one type"
+            transaction:read:amount: "Needed when to fetch the current user transaction amount over a period, optionally grouped by type"
             debt:create: "Needed when to create a new debt"
             debt:read: "Needed when to fetch current user debts by type"
             subscription-plan:create: "Needed when to create a new subscription plan"
@@ -405,8 +405,8 @@ components:
     DebtTypeDTO:
       type: "string"
       enum:
-      - "RECEIVABLE"
-      - "PAYABLE"
+      - "OWED_TO_ME"
+      - "OWED_BY_ME"
     DebtStatusDTO:
       type: "string"
       enum:
@@ -533,6 +533,13 @@ components:
           format: "uuid"
         paymentUrl:
           type: "string"
+    TransactionAmountGroupedDTO:
+      type: "object"
+      properties:
+        INCOMING:
+          $ref: "#/components/schemas/MoneyDTO"
+        EXPENSE:
+          $ref: "#/components/schemas/MoneyDTO"
     TransactionTypeDTO:
       type: "string"
       enum:

@@ -70,7 +70,7 @@ class DebtApiExceptionHandlerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(
                     """
-                    {"type":"RECEIVABLE","counterpartyName":"Client A","amount":{"currency":"XAF"},"dueDate":"2026-04-11"}
+                    {"type":"OWED_TO_ME","counterpartyName":"Client A","amount":{"currency":"XAF"},"dueDate":"2026-04-11"}
                     """))
         .andExpect(status().isBadRequest())
         .andExpect(jsonPath("$.code").value("KAPITA-400-VALIDATION"))
@@ -93,7 +93,7 @@ class DebtApiExceptionHandlerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(
                     """
-                    {"type":"RECEIVABLE","counterpartyName":"Client A","amount":{"value":5000,"currency":"XAF"},"dueDate":"2026-04-11"}
+                    {"type":"OWED_TO_ME","counterpartyName":"Client A","amount":{"value":5000,"currency":"XAF"},"dueDate":"2026-04-11"}
                     """))
         .andExpect(status().isBadRequest())
         .andExpect(jsonPath("$.code").value("KAPITA-400-005"))
@@ -112,7 +112,7 @@ class DebtApiExceptionHandlerTest {
     mockMvc
         .perform(
             get("/debt")
-                .queryParam("type", "RECEIVABLE")
+                .queryParam("type", "OWED_TO_ME")
                 .queryParam("pageNumber", "0")
                 .queryParam("pageSize", "10"))
         .andExpect(status().isBadRequest())
@@ -146,7 +146,7 @@ class DebtApiExceptionHandlerTest {
     mockMvc
         .perform(
             get("/debt")
-                .queryParam("type", "RECEIVABLE")
+                .queryParam("type", "OWED_TO_ME")
                 .queryParam("pageNumber", "-1")
                 .queryParam("pageSize", "10"))
         .andExpect(status().isBadRequest())

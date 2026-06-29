@@ -40,7 +40,7 @@ class DebtFactoryImplTest {
     UserId currentUserId = new UserId(UUID.randomUUID());
     DebtData input =
         DebtData.builder()
-            .type(DebtType.RECEIVABLE)
+            .type(DebtType.OWED_TO_ME)
             .counterpartyName("Client A")
             .amount(Money.of(new BigDecimal("5000.00"), "XAF"))
             .dueDate(LocalDate.of(2026, 4, 11))
@@ -58,7 +58,7 @@ class DebtFactoryImplTest {
     Debt debtToSave = debtCaptor.getValue();
     assertThat(debtToSave.getId()).isNotNull();
     assertThat(debtToSave.getId().toUUID()).isNotNull();
-    assertThat(debtToSave.getType()).isEqualTo(DebtType.RECEIVABLE);
+    assertThat(debtToSave.getType()).isEqualTo(DebtType.OWED_TO_ME);
     assertThat(debtToSave.getCounterpartyName()).isEqualTo("Client A");
     assertThat(debtToSave.getAmount().getCurrency().getCurrencyCode()).isEqualTo("XAF");
     assertThat(debtToSave.getAmount().getNumber().numberValue(BigDecimal.class))
@@ -75,7 +75,7 @@ class DebtFactoryImplTest {
     UserId currentUserId = new UserId(UUID.randomUUID());
     DebtData input =
         DebtData.builder()
-            .type(DebtType.PAYABLE)
+            .type(DebtType.OWED_BY_ME)
             .counterpartyName("  Fournisseur B  ")
             .amount(Money.of(new BigDecimal("15000.00"), "XAF"))
             .dueDate(LocalDate.of(2026, 4, 12))
@@ -94,7 +94,7 @@ class DebtFactoryImplTest {
     DebtFactoryImpl debtFactory = new DebtFactoryImpl(debtRepository, Clock.systemUTC());
     DebtData input =
         DebtData.builder()
-            .type(DebtType.RECEIVABLE)
+            .type(DebtType.OWED_TO_ME)
             .counterpartyName("Client A")
             .amount(Money.of(new BigDecimal("5000.00"), "XAF"))
             .dueDate(LocalDate.of(2026, 4, 11))

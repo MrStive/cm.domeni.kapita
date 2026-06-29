@@ -30,13 +30,13 @@ class DebtFetcherImplTest {
     UserId currentUserId = new UserId(UUID.randomUUID());
     DebtPage expectedPage = new DebtPage(List.of(new Debt(), new Debt()), 1, 10, 12, 2);
 
-    given(debtRepository.findAllByUserIdAndType(currentUserId, DebtType.RECEIVABLE, 1, 10))
+    given(debtRepository.findAllByUserIdAndType(currentUserId, DebtType.OWED_TO_ME, 1, 10))
         .willReturn(expectedPage);
 
-    DebtPage result = objectUnderTest.getByType(DebtType.RECEIVABLE, 1, 10, currentUserId);
+    DebtPage result = objectUnderTest.getByType(DebtType.OWED_TO_ME, 1, 10, currentUserId);
 
     assertThat(result).isSameAs(expectedPage);
-    then(debtRepository).should().findAllByUserIdAndType(currentUserId, DebtType.RECEIVABLE, 1, 10);
+    then(debtRepository).should().findAllByUserIdAndType(currentUserId, DebtType.OWED_TO_ME, 1, 10);
   }
 
   @Test
@@ -59,7 +59,8 @@ class DebtFetcherImplTest {
 
     assertThatThrownBy(
             () ->
-                objectUnderTest.getByType(DebtType.PAYABLE, -1, 10, new UserId(UUID.randomUUID())))
+                objectUnderTest.getByType(
+                    DebtType.OWED_BY_ME, -1, 10, new UserId(UUID.randomUUID())))
         .isInstanceOf(InvalidDebtPayloadException.class)
         .hasMessage("debt page number is invalid");
 
@@ -71,7 +72,8 @@ class DebtFetcherImplTest {
     DebtFetcherImpl objectUnderTest = new DebtFetcherImpl(debtRepository);
 
     assertThatThrownBy(
-            () -> objectUnderTest.getByType(DebtType.PAYABLE, 0, 0, new UserId(UUID.randomUUID())))
+            () ->
+                objectUnderTest.getByType(DebtType.OWED_BY_ME, 0, 0, new UserId(UUID.randomUUID())))
         .isInstanceOf(InvalidDebtPayloadException.class)
         .hasMessage("debt page size is invalid");
 
@@ -82,7 +84,7 @@ class DebtFetcherImplTest {
   void getByTypeWhenCurrentUserIdIsMissingShouldThrowInvalidDebtPayloadExceptionTest() {
     DebtFetcherImpl objectUnderTest = new DebtFetcherImpl(debtRepository);
 
-    assertThatThrownBy(() -> objectUnderTest.getByType(DebtType.PAYABLE, 0, 10, null))
+    assertThatThrownBy(() -> objectUnderTest.getByType(DebtType.OWED_BY_ME, 0, 10, null))
         .isInstanceOf(InvalidDebtPayloadException.class)
         .hasMessage("debt user id is required");
 

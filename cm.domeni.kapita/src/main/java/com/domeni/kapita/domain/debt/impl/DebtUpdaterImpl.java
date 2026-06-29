@@ -58,8 +58,8 @@ public class DebtUpdaterImpl implements DebtUpdater {
 
   private TransactionType toTransactionType(DebtType debtType) {
     return switch (debtType) {
-      case RECEIVABLE -> TransactionType.INCOMING;
-      case PAYABLE -> TransactionType.EXPENSE;
+      case OWED_TO_ME -> TransactionType.INCOMING;
+      case OWED_BY_ME -> TransactionType.EXPENSE;
     };
   }
 }

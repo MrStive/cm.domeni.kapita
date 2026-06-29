@@ -32,7 +32,7 @@ class DebtMapperTest {
   void mapCreateDebtDtoShouldReturnDebtDataTest() {
     CreateDebtDTO input =
         new CreateDebtDTO()
-            .type(DebtTypeDTO.RECEIVABLE)
+            .type(DebtTypeDTO.OWED_TO_ME)
             .counterpartyName("Client A")
             .amount(new MoneyDTO().currency("XAF").value(new BigDecimal("5000.00")))
             .dueDate(LocalDate.of(2026, 4, 11));
@@ -40,7 +40,7 @@ class DebtMapperTest {
     DebtData result = debtMapper.map(input);
 
     assertThat(result).isNotNull();
-    assertThat(result.type()).isEqualTo(DebtType.RECEIVABLE);
+    assertThat(result.type()).isEqualTo(DebtType.OWED_TO_ME);
     assertThat(result.counterpartyName()).isEqualTo("Client A");
     assertThat(result.amount().getCurrency().getCurrencyCode()).isEqualTo("XAF");
     assertThat(result.amount().getNumber().numberValue(BigDecimal.class))
@@ -62,7 +62,7 @@ class DebtMapperTest {
     Debt input =
         Debt.builder()
             .id(new DebtId(UUID.fromString("6a86c341-c95a-4d7b-ba35-a0836bdb7547")))
-            .type(DebtType.PAYABLE)
+            .type(DebtType.OWED_BY_ME)
             .counterpartyName("Fournisseur B")
             .amount(Money.of(new BigDecimal("15000.00"), "XAF"))
             .dueDate(LocalDate.of(2026, 4, 12))
@@ -73,7 +73,7 @@ class DebtMapperTest {
     DebtDTO result = debtMapper.map(input);
 
     assertThat(result.getId()).isEqualTo(UUID.fromString("6a86c341-c95a-4d7b-ba35-a0836bdb7547"));
-    assertThat(result.getType()).isEqualTo(DebtTypeDTO.PAYABLE);
+    assertThat(result.getType()).isEqualTo(DebtTypeDTO.OWED_BY_ME);
     assertThat(result.getCounterpartyName()).isEqualTo("Fournisseur B");
     assertThat(result.getAmount().getCurrency()).isEqualTo("XAF");
     assertThat(result.getAmount().getValue()).isEqualByComparingTo("15000.00");
@@ -89,7 +89,7 @@ class DebtMapperTest {
             List.of(
                 Debt.builder()
                     .id(new DebtId(UUID.fromString("6a86c341-c95a-4d7b-ba35-a0836bdb7547")))
-                    .type(DebtType.RECEIVABLE)
+                    .type(DebtType.OWED_TO_ME)
                     .counterpartyName("Client A")
                     .amount(Money.of(new BigDecimal("5000.00"), "XAF"))
                     .dueDate(LocalDate.of(2026, 4, 11))
@@ -108,6 +108,6 @@ class DebtMapperTest {
     assertThat(result.getPageSize()).isEqualTo(10);
     assertThat(result.getTotalElements()).isEqualTo(1L);
     assertThat(result.getTotalPages()).isEqualTo(1);
-    assertThat(result.getItems().getFirst().getType()).isEqualTo(DebtTypeDTO.RECEIVABLE);
+    assertThat(result.getItems().getFirst().getType()).isEqualTo(DebtTypeDTO.OWED_TO_ME);
   }
 }

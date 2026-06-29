@@ -48,8 +48,8 @@ public interface DebtMapper {
   @Mapping(target = "totalPages", source = "totalPages")
   DebtPageDTO map(DebtPage value);
 
-  @ValueMapping(source = "PAYABLE", target = "PAYABLE")
-  @ValueMapping(source = "RECEIVABLE", target = "RECEIVABLE")
+  @ValueMapping(source = "OWED_BY_ME", target = "OWED_BY_ME")
+  @ValueMapping(source = "OWED_TO_ME", target = "OWED_TO_ME")
   DebtType map(DebtTypeDTO type);
 
   default MonetaryAmount map(MoneyDTO value) {
