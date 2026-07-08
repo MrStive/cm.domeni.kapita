@@ -34,8 +34,8 @@ public class SubscriptionRepositoryImpl implements SubscriptionRepository {
   }
 
   @Override
-  public Optional<Subscription> findByUserId(UserId userId) {
-    return subscriptionSpringRepository.findByUserIdOrdered(userId).stream().findFirst();
+  public List<Subscription> findByUserId(UserId userId) {
+    return subscriptionSpringRepository.findByUserId(userId);
   }
 
   @Override

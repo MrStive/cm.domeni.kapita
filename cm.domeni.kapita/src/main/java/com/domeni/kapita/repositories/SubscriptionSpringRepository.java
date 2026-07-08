@@ -19,16 +19,7 @@ public interface SubscriptionSpringRepository extends JpaRepository<Subscription
   Optional<Subscription> findByUserIdAndPlanIdAndStatus(
       UserId userId, SubscriptionPlanId planId, SubscriptionStatus status);
 
-  @Query(
-      "SELECT s FROM Subscription s WHERE s.userId = :userId ORDER BY "
-          + "CASE s.status "
-          + "WHEN 'ACTIVE' THEN 0 "
-          + "WHEN 'TRIAL' THEN 1 "
-          + "WHEN 'PENDING' THEN 2 "
-          + "WHEN 'CANCELLED' THEN 3 "
-          + "WHEN 'EXPIRED' THEN 4 "
-          + "END, s.createdAt DESC")
-  List<Subscription> findByUserIdOrdered(@Param("userId") UserId userId);
+  List<Subscription> findByUserId(UserId userId);
 
   List<Subscription> findByStatusIn(List<SubscriptionStatus> statuses);
 
