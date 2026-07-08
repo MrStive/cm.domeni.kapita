@@ -490,9 +490,9 @@ sourceSets.main.get().java.srcDir(
 )
 
 jib {
-    val imageNamePrefix = System.getenv("NEXUS_DOCKER_REGISTRY_URL") ?: ""
-    val nexusUsername = System.getenv("NEXUS_CREDENTIALS_USR") ?: "admin"
-    val nexusPassword = System.getenv("NEXUS_CREDENTIALS_PSW") ?: "9d912f7d-c29a-4795-bd0a-b17481659304"
+    val imageNamePrefix = System.getenv("NEXUS_DOCKER_REGISTRY_URL") ?: "ghcr.io/mrstive"
+    val nexusUsername = System.getenv("NEXUS_CREDENTIALS_USR") ?: ""
+    val nexusPassword = System.getenv("NEXUS_CREDENTIALS_PSW") ?: ""
     from {
         image = "eclipse-temurin:25-jdk"
     }
@@ -509,6 +509,7 @@ jib {
         }
     }
     container {
+        mainClass = "com.domeni.kapita.KapitaApplication"
         creationTime = "USE_CURRENT_TIMESTAMP"
         jvmFlags = listOf("--enable-preview")
         extraClasspath = listOf("/opt/liquibase-external")
