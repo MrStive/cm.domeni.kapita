@@ -235,6 +235,23 @@ paths:
         "404":
           description: "KAPITA-404-002"
   /subscription-plan:
+    get:
+      tags:
+      - "SubscriptionPlan"
+      summary: "Fetch all active subscription plans"
+      description: "Fetch all active subscription plans"
+      operationId: "fetchSubscriptionPlans"
+      security:
+      - bearerAuth: []
+      responses:
+        "200":
+          description: "successful operation"
+          content:
+            application/json:
+              schema:
+                type: "array"
+                items:
+                  $ref: "#/components/schemas/SubscriptionPlanDTO"
     post:
       tags:
       - "SubscriptionPlan"
@@ -514,6 +531,31 @@ components:
           $ref: "#/components/schemas/SubscriptionPlanDurationUnitDTO"
         price:
           $ref: "#/components/schemas/MoneyDTO"
+    SubscriptionPlanDTO:
+      type: "object"
+      required:
+      - "id"
+      - "status"
+      - "durationValue"
+      - "durationUnit"
+      - "price"
+      - "createdAt"
+      properties:
+        id:
+          type: "string"
+          format: "uuid"
+        status:
+          $ref: "#/components/schemas/SubscriptionPlanStatusDTO"
+        durationValue:
+          type: "integer"
+          format: "int32"
+        durationUnit:
+          $ref: "#/components/schemas/SubscriptionPlanDurationUnitDTO"
+        price:
+          $ref: "#/components/schemas/MoneyDTO"
+        createdAt:
+          type: "string"
+          format: "date-time"
     SubscriptionRequestDTO:
       type: "object"
       required:

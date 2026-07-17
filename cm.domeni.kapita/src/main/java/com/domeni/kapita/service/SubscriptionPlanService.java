@@ -1,5 +1,6 @@
 package com.domeni.kapita.service;
 
+import cm.domeni.generated.domeni.kapita.dto.SubscriptionPlanDTO;
 import com.domeni.kapita.domain.exception.PaymentInitiationException;
 import com.domeni.kapita.domain.exception.SubscriptionPlanNotFoundException;
 import com.domeni.kapita.domain.payment.PaymentPort;
@@ -17,6 +18,8 @@ import com.domeni.kapita.domain.subscriptionplan.SubscriptionPlanId;
 import com.domeni.kapita.domain.subscriptionplan.SubscriptionRepository;
 import com.domeni.kapita.domain.subscriptionplan.SubscriptionStatus;
 import com.domeni.kapita.domain.user.UserId;
+import com.domeni.kapita.service.mapper.SubscriptionPlanMapper;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -30,9 +33,17 @@ import org.springframework.transaction.annotation.Transactional;
 public class SubscriptionPlanService {
   private final SubscriptionPlanFactory subscriptionPlanFactory;
   private final SubscriptionPlanFetcher subscriptionPlanFetcher;
+  private final SubscriptionPlanMapper subscriptionPlanMapper;
   private final SubscriptionFactory subscriptionFactory;
   private final SubscriptionRepository subscriptionRepository;
   private final PaymentPort paymentPort;
+
+  @Transactional(readOnly = true)
+  public List<SubscriptionPlanDTO> getActivePlans() {
+    return subscriptionPlanFetcher.getAllActive().stream()
+        .map(subscriptionPlanMapper::map)
+        .toList();
+  }
 
   @Transactional
   public UUID createSubscriptionPlan(SubscriptionPlanData data) {

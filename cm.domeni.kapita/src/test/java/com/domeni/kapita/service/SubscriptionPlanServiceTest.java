@@ -7,6 +7,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
 
+import cm.domeni.generated.domeni.kapita.dto.SubscriptionPlanDTO;
 import com.domeni.kapita.domain.exception.PaymentInitiationException;
 import com.domeni.kapita.domain.exception.SubscriptionPlanNotFoundException;
 import com.domeni.kapita.domain.payment.PaymentPort;
@@ -24,6 +25,8 @@ import com.domeni.kapita.domain.subscriptionplan.SubscriptionPlanId;
 import com.domeni.kapita.domain.subscriptionplan.SubscriptionRepository;
 import com.domeni.kapita.domain.subscriptionplan.SubscriptionStatus;
 import com.domeni.kapita.domain.user.UserId;
+import com.domeni.kapita.service.mapper.SubscriptionPlanMapper;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import javax.money.MonetaryAmount;
@@ -39,11 +42,30 @@ class SubscriptionPlanServiceTest {
 
   @Mock private SubscriptionPlanFactory subscriptionPlanFactory;
   @Mock private SubscriptionPlanFetcher subscriptionPlanFetcher;
+  @Mock private SubscriptionPlanMapper subscriptionPlanMapper;
   @Mock private SubscriptionFactory subscriptionFactory;
   @Mock private SubscriptionRepository subscriptionRepository;
   @Mock private PaymentPort paymentPort;
 
   @InjectMocks private SubscriptionPlanService subscriptionPlanService;
+
+  @Test
+  void getActivePlansShouldFetchActivePlansAndMapToDtoTest() {
+    SubscriptionPlan plan1 = mock(SubscriptionPlan.class);
+    SubscriptionPlan plan2 = mock(SubscriptionPlan.class);
+    SubscriptionPlanDTO dto1 = new SubscriptionPlanDTO().id(UUID.randomUUID());
+    SubscriptionPlanDTO dto2 = new SubscriptionPlanDTO().id(UUID.randomUUID());
+    given(subscriptionPlanFetcher.getAllActive()).willReturn(List.of(plan1, plan2));
+    given(subscriptionPlanMapper.map(plan1)).willReturn(dto1);
+    given(subscriptionPlanMapper.map(plan2)).willReturn(dto2);
+
+    List<SubscriptionPlanDTO> result = subscriptionPlanService.getActivePlans();
+
+    assertThat(result).containsExactly(dto1, dto2);
+    then(subscriptionPlanFetcher).should().getAllActive();
+    then(subscriptionPlanMapper).should().map(plan1);
+    then(subscriptionPlanMapper).should().map(plan2);
+  }
 
   @Test
   void createSubscriptionPlanShouldDelegateDataToFactoryAndReturnCreatedIdTest() {
