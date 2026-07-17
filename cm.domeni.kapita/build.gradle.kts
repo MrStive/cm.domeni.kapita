@@ -25,7 +25,7 @@ plugins {
 application {
     mainClass = "com.domeni.kapita.KapitaApplication"
 }
-version = "0.0.0-SNAPSHOT"
+version = "0.0.4"
 group = "cm.domeni.kapita"
 val kapitaPlatformVersion =
     providers

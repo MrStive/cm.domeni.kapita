@@ -8,6 +8,7 @@ import static org.mockito.Mockito.when;
 import cm.domeni.generated.domeni.kapita.dto.CreateSubscriptionPlanDTO;
 import cm.domeni.generated.domeni.kapita.dto.CreationResponseDTO;
 import cm.domeni.generated.domeni.kapita.dto.MoneyDTO;
+import cm.domeni.generated.domeni.kapita.dto.SubscriptionPlanDTO;
 import cm.domeni.generated.domeni.kapita.dto.SubscriptionPlanDurationUnitDTO;
 import cm.domeni.generated.domeni.kapita.dto.SubscriptionPlanStatusDTO;
 import cm.domeni.generated.domeni.kapita.dto.SubscriptionRequestDTO;
@@ -18,6 +19,7 @@ import com.domeni.kapita.security.jwt.CurrentUserProvider;
 import com.domeni.kapita.service.SubscriptionPlanService;
 import com.domeni.kapita.service.mapper.SubscriptionPlanMapper;
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -30,6 +32,28 @@ class SubscriptionPlanResourceTest {
   @Mock private SubscriptionPlanService subscriptionPlanService;
   @Mock private SubscriptionPlanMapper subscriptionPlanMapper;
   @Mock private CurrentUserProvider currentUserProvider;
+
+  @Test
+  void fetchSubscriptionPlansShouldReturnActivePlansTest() {
+    SubscriptionPlanDTO dto1 = new SubscriptionPlanDTO().id(UUID.randomUUID()).durationValue(1);
+    SubscriptionPlanDTO dto2 = new SubscriptionPlanDTO().id(UUID.randomUUID()).durationValue(3);
+
+    when(subscriptionPlanService.getActivePlans()).thenReturn(List.of(dto1, dto2));
+
+    // spotless:off
+        List<SubscriptionPlanDTO> response =
+                given()
+                        .standaloneSetup(new SubscriptionPlanResource(subscriptionPlanService, subscriptionPlanMapper, currentUserProvider))
+                .when()
+                        .get("/subscription-plan")
+                .then()
+                        .statusCode(200)
+                        .extract().body().jsonPath().getList(".", SubscriptionPlanDTO.class);
+        // spotless:on
+    assertThat(response).hasSize(2);
+    assertThat(response.get(0).getId()).isEqualTo(dto1.getId());
+    assertThat(response.get(1).getId()).isEqualTo(dto2.getId());
+  }
 
   @Test
   void createSubscriptionPlanShouldReturnCreatedSubscriptionPlanIdTest() {
